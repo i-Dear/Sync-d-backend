@@ -3,6 +3,7 @@ package com.syncd.domain.User;
 import com.syncd.domain.User.dto.LoginDto;
 import com.syncd.domain.User.dto.RegisterDto;
 import com.syncd.domain.User.entity.UserEntity;
+import com.syncd.domain.User.exceptions.LoginException;
 import com.syncd.domain.User.exceptions.RegisterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,11 +29,15 @@ public class UserService {
         return registerDto.getEmail();
     }
 
-    public Boolean loginUser(LoginDto loginDto){
+    public Boolean loginUser(LoginDto loginDto) {
         return userDao.findByEmail(loginDto.getEmail())
                 .map(userEntity -> {
-                    return loginDto.getPassword().equals(userEntity.getPassword());
+                    if (loginDto.getPassword().equals(userEntity.getPassword())) {
+                        return true;
+                    } else {
+                        throw new LoginException("Invalid password for email: " + loginDto.getEmail());
+                    }
                 })
-                .orElse(false);
+                .orElseThrow(() -> new LoginException("User not found with email: " + loginDto.getEmail()));
     }
 }
