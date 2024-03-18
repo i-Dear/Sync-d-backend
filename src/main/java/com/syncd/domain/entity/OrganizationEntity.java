@@ -1,4 +1,4 @@
-package com.syncd.domain.User.entity;
+package com.syncd.domain.entity;
 
 import lombok.Builder;
 import lombok.Data;
