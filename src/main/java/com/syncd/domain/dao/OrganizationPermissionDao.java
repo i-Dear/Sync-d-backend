@@ -1,12 +1,12 @@
 package com.syncd.domain.dao;
 
 import com.syncd.domain.entity.OrganizationEntity;
-import com.syncd.domain.entity.UserEntity;
+import com.syncd.domain.entity.OrganizationPermissionEntity;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.List;
 
-@Repository
-public interface OrganizationDao extends MongoRepository<OrganizationEntity, String> {
+public interface OrganizationPermissionDao extends MongoRepository<OrganizationPermissionEntity, String> {
+    List<OrganizationPermissionEntity> findByKey_UserId(String userId);
 }

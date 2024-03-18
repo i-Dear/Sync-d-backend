@@ -1,4 +1,4 @@
-package com.syncd.domain.User.dto;
+package com.syncd.module.User.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetAllInfoAboutRoomsByUserIdDto {
-    private String userId;
-    private String roomId;
+public class GetAllInfoAboutRoomsByUserIdRequestDto {
+    private String email;
 }

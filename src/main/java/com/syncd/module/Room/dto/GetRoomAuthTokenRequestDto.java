@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetRoomAuthTokenDto {
+public class GetRoomAuthTokenRequestDto {
     private String userId;
     private String roomId;
 }

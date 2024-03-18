@@ -1,10 +1,11 @@
-package com.syncd.domain.User;
+package com.syncd.module.User;
 
-import com.syncd.domain.User.dto.LoginDto;
-import com.syncd.domain.User.dto.RegisterDto;
-import com.syncd.domain.User.entity.UserEntity;
-import com.syncd.domain.User.exceptions.LoginException;
-import com.syncd.domain.User.exceptions.RegisterException;
+import com.syncd.domain.dao.UserDao;
+import com.syncd.domain.entity.UserEntity;
+import com.syncd.module.User.dto.LoginDto;
+import com.syncd.module.User.dto.RegisterDto;
+import com.syncd.module.User.exceptions.LoginException;
+import com.syncd.module.User.exceptions.RegisterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,9 +25,11 @@ public class UserService {
                 .email(registerDto.getEmail())
                 .password(registerDto.getPassword())
                 .age(registerDto.getAge())
+                .name(registerDto.getName())
                 .build();
-        userDao.save(userEntity);
-        return registerDto.getEmail();
+        System.out.print(userEntity);
+
+        return userDao.save(userEntity).getUserId();
     }
 
     public Boolean loginUser(LoginDto loginDto) {

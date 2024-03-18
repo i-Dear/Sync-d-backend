@@ -1,4 +1,4 @@
-package com.syncd.domain.User.dto;
+package com.syncd.module.User.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RegisterDto {
     private String email;
+    private String name;
     private String password;
     private Integer age;
 }
