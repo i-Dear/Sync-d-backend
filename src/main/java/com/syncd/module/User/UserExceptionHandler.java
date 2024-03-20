@@ -1,7 +1,7 @@
-package com.syncd.domain.User;
+package com.syncd.module.User;
 
-import com.syncd.domain.User.exceptions.LoginException;
-import com.syncd.domain.User.exceptions.RegisterException;
+import com.syncd.module.User.exceptions.LoginException;
+import com.syncd.module.User.exceptions.RegisterException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
