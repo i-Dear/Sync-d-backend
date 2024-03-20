@@ -1,4 +1,4 @@
-package com.syncd.domain.User.dto;
+package com.syncd.module.Room.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterDto {
-    private String email;
-    private String password;
-    private Integer age;
+public class GetRoomAuthTokenResponsetDto {
+    private String token;
 }

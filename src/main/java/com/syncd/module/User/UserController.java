@@ -1,7 +1,7 @@
-package com.syncd.domain.User;
+package com.syncd.module.User;
 
-import com.syncd.domain.User.dto.LoginDto;
-import com.syncd.domain.User.dto.RegisterDto;
+import com.syncd.module.User.dto.LoginDto;
+import com.syncd.module.User.dto.RegisterDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

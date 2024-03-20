@@ -1,4 +1,4 @@
-package com.syncd.domain.User.exceptions;
+package com.syncd.module.User.exceptions;
 
 public class RegisterException extends RuntimeException{
     public RegisterException(String message) {

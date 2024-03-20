@@ -1,4 +1,4 @@
-package com.syncd.domain.User.dto;
+package com.syncd.module.Room.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginDto {
+public class GetAllInfoAboutRoomsByUserIdRequestDto {
     private String email;
-    private String password;
 }
