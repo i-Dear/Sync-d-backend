@@ -1,12 +1,14 @@
-package com.syncd.domain.enums;
+package com.syncd.enums;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public enum Role {
-    @JsonProperty("admin")
-    ADMIN,
+    @JsonProperty("host")
+    HOST,
     @JsonProperty("manager")
     MANAGER,
     @JsonProperty("member")
-    MEMBER
+    MEMBER,
+    @JsonProperty("guest")
+    GUEST
 }

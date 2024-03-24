@@ -1,4 +1,4 @@
-package com.syncd.module.User.exceptions;
+package com.syncd.adapter.in.web.exception.exceptions;
 
 public class LoginException extends RuntimeException {
     public LoginException(String message) {

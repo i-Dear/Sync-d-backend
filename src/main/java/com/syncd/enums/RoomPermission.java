@@ -1,4 +1,4 @@
-package com.syncd.domain.enums;
+package com.syncd.enums;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
