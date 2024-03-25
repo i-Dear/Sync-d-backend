@@ -4,6 +4,7 @@ import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase;
 import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase.*;
 import com.syncd.application.port.in.GetRoomAuthTokenUsecase;
 import com.syncd.application.port.in.GetRoomAuthTokenUsecase.*;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,10 +21,12 @@ public class RoomController {
     @PostMapping("/auth")
     public GetRoomAuthTokenResponseDto getRoomAuthToken(@RequestBody GetRoomAuthTokenRequestDto getRoomAuthToken){
         return getRoomAuthTokenUsecase.getRoomAuthToken(getRoomAuthToken);
+
     }
 
     @PostMapping("/")
     public GetAllInfoAboutRoomsByUserIdResponseDto getAllInfoAboutRoomsByUserId(@RequestBody GetAllInfoAboutRoomsByUserIdRequestDto getAllInfoAboutRoomsByUserIdRequestDto){
         return getAllRoomsByUserIdUsecase.getAllRoomsByUserId(getAllInfoAboutRoomsByUserIdRequestDto);
+
     }
 }
