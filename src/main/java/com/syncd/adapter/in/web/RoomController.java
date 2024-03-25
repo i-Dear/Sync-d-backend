@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/v1/room")
 public class RoomController {
-    private GetAllRoomsByUserIdUsecase getAllRoomsByUserIdUsecase;
-    private GetRoomAuthTokenUsecase getRoomAuthTokenUsecase;
+    private final GetAllRoomsByUserIdUsecase getAllRoomsByUserIdUsecase;
+    private final GetRoomAuthTokenUsecase getRoomAuthTokenUsecase;
 
     @PostMapping("/auth")
     public GetRoomAuthTokenResponseDto getRoomAuthToken(@RequestBody GetRoomAuthTokenRequestDto getRoomAuthToken){
