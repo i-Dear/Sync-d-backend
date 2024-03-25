@@ -1,7 +1,7 @@
 package com.syncd.application.service;
 
-import com.syncd.application.domain.Organization;
-import com.syncd.application.port.in.OrganizationUsecase;
+import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase;
+import com.syncd.application.port.in.GetRoomAuthTokenUsecase;
 import com.syncd.application.port.out.liveblock.LiveblocksPort;
 import com.syncd.application.port.out.organization.ReadOrganizationPort;
 import com.syncd.application.port.out.organization.WriteOrganizationPort;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class OrganizationService implements OrganizationUsecase {
+public class OrganizationService implements GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase {
     private final LiveblocksPort liveblocksPort;
     private final ReadOrganizationPort readOrganizationPort;
     private final WriteOrganizationPort writeOrganizationPort;
@@ -24,7 +24,7 @@ public class OrganizationService implements OrganizationUsecase {
         return new GetRoomAuthTokenResponseDto(token);
     }
 
-    public GetAllInfoAboutRoomsByUserIdResponseDto getAllInfoAboutRoomsByUserId(GetAllInfoAboutRoomsByUserIdRequestDto requestDto) {
+    public GetAllInfoAboutRoomsByUserIdResponseDto getAllRoomsByUserId(GetAllInfoAboutRoomsByUserIdRequestDto requestDto) {
         return null;
     }
 

@@ -4,27 +4,21 @@ import com.syncd.enums.Role;
 
 import java.util.List;
 
-public interface OrganizationUsecase {
+public interface GetAllRoomsByUserIdUsecase {
     // ======================================
     // METHOD
     // ======================================
-    GetRoomAuthTokenResponseDto getRoomAuthToken(GetRoomAuthTokenRequestDto getRoomAuthTokenRequestDto);
-
-    GetAllInfoAboutRoomsByUserIdResponseDto getAllInfoAboutRoomsByUserId(GetAllInfoAboutRoomsByUserIdRequestDto requestDto);
+    GetAllInfoAboutRoomsByUserIdResponseDto getAllRoomsByUserId(GetAllInfoAboutRoomsByUserIdRequestDto requestDto);
 
     // ======================================
     // DTO
     // ======================================
-    record GetRoomAuthTokenResponseDto(String token){}
-
-    record GetRoomAuthTokenRequestDto(String userId, String roomId){}
-
     record GetAllInfoAboutRoomsByUserIdResponseDto(
             String userId,
-            List<OrganizationInDto> organizations
+            List<OrgForGetAllInfoAboutRoomsByUserIdResponseDto> organizations
     ){}
 
-    record OrganizationInDto(
+    record OrgForGetAllInfoAboutRoomsByUserIdResponseDto(
             String orgName,
             String orgId,
             String orgDescription,
