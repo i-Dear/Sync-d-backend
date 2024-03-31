@@ -8,24 +8,24 @@ public interface GetAllRoomsByUserIdUsecase {
     // ======================================
     // METHOD
     // ======================================
-    GetAllInfoAboutRoomsByUserIdResponseDto getAllRoomsByUserId(GetAllInfoAboutRoomsByUserIdRequestDto requestDto);
+    GetAllRoomsByUserIdResponseDto getAllRoomsByUserId(GetAllRoomsByUserIdRequestDto requestDto);
 
     // ======================================
     // DTO
     // ======================================
-    record GetAllInfoAboutRoomsByUserIdResponseDto(
+    record GetAllRoomsByUserIdResponseDto(
             String userId,
-            List<OrgForGetAllInfoAboutRoomsByUserIdResponseDto> organizations
+            List<TeamForGetAllInfoAboutRoomsByUserIdResponseDto> teams
     ){}
 
-    record OrgForGetAllInfoAboutRoomsByUserIdResponseDto(
-            String orgName,
-            String orgId,
-            String orgDescription,
+    record TeamForGetAllInfoAboutRoomsByUserIdResponseDto(
+            String teamName,
+            String teamId,
+            String teamDescription,
             Role role,
             String roomId
     ){}
 
-    record GetAllInfoAboutRoomsByUserIdRequestDto(String email){}
+    record GetAllRoomsByUserIdRequestDto(String email){}
 
     }

@@ -25,8 +25,9 @@ public class RoomController {
     }
 
     @PostMapping("/")
-    public GetAllInfoAboutRoomsByUserIdResponseDto getAllInfoAboutRoomsByUserId(@RequestBody GetAllInfoAboutRoomsByUserIdRequestDto getAllInfoAboutRoomsByUserIdRequestDto){
-        return getAllRoomsByUserIdUsecase.getAllRoomsByUserId(getAllInfoAboutRoomsByUserIdRequestDto);
+    public GetAllRoomsByUserIdResponseDto getAllInfoAboutRoomsByUserId(@RequestBody GetAllRoomsByUserIdRequestDto requestDto){
+
+        return getAllRoomsByUserIdUsecase.getAllRoomsByUserId(requestDto);
 
     }
 }
