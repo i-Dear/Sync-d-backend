@@ -3,8 +3,8 @@ package com.syncd.application.service;
 import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase;
 import com.syncd.application.port.in.GetRoomAuthTokenUsecase;
 import com.syncd.application.port.out.liveblock.LiveblocksPort;
-import com.syncd.application.port.out.persistence.team.ReadTeamPort;
-import com.syncd.application.port.out.persistence.team.WriteTeamPort;
+import com.syncd.application.port.out.persistence.project.ReadProjectPort;
+import com.syncd.application.port.out.persistence.project.WriteProjectPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -12,10 +12,10 @@ import org.springframework.stereotype.Service;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class TeamService implements GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase {
+public class ProjectService implements GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase {
     private final LiveblocksPort liveblocksPort;
-    private final ReadTeamPort readTeamPort;
-    private final WriteTeamPort writeTeamPort;
+    private final ReadProjectPort readTeamPort;
+    private final WriteProjectPort writeTeamPort;
 
     @Override
     public GetRoomAuthTokenResponseDto getRoomAuthToken(GetRoomAuthTokenRequestDto getRoomAuthTokenRequestDto){
