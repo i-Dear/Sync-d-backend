@@ -1,10 +1,11 @@
 package com.syncd.adapter.in.web;
 
 import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase;
-import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase.*;
+import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase.GetAllRoomsByUserIdRequestDto;
+import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase.GetAllRoomsByUserIdResponseDto;
 import com.syncd.application.port.in.GetRoomAuthTokenUsecase;
-import com.syncd.application.port.in.GetRoomAuthTokenUsecase.*;
-
+import com.syncd.application.port.in.GetRoomAuthTokenUsecase.GetRoomAuthTokenRequestDto;
+import com.syncd.application.port.in.GetRoomAuthTokenUsecase.GetRoomAuthTokenResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/room")
-public class RoomController {
+@RequestMapping("/v1/project")
+public class ProjectController {
     private final GetAllRoomsByUserIdUsecase getAllRoomsByUserIdUsecase;
     private final GetRoomAuthTokenUsecase getRoomAuthTokenUsecase;
 

@@ -1,7 +1,9 @@
+
 package com.syncd.adapter.in.web.exception;
 
 import com.syncd.adapter.in.web.exception.exceptions.LoginException;
 import com.syncd.adapter.in.web.exception.exceptions.RegisterException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
