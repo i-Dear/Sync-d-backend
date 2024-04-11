@@ -1,22 +1,21 @@
 package com.syncd.application.service;
 
-import com.syncd.application.domain.Organization;
-import com.syncd.application.port.in.OrganizationUsecase;
+import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase;
+import com.syncd.application.port.in.GetRoomAuthTokenUsecase;
 import com.syncd.application.port.out.liveblock.LiveblocksPort;
-import com.syncd.application.port.out.organization.ReadOrganizationPort;
-import com.syncd.application.port.out.organization.WriteOrganizationPort;
+import com.syncd.application.port.out.persistence.project.ReadProjectPort;
+import com.syncd.application.port.out.persistence.project.WriteProjectPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
-
 @Service
 @Primary
 @RequiredArgsConstructor
-public class OrganizationService implements OrganizationUsecase {
+public class ProjectService implements GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase {
     private final LiveblocksPort liveblocksPort;
-    private final ReadOrganizationPort readOrganizationPort;
-    private final WriteOrganizationPort writeOrganizationPort;
+    private final ReadProjectPort readTeamPort;
+    private final WriteProjectPort writeTeamPort;
 
     @Override
     public GetRoomAuthTokenResponseDto getRoomAuthToken(GetRoomAuthTokenRequestDto getRoomAuthTokenRequestDto){
@@ -24,7 +23,7 @@ public class OrganizationService implements OrganizationUsecase {
         return new GetRoomAuthTokenResponseDto(token);
     }
 
-    public GetAllInfoAboutRoomsByUserIdResponseDto getAllInfoAboutRoomsByUserId(GetAllInfoAboutRoomsByUserIdRequestDto requestDto) {
+    public GetAllRoomsByUserIdResponseDto getAllRoomsByUserId(GetAllRoomsByUserIdRequestDto requestDto) {
         return null;
     }
 
