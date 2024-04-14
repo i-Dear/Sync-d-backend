@@ -15,17 +15,17 @@ public interface GetAllRoomsByUserIdUsecase {
     // ======================================
     record GetAllRoomsByUserIdResponseDto(
             String userId,
-            List<TeamForGetAllInfoAboutRoomsByUserIdResponseDto> teams
+            List<ProjectForGetAllInfoAboutRoomsByUserIdResponseDto> projects
     ){}
 
-    record TeamForGetAllInfoAboutRoomsByUserIdResponseDto(
-            String teamName,
-            String teamId,
-            String teamDescription,
+    record ProjectForGetAllInfoAboutRoomsByUserIdResponseDto(
+            String projectName,
+            String projectId,
+            String projectDescription,
             Role role,
             String roomId
     ){}
 
-    record GetAllRoomsByUserIdRequestDto(String email){}
+    record GetAllRoomsByUserIdRequestDto(String userId){}
 
     }
