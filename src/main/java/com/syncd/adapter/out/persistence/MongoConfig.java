@@ -11,4 +11,6 @@ public class MongoConfig {
     public MongoTemplate mongoTemplate(MongoDatabaseFactory factory) {
         return new MongoTemplate(factory);
     }
+
+
 }

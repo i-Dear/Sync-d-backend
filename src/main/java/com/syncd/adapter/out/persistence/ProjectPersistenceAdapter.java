@@ -7,6 +7,7 @@ import com.syncd.adapter.out.persistence.repository.projectPermission.ProjectPer
 import com.syncd.adapter.out.persistence.repository.projectPermission.ProjectPermissionEntity;
 import com.syncd.adapter.out.persistence.repository.projectPermission.ProjectPermissionEntity.*;
 
+import com.syncd.adapter.out.persistence.repository.userInProject.UserInProjectEntity;
 import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
 import com.syncd.application.port.out.persistence.project.dto.ProjectDto;
@@ -15,7 +16,13 @@ import com.syncd.application.port.out.persistence.project.dto.UserRoleForProject
 import com.syncd.enums.Role;
 import com.syncd.enums.RoomPermission;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +36,7 @@ public class ProjectPersistenceAdapter implements ReadProjectPort, WriteProjectP
 
     private final ProjectDao projectDao;
     private final ProjectPermissionDao projectPermissionDao;
+    private final MongoTemplate mongoTemplate;
 
     // ======================================
     // READ
@@ -120,9 +128,61 @@ public class ProjectPersistenceAdapter implements ReadProjectPort, WriteProjectP
         return new ProjectId(projectId);
     }
 
-    public ProjectId RemoveUserFromProject(String projectId,String userId){
+    public ProjectId RemoveUserFromProjectPermission(String projectId, String userId){
         projectPermissionDao.findByKey_ProjectIdAndKey_UserId(projectId, userId)
                 .ifPresent(projectPermission -> projectPermissionDao.delete(projectPermission));
+        return new ProjectId(projectId);
+    }
+
+    public ProjectId DeleteProject(String projectId) {
+        List<ProjectPermissionEntity> permissions = projectPermissionDao.findAllByKey_ProjectId(projectId);
+
+        if (!permissions.isEmpty()) {
+            projectPermissionDao.deleteAll(permissions);
+        }
+
+        projectDao.findById(projectId).ifPresent(projectDao::delete);
+
+        return new ProjectId(projectId);
+    }
+
+    public ProjectId WithdrawUserInProject(String projectId, List<String> userIds) {
+        Query query = new Query(Criteria.where("project_id").is(projectId));
+        Update update = new Update().pullAll("users", userIds.toArray());
+        mongoTemplate.updateFirst(query, update, UserInProjectEntity.class);
+        return new ProjectId(projectId);
+    }
+
+    public ProjectId InviteUserInProject(String projectId, List<String> userIds) {
+        Query query = new Query(Criteria.where("project_id").is(projectId));
+        Update update = new Update();
+        for (String userId : userIds) {
+            update.addToSet("users", userId);
+        }
+        mongoTemplate.updateFirst(query, update, UserInProjectEntity.class);
+        return new ProjectId(projectId);
+    }
+
+    public ProjectId UpdateProjectDetails(String projectId, String newName, String newDescription, String newImage) {
+        // Find the project by its ID
+        Query query = new Query(Criteria.where("project_id").is(projectId));
+
+        // Create an update object to set new values
+        Update update = new Update();
+        if (newName != null && !newName.isEmpty()) {
+            update.set("name", newName);
+        }
+        if (newDescription != null && !newDescription.isEmpty()) {
+            update.set("description", newDescription);
+        }
+        if (newImage != null && !newImage.isEmpty()) {
+            update.set("img", newImage);
+        }
+
+        // Execute the update operation
+        mongoTemplate.updateFirst(query, update, ProjectEntity.class);
+
+        // Return the projectId as confirmation of the update
         return new ProjectId(projectId);
     }
 

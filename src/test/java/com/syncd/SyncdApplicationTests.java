@@ -1,4 +1,4 @@
-package com.iDeer.syncd;
+package com.syncd;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

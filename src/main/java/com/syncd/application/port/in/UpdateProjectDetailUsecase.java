@@ -1,22 +1,24 @@
 package com.syncd.application.port.in;
 
-public interface CreateProjectUsecase {
+public interface UpdateProjectDetailUsecase {
     // ======================================
     // METHOD
     // ======================================
-    CreateProjectResponseDto createProject(CreateProjectRequestDto requestDto);
+    UpdateProjectDetailResponseDto updateProjectDetail(UpdateProjectDetailRequestDto requestDto);
 
     // ======================================
     // DTO
     // ======================================
-    record CreateProjectRequestDto(
-            String userId,
+    record UpdateProjectDetailRequestDto(
+            String projectId,
             String projectName,
-            String projectDescription
+            String description,
+            String image
+
     ) {
     }
 
-    record CreateProjectResponseDto(
+    record UpdateProjectDetailResponseDto(
             String projectId
     ) {
     }
