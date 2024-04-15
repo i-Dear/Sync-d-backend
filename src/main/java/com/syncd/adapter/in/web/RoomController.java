@@ -30,4 +30,10 @@ public class RoomController {
         return getAllRoomsByUserIdUsecase.getAllRoomsByUserId(requestDto);
 
     }
+
+    @PostMapping("/test-auth")
+    public GetRoomAuthTokenResponseDto getRoomAuthToken(@RequestBody GetRoomAuthTokenUsecase.TestDto getRoomAuthToken){
+        return getRoomAuthTokenUsecase.Test(getRoomAuthToken);
+
+    }
 }

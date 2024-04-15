@@ -46,6 +46,16 @@ public class ProjectService implements GetAllRoomsByUserIdUsecase, GetRoomAuthTo
     }
 
     @Override
+    public GetRoomAuthTokenResponseDto Test(TestDto req) {
+        // Example of fetching projects and converting them to roles. Adjust according to your actual logic.
+
+        GetRoomAuthTokenDto authTokenDto = liveblocksPort.Test(req.userId(),req.roomId());
+        // Assuming the GetRoomAuthTokenDto returns a token directly. Adjust this based on the actual API.
+        return new GetRoomAuthTokenResponseDto(authTokenDto.token());
+
+    }
+
+    @Override
     public GetAllRoomsByUserIdResponseDto getAllRoomsByUserId(GetAllRoomsByUserIdRequestDto requestDto) {
         List<ProjectByUserIdDto> allProjectDto = fetchProjects(requestDto.userId());
         List<Project> allProjects = convertToProjectEntities(allProjectDto);

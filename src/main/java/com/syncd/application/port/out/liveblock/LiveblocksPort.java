@@ -6,8 +6,9 @@ import com.syncd.application.port.out.liveblock.dto.UserRoleForLiveblocksDto;
 
 import java.util.List;
 
+
 public interface LiveblocksPort {
     GetRoomAuthTokenDto GetRoomAuthToken(String userId,List<UserRoleForLiveblocksDto> roles);
-
+    GetRoomAuthTokenDto Test(String userId, String roomId);
 }
 
