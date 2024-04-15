@@ -52,7 +52,6 @@ public class ProjectService implements GetAllRoomsByUserIdUsecase, GetRoomAuthTo
         GetRoomAuthTokenDto authTokenDto = liveblocksPort.Test(req.userId(),req.roomId());
         // Assuming the GetRoomAuthTokenDto returns a token directly. Adjust this based on the actual API.
         return new GetRoomAuthTokenResponseDto(authTokenDto.token());
-
     }
 
     @Override

@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class UserInTeam {
+public class UserInProject {
     private final String userId;
     private final Role role;
 }
