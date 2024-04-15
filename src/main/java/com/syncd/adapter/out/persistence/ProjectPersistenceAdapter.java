@@ -69,6 +69,7 @@ public class ProjectPersistenceAdapter implements ReadProjectPort, WriteProjectP
         return new ProjectId(projectEntity.getId());
     }
 
+    @Override
     public ProjectId AddUsersToProject(String projectId, List<UserRoleForProjectDto> users){
         String savedProjectId = addUsersToProject(projectId,users);
         return new ProjectId(savedProjectId);
@@ -121,7 +122,7 @@ public class ProjectPersistenceAdapter implements ReadProjectPort, WriteProjectP
         return new ProjectId(projectId);
     }
 
-    public ProjectId RemoveUserFromProject(String projectId,String userId){
+    public ProjectId RemoveUserFromProjectPermission(String projectId,String userId){
         projectPermissionDao.findByProjectIdAndUserId(projectId, userId)
                 .ifPresent(projectPermission -> projectPermissionDao.delete(projectPermission));
         return new ProjectId(projectId);

@@ -14,10 +14,10 @@ public class Project {
     private final String id;
     private final String name;
     private final String description;
-    private  List<UserInTeam> users;
+    private  List<UserInProject> users;
 
     // 여러 사용자 추가
-    public void addUsers(List<UserInTeam> newUsers) {
+    public void addUsers(List<UserInProject> newUsers) {
         if (this.users == null) {
             this.users = new ArrayList<>();
         }

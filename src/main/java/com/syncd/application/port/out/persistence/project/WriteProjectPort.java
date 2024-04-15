@@ -17,11 +17,11 @@ public interface WriteProjectPort {
 
     ProjectId RemoveUserFromProjectPermission(String projectId, String userId);
 
-    ProjectId DeleteProject(String projectId);
+//    ProjectId DeleteProject(String projectId);
 
-    ProjectId WithdrawUserInProject(String projectId, List<String> userId);
+//    ProjectId WithdrawUserInProject(String projectId, List<String> userId);
 
-    ProjectId InviteUserInProject(String projectId, List<String> userId);
+//    ProjectId InviteUserInProject(String projectId, List<String> userId);
 
-    ProjectId UpdateProjectDetails(String projectId, String newName, String newDescription, String newImage);
+//    ProjectId UpdateProjectDetails(String projectId, String newName, String newDescription, String newImage);
 }

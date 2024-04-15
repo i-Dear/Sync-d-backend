@@ -26,7 +26,7 @@ public interface ProjectMapper {
         return project.getUsers().stream()
                 .filter(userInTeam -> userId.equals(userInTeam.getUserId()))
                 .findFirst()
-                .map(UserInTeam::getRole)
+                .map(UserInProject::getRole)
                 .orElse(null); // Or handle accordingly if a role must always be present
     }
     Project fromCreateProjectRequestDto(CreateProjectUsecase.CreateProjectRequestDto requestDto);
