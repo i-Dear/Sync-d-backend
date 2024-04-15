@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 public record ProjectDto(
-        String projectId,
+        String id,
         String name,
         String description,
         List<UserRoleForProjectDto> users

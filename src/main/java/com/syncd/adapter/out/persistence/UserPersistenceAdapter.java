@@ -32,7 +32,7 @@ public class UserPersistenceAdapter implements WriteUserPort, ReadUserPort {
         UserEntity savedUser = userDao.save(newUser);
 
         // 저장된 User의 ID 반환
-        return new UserId(savedUser.getUserId());
+        return new UserId(savedUser.getId());
     }
     // ======================================
     // READ

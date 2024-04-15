@@ -14,20 +14,12 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "project_permissions")
 public class ProjectPermissionEntity {
     @Id
-    private ProjectPermissionKey key;
-
+    private String id;
+    private String userId;
+    private String projectId;
     private Role role;
     @Field("room_permission")
     private RoomPermission roomPermission;
-
-    @Data
-    @Builder
-    @EqualsAndHashCode
-    static public class ProjectPermissionKey {
-        private String userId;
-        private String projectId;
-
-    }
 
 //    @Builder
 //    @Data

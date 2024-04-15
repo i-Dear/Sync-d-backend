@@ -11,10 +11,9 @@ import java.util.stream.Collectors;
 @Builder
 @Data
 public class Project {
-    private final String projectId;
+    private final String id;
     private final String name;
     private final String description;
-    private  List<String> projectIds;
     private  List<UserInTeam> users;
 
     // 여러 사용자 추가
@@ -34,9 +33,6 @@ public class Project {
         }
     }
 
-    // 팀 정보 업데이트
-    public Project updateTeamInfo(String newName, String newDescription, List<String> newProjectIds) {
-        return new Project(this.projectId, newName, newDescription, newProjectIds, this.users);
-    }
+
 
 }

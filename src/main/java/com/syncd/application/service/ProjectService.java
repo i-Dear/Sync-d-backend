@@ -34,13 +34,11 @@ public class ProjectService implements GetAllRoomsByUserIdUsecase, GetRoomAuthTo
     @Override
     public GetAllRoomsByUserIdResponseDto getAllRoomsByUserId(GetAllRoomsByUserIdRequestDto requestDto) {
         List<ProjectDto> allProjectDto = readTeamPort.findByUserId(requestDto.userId());
-        System.out.print(allProjectDto);
         List<Project> allProject = allProjectDto.stream()
                 .map(el -> ProjectMapper.INSTANCE.fromProjectDto(el))
                 .collect(Collectors.toList());
-
         List<ProjectForGetAllInfoAboutRoomsByUserIdResponseDto> projectsForResponse =  allProject.stream()
-                .map(el -> ProjectMapper.INSTANCE.toProjectForGetAllInfoAboutRoomsByUserIdResponseDto(el))
+                .map(el -> ProjectMapper.INSTANCE.toProjectForGetAllInfoAboutRoomsByUserIdResponseDto(el,requestDto.userId()))
                 .collect(Collectors.toList());
 
         GetAllRoomsByUserIdResponseDto response = new GetAllRoomsByUserIdResponseDto(requestDto.userId(),projectsForResponse);

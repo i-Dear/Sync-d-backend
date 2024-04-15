@@ -35,7 +35,7 @@ public class ProjectController {
     }
 
     @PostMapping("/create")
-    public CreateProjectResponseDto createProject(CreateProjectRequestDto requestDto){
+    public CreateProjectResponseDto createProject(@RequestBody CreateProjectRequestDto requestDto){
         return createProjectUsecase.createProject(requestDto);
     }
 }

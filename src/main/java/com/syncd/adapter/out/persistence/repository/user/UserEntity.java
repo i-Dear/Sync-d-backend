@@ -15,8 +15,7 @@ import java.util.List;
 @Document(collection = "users")
 public class UserEntity {
     @Id
-    @Field("user_id")
-    private String userId;
+    private String id;
     private String email;
     private String password;
     private String name;
