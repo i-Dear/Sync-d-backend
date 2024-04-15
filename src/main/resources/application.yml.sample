@@ -3,3 +3,6 @@ spring:
     mongodb:
       database:
       uri:
+  security:
+    auth:
+      liveBlockSecretKey:

@@ -19,9 +19,9 @@ public interface GetAllRoomsByUserIdUsecase {
     ){}
 
     record ProjectForGetAllInfoAboutRoomsByUserIdResponseDto(
-            String projectName,
-            String projectId,
-            String projectDescription,
+            String name,
+            String id,
+            String description,
             Role role,
             String roomId
     ){}

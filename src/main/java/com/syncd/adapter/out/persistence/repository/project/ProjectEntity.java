@@ -11,8 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "projects")
 public class ProjectEntity {
     @Id
-    @Field("project_id")
-    private String projectId;
+    private String id;
     private String name;
     private String description;
     private String img;
