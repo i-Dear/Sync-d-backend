@@ -9,6 +9,7 @@ import com.syncd.adapter.out.persistence.repository.projectPermission.ProjectPer
 
 import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
+import com.syncd.application.port.out.persistence.project.dto.ProjectByUserIdDto;
 import com.syncd.application.port.out.persistence.project.dto.ProjectDto;
 import com.syncd.application.port.out.persistence.project.dto.ProjectId;
 import com.syncd.application.port.out.persistence.project.dto.UserRoleForProjectDto;
@@ -33,21 +34,23 @@ public class ProjectPersistenceAdapter implements ReadProjectPort, WriteProjectP
     // ======================================
     // READ
     // ======================================
-    public List<ProjectDto> findByUserId(String userId){
+    public List<ProjectByUserIdDto> findByUserId(String userId){
         List<ProjectPermissionEntity> allPermissions = projectPermissionDao.findAllByUserId(userId);
         return allPermissions.stream()
-                .map(permission -> createProjectDtoFromPermission(permission))
+                .map(permission -> createProjectByUserIdDtoFromPermission(permission))
                 .collect(Collectors.toList());
     }
-    private ProjectDto createProjectDtoFromPermission(ProjectPermissionEntity permission) {
+    private ProjectByUserIdDto createProjectByUserIdDtoFromPermission(ProjectPermissionEntity permission) {
         ProjectEntity project = projectDao.findById(permission.getProjectId()).orElse(null);
 
         if (project != null) {
-            return new ProjectDto(
+            return new ProjectByUserIdDto(
+                    permission.getUserId(),
                     project.getId(),
                     project.getName(),
                     project.getDescription(),
-                    List.of(new UserRoleForProjectDto(permission.getUserId(),permission.getRole(), permission.getRoomPermission()))
+                    permission.getRole(),
+                    permission.getRoomPermission()
             );
         }
         return null;
