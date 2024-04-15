@@ -11,8 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "questions")
 public class QuestionEntity {
     @Id
-    @Field("question_id")
-    private String questionId;
+    private String id;
 
     @Field("user_id")
     private String userId;

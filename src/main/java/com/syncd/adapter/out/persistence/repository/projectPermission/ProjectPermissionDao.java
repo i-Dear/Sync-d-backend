@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProjectPermissionDao extends MongoRepository<ProjectPermissionEntity, String> {
-    Optional<ProjectPermissionEntity> findByKey_ProjectIdAndKey_UserId(String projectId, String userId);
-    List<ProjectPermissionEntity> findAllByKey_UserId(String userId);
-    List<ProjectPermissionEntity> findAllByKey_ProjectId(String projectId);
+    Optional<ProjectPermissionEntity> findByProjectIdAndUserId(String projectId, String userId);
+
+    List<ProjectPermissionEntity> findAllByUserId(String userId);
+
 }

@@ -14,8 +14,7 @@ import java.util.List;
 @Document(collection = "admins")
 public class AdminEntity {
     @Id
-    @Field("admin_id")
-    private String adminId;
+    private String id;
     private String email;
     private String password;
     private String name;
