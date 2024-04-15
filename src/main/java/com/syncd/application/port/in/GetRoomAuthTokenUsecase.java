@@ -11,5 +11,5 @@ public interface GetRoomAuthTokenUsecase {
     // ======================================
     record GetRoomAuthTokenResponseDto(String token){}
 
-    record GetRoomAuthTokenRequestDto(String userId, String roomId){}
+    record GetRoomAuthTokenRequestDto(String userId){}
     }

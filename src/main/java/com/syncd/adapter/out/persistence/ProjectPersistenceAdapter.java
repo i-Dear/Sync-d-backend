@@ -9,6 +9,7 @@ import com.syncd.adapter.out.persistence.repository.projectPermission.ProjectPer
 
 import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
+import com.syncd.application.port.out.persistence.project.dto.ProjectByUserIdDto;
 import com.syncd.application.port.out.persistence.project.dto.ProjectDto;
 import com.syncd.application.port.out.persistence.project.dto.ProjectId;
 import com.syncd.application.port.out.persistence.project.dto.UserRoleForProjectDto;
@@ -33,24 +34,23 @@ public class ProjectPersistenceAdapter implements ReadProjectPort, WriteProjectP
     // ======================================
     // READ
     // ======================================
-    public List<ProjectDto> findByUserId(String userId){
-        List<ProjectPermissionEntity> allPermissions = projectPermissionDao.findAllByKey_UserId(userId);
-        System.out.print(allPermissions);
+    public List<ProjectByUserIdDto> findByUserId(String userId){
+        List<ProjectPermissionEntity> allPermissions = projectPermissionDao.findAllByUserId(userId);
         return allPermissions.stream()
-                .map(permission -> createProjectDtoFromPermission(permission))
+                .map(permission -> createProjectByUserIdDtoFromPermission(permission))
                 .collect(Collectors.toList());
     }
-    private ProjectDto createProjectDtoFromPermission(ProjectPermissionEntity permission) {
-        // Find the project associated with the permission
-        ProjectEntity project = projectDao.findById(permission.getKey().getProjectId()).orElse(null);
+    private ProjectByUserIdDto createProjectByUserIdDtoFromPermission(ProjectPermissionEntity permission) {
+        ProjectEntity project = projectDao.findById(permission.getProjectId()).orElse(null);
 
-        // If project is found, create a ProjectDto
         if (project != null) {
-            return new ProjectDto(
-                    project.getProjectId(),
+            return new ProjectByUserIdDto(
+                    permission.getUserId(),
+                    project.getId(),
                     project.getName(),
                     project.getDescription(),
-                    List.of(new UserRoleForProjectDto(permission.getKey().getUserId(),permission.getRole(), permission.getRoomPermission()))
+                    permission.getRole(),
+                    permission.getRoomPermission()
             );
         }
         return null;
@@ -65,8 +65,8 @@ public class ProjectPersistenceAdapter implements ReadProjectPort, WriteProjectP
         UserRoleForProjectDto hostUserRole = new UserRoleForProjectDto(hostId, Role.HOST,RoomPermission.WRITE);
         List<UserRoleForProjectDto> userRoles = List.of(hostUserRole);
 
-        addUsersToProject(projectEntity.getProjectId(),userRoles);
-        return new ProjectId(projectEntity.getProjectId());
+        addUsersToProject(projectEntity.getId(),userRoles);
+        return new ProjectId(projectEntity.getId());
     }
 
     public ProjectId AddUsersToProject(String projectId, List<UserRoleForProjectDto> users){
@@ -85,10 +85,11 @@ public class ProjectPersistenceAdapter implements ReadProjectPort, WriteProjectP
 
     private String addUsersToProject(String projectId,  List<UserRoleForProjectDto> users){
         users.forEach(user -> {
-            ProjectPermissionKey key = ProjectPermissionKey.builder().userId(user.userId()).projectId(projectId).build();
             ProjectPermissionEntity permissionEntity = ProjectPermissionEntity.builder()
-                    .key(key)
+                    .userId(user.userId())
+                    .projectId(projectId)
                     .role(user.role())
+                    .roomPermission(RoomPermission.WRITE)
                     .build();
             projectPermissionDao.save(permissionEntity);
         });
@@ -102,7 +103,7 @@ public class ProjectPersistenceAdapter implements ReadProjectPort, WriteProjectP
 
     private String updateUsersRoleToProject(String projectId, List<UserRoleForProjectDto> users){
         users.forEach(user -> {
-            projectPermissionDao.findByKey_ProjectIdAndKey_UserId(projectId, user.userId())
+            projectPermissionDao.findByProjectIdAndUserId(projectId, user.userId())
                     .ifPresent(permission -> {
                         permission.setRole(user.role());
                         projectPermissionDao.save(permission);
@@ -121,7 +122,7 @@ public class ProjectPersistenceAdapter implements ReadProjectPort, WriteProjectP
     }
 
     public ProjectId RemoveUserFromProject(String projectId,String userId){
-        projectPermissionDao.findByKey_ProjectIdAndKey_UserId(projectId, userId)
+        projectPermissionDao.findByProjectIdAndUserId(projectId, userId)
                 .ifPresent(projectPermission -> projectPermissionDao.delete(projectPermission));
         return new ProjectId(projectId);
     }
