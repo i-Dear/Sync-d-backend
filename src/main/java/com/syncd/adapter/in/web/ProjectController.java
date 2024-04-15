@@ -22,11 +22,6 @@ public class ProjectController {
     private final GetRoomAuthTokenUsecase getRoomAuthTokenUsecase;
     private final CreateProjectUsecase createProjectUsecase;
 
-    @PostMapping("/auth")
-    public GetRoomAuthTokenResponseDto getRoomAuthToken(@RequestBody GetRoomAuthTokenRequestDto getRoomAuthToken){
-        return getRoomAuthTokenUsecase.getRoomAuthToken(getRoomAuthToken);
-
-    }
 
     @PostMapping("/")
     public GetAllRoomsByUserIdResponseDto getAllInfoAboutRoomsByUserId(@RequestBody GetAllRoomsByUserIdRequestDto requestDto){
@@ -38,4 +33,6 @@ public class ProjectController {
     public CreateProjectResponseDto createProject(@RequestBody CreateProjectRequestDto requestDto){
         return createProjectUsecase.createProject(requestDto);
     }
+
+
 }
