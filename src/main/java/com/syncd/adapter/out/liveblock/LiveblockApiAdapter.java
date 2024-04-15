@@ -25,7 +25,7 @@ public class LiveblockApiAdapter implements LiveblocksPort {
     @Value("${spring.security.auth.liveBlockSecretKey}")
     private String secretKey;
     @Override
-    public GetRoomAuthTokenDto GetRoomAuthToken(  String userId,  List<UserRoleForLiveblocksDto> roles) {
+    public GetRoomAuthTokenDto GetRoomAuthToken(String userId,  List<UserRoleForLiveblocksDto> roles) {
         String url = "https://api.liveblocks.io/v2/authorize-user";
 
         HttpHeaders headers = new HttpHeaders();
@@ -63,6 +63,36 @@ public class LiveblockApiAdapter implements LiveblocksPort {
               },
               "permissions": %s
             }
-            """, userId, "Default Name", "https://example.org/avatar.jpg", permissionsJson);
+            """, userId, "정준호", "https://s3.ap-northeast-2.amazonaws.com/elasticbeanstalk-ap-northeast-2-176213403491/media/magazine_img/magazine_327/7ae22985-90e8-44c3-a1d6-ee470ddc9073.jpg", permissionsJson);
     }
+
+    @Override
+    public GetRoomAuthTokenDto Test(String userId,  String roomId) {
+        String url = "https://api.liveblocks.io/v2/authorize-user";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer "+secretKey);
+
+        String jsonBody = String.format("""
+            {
+              "userId": "%s",
+              "userInfo": {
+                "name": "%s",
+                "avatar": "%s"
+              },
+              "permissions": {
+                "%s": [
+                    "room:write"
+                  ]
+                }
+            }
+            """, userId, "정준호", "https://s3.ap-northeast-2.amazonaws.com/elasticbeanstalk-ap-northeast-2-176213403491/media/magazine_img/magazine_327/7ae22985-90e8-44c3-a1d6-ee470ddc9073.jpg",roomId);
+
+        HttpEntity<String> request = new HttpEntity<>(jsonBody, headers);
+
+        System.out.print(request);
+        return restTemplate.postForObject(url, request, GetRoomAuthTokenDto.class);
+    }
+
 }
