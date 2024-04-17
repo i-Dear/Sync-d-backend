@@ -1,4 +1,4 @@
-package com.syncd.application.domain.project;
+package com.syncd.domain.project;
 
 
 import lombok.Builder;
@@ -14,9 +14,9 @@ public class Project {
     private final String id;
     private final String name;
     private final String description;
+    private final String img;
     private  List<UserInProject> users;
 
-    // 여러 사용자 추가
     public void addUsers(List<UserInProject> newUsers) {
         if (this.users == null) {
             this.users = new ArrayList<>();
@@ -24,7 +24,6 @@ public class Project {
         this.users.addAll(newUsers);
     }
 
-    // 여러 사용자 제거
     public void withdrawUsers(List<String> userIds) {
         if (this.users != null && !userIds.isEmpty()) {
             this.users = this.users.stream()

@@ -1,14 +1,12 @@
 package com.syncd.application.service;
 
-import com.syncd.application.domain.user.User;
-import com.syncd.application.domain.user.UserMapper;
 import com.syncd.application.port.in.LoginUserUsecase;
 import com.syncd.application.port.in.RegitsterUserUsecase;
 import com.syncd.application.port.out.autentication.AuthenticationPort;
-import com.syncd.application.port.out.autentication.dto.TokenDto;
-import com.syncd.application.port.out.autentication.dto.UserForTokenDto;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
 import com.syncd.application.port.out.persistence.user.WriteUserPort;
+import com.syncd.dto.TokenDto;
+import com.syncd.dto.UserForTokenDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;

@@ -11,8 +11,9 @@ public interface CreateProjectUsecase {
     // ======================================
     record CreateProjectRequestDto(
             String userId,
-            String projectName,
-            String projectDescription
+            String name,
+            String description,
+            String img
     ) {
     }
 

@@ -1,4 +1,4 @@
-package com.syncd.application.domain.project;
+package com.syncd.domain.project;
 
 import com.syncd.enums.Role;
 import lombok.Builder;

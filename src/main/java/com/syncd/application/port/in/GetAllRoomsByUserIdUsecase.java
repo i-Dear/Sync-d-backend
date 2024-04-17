@@ -22,8 +22,7 @@ public interface GetAllRoomsByUserIdUsecase {
             String name,
             String id,
             String description,
-            Role role,
-            String roomId
+            Role role
     ){}
 
     record GetAllRoomsByUserIdRequestDto(String userId){}

@@ -2,11 +2,11 @@ package com.syncd.adapter.out.persistence;
 
 import com.syncd.adapter.out.persistence.repository.user.UserDao;
 import com.syncd.adapter.out.persistence.repository.user.UserEntity;
-import com.syncd.application.domain.user.UserMapper;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
 import com.syncd.application.port.out.persistence.user.WriteUserPort;
-import com.syncd.application.port.out.persistence.user.dto.UserDto;
-import com.syncd.application.port.out.persistence.user.dto.UserId;
+import com.syncd.domain.user.UserMapper;
+import com.syncd.dto.UserDto;
+import com.syncd.dto.UserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

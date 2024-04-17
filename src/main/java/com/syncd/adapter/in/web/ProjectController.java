@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/project")
 public class ProjectController {
     private final GetAllRoomsByUserIdUsecase getAllRoomsByUserIdUsecase;
-    private final GetRoomAuthTokenUsecase getRoomAuthTokenUsecase;
     private final CreateProjectUsecase createProjectUsecase;
 
 
