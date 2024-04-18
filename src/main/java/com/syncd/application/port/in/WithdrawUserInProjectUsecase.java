@@ -10,6 +10,7 @@ public interface WithdrawUserInProjectUsecase {
     // DTO
     // ======================================
     record WithdrawUserInProjectRequestDto(
+            String userId,
             String projectId,
             List<String> users
     ) {

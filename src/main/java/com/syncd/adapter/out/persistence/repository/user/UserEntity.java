@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-@Builder
 @Data
 @Document(collection = "users")
 public class UserEntity {
@@ -24,7 +23,6 @@ public class UserEntity {
     @Field("profile_img")
     private String profileImg;
 
-    @Builder.Default
     @Field("project_ids")
     private List<String> projectIds = new ArrayList<>();
 }

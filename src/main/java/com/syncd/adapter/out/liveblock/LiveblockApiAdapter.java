@@ -2,10 +2,9 @@ package com.syncd.adapter.out.liveblock;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.syncd.application.port.in.GetRoomAuthTokenUsecase;
 import com.syncd.application.port.out.liveblock.LiveblocksPort;
-import com.syncd.application.port.out.liveblock.dto.GetRoomAuthTokenDto;
-import com.syncd.application.port.out.liveblock.dto.UserRoleForLiveblocksDto;
+import com.syncd.dto.LiveblocksTokenDto;
+import com.syncd.dto.UserRoleDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
@@ -25,7 +24,7 @@ public class LiveblockApiAdapter implements LiveblocksPort {
     @Value("${spring.security.auth.liveBlockSecretKey}")
     private String secretKey;
     @Override
-    public GetRoomAuthTokenDto GetRoomAuthToken(String userId,  List<UserRoleForLiveblocksDto> roles) {
+    public LiveblocksTokenDto GetRoomAuthToken(String userId, List<UserRoleDto> roles) {
         String url = "https://api.liveblocks.io/v2/authorize-user";
 
         HttpHeaders headers = new HttpHeaders();
@@ -37,14 +36,14 @@ public class LiveblockApiAdapter implements LiveblocksPort {
         HttpEntity<String> request = new HttpEntity<>(jsonBody, headers);
 //        System.out.print(request);
 
-        return restTemplate.postForObject(url, request, GetRoomAuthTokenDto.class);
+        return restTemplate.postForObject(url, request, LiveblocksTokenDto.class);
     }
 
-    private String createJsonBody(String userId, List<UserRoleForLiveblocksDto> roles) {
+    private String createJsonBody(String userId, List<UserRoleDto> roles) {
         Map<String, List<String>> permissions = roles.stream()
                 .collect(Collectors.groupingBy(
-                        UserRoleForLiveblocksDto::projectId,
-                        Collectors.mapping(role -> "room:" + role.roomPermission().name().toLowerCase(), Collectors.toList())
+                        UserRoleDto::projectId,
+                        Collectors.mapping(role -> "room:write", Collectors.toList())
                 ));
 
         String permissionsJson = null;
@@ -67,7 +66,7 @@ public class LiveblockApiAdapter implements LiveblocksPort {
     }
 
     @Override
-    public GetRoomAuthTokenDto Test(String userId,  String roomId) {
+    public LiveblocksTokenDto Test(String userId,  String roomId) {
         String url = "https://api.liveblocks.io/v2/authorize-user";
 
         HttpHeaders headers = new HttpHeaders();
@@ -92,7 +91,7 @@ public class LiveblockApiAdapter implements LiveblocksPort {
         HttpEntity<String> request = new HttpEntity<>(jsonBody, headers);
 
         System.out.print(request);
-        return restTemplate.postForObject(url, request, GetRoomAuthTokenDto.class);
+        return restTemplate.postForObject(url, request, LiveblocksTokenDto.class);
     }
 
 }

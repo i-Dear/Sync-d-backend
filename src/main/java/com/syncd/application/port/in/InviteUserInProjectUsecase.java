@@ -11,12 +11,12 @@ public interface InviteUserInProjectUsecase {
     // DTO
     // ======================================
     record InviteUserInProjectRequestDto(
+            String userId,
             String projectId,
             List<String> users
-    ) {
-    }
+    ) {}
+
     record InviteUserInProjectResponseDto(
             String projectId
-    ) {
-    }
+    ) {}
 }

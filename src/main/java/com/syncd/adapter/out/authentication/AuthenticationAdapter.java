@@ -1,8 +1,8 @@
 package com.syncd.adapter.out.authentication;
 
 import com.syncd.application.port.out.autentication.AuthenticationPort;
-import com.syncd.application.port.out.autentication.dto.TokenDto;
-import com.syncd.application.port.out.autentication.dto.UserForTokenDto;
+import com.syncd.dto.TokenDto;
+import com.syncd.dto.UserForTokenDto;
 import org.springframework.stereotype.Component;
 
 @Component
