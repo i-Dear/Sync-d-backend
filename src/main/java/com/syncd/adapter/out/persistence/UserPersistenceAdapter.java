@@ -7,6 +7,7 @@ import com.syncd.application.port.out.persistence.user.WriteUserPort;
 import com.syncd.domain.user.UserMapper;
 import com.syncd.dto.UserDto;
 import com.syncd.dto.UserId;
+import com.syncd.enums.UserAccountStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -22,12 +23,11 @@ public class UserPersistenceAdapter implements WriteUserPort, ReadUserPort {
     @Override
     public UserId createUser(String userName, String email, String password) {
         // UserEntity 생성
-        UserEntity newUser = UserEntity.builder()
-                .email(email)
-                .password(password) // 비밀번호는 보통 저장 전에 해싱 처리를 해야 합니다.
-                .name(userName)
-                .build();
-
+        UserEntity newUser = new UserEntity();
+        newUser.setName(userName);
+        newUser.setEmail(email);
+        newUser.setPassword(password);
+        newUser.setStatus(UserAccountStatus.AVAILABLE);
         // MongoDB에 저장
         UserEntity savedUser = userDao.save(newUser);
 

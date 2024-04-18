@@ -1,6 +1,7 @@
 package com.syncd.domain.project;
 
 
+import com.syncd.enums.Role;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,13 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Builder
 @Data
 public class Project {
     private final String id;
-    private final String name;
-    private final String description;
-    private final String img;
+    private  String name;
+    private  String description;
+    private  String img;
     private  List<UserInProject> users;
 
     public void addUsers(List<UserInProject> newUsers) {
@@ -30,5 +30,13 @@ public class Project {
                     .filter(user -> !userIds.contains(user.getUserId()))
                     .collect(Collectors.toList());
         }
+    }
+
+    public String getHost() {
+        return this.users.stream()
+                .filter(user -> user.getRole() == Role.HOST)
+                .map(UserInProject::getUserId)
+                .findFirst()
+                .orElse(null);  // Returns null if no host is found
     }
 }

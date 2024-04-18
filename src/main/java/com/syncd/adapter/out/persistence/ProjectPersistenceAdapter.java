@@ -25,6 +25,7 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
                 .map(ProjectMapper.INSTANCE::fromProjectEntity)
                 .collect(Collectors.toList());
 
+        Project project = findProjectByProjectId("6620eb32d8c4d81b573abc4d");
         return projects;
     }
 

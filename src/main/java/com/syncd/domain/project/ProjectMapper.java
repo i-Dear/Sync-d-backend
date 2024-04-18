@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface ProjectMapper {
     ProjectMapper INSTANCE = Mappers.getMapper(ProjectMapper.class);
-    @Mapping(target = "users", source = "users")
     Project fromProjectEntity(ProjectEntity projectEntity);
 
     ProjectEntity toProjectEntity(Project project);

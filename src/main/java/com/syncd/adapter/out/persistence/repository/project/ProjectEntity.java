@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
 
-@Builder
 @Data
 @Document(collection = "projects")
 public class ProjectEntity {
@@ -21,7 +20,7 @@ public class ProjectEntity {
     private String img;
     private List<UserInProjectEntity> users;
 
-    @Builder
+    @Data
     public static class UserInProjectEntity {
         private String userId;
         private Role role;

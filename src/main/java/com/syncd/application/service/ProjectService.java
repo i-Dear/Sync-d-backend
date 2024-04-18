@@ -1,6 +1,7 @@
 package com.syncd.application.service;
 
 import com.syncd.adapter.out.liveblock.LiveblockApiAdapter;
+import com.syncd.adapter.out.persistence.exception.ProjectAlreadyExistsException;
 import com.syncd.application.port.in.*;
 import com.syncd.application.port.out.autentication.AuthenticationPort;
 import com.syncd.application.port.out.persistence.project.ReadProjectPort;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase {
+public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase,UpdateProjectUsecase,WithdrawUserInProjectUsecase,InviteUserInProjectUsecase,DeleteProjectUsecase {
     private final ReadProjectPort readProjectPort;
     private final WriteProjectPort writeProjectPort;
 
@@ -35,17 +36,13 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
     @Override
     public CreateProjectResponseDto createProject(CreateProjectRequestDto requestDto) {
-        UserInProject user = UserInProject.builder()
-                .userId(requestDto.userId())
-                .role(Role.HOST)
-                .build();
+        List<UserInProject> users =Arrays.asList(new UserInProject(requestDto.userId(),Role.HOST));
 
-        Project project = Project.builder()
-                .name(requestDto.name())
-                .description(requestDto.description())
-                .img(requestDto.img())
-                .users(Arrays.asList(user))
-                .build();
+        Project project = new Project(null);
+        project.setImg(requestDto.img());
+        project.setName(requestDto.name());
+        project.setDescription(requestDto.description());
+        project.setUsers(users);
 
         return new CreateProjectResponseDto(writeProjectPort.CreateProject(project));
     }
@@ -53,7 +50,8 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     @Override
     public GetAllRoomsByUserIdResponseDto getAllRoomsByUserId(GetAllRoomsByUserIdRequestDto requestDto) {
         List<Project> projects = readProjectPort.findAllProjectByUserId(requestDto.userId());
-        return mapProjectsToResponse(requestDto.userId(),projects);
+        GetAllRoomsByUserIdResponseDto responseDto =  mapProjectsToResponse(requestDto.userId(),projects);
+        return responseDto;
     }
 
     private GetAllRoomsByUserIdResponseDto mapProjectsToResponse(String userId, List<Project> projects) {
@@ -93,11 +91,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     }
 
     private UserRoleDto convertUserToUserRoleDto(String projectId, UserInProject user) {
-        return UserRoleDto.builder()
-                .userId(user.getUserId())
-                .role(user.getRole())
-                .projectId(projectId)
-                .build();
+        return new UserRoleDto(projectId,user.getUserId(),user.getRole());
     }
 
 
@@ -111,5 +105,54 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     @Override
     public GetRoomAuthTokenResponseDto Test(TestDto test) {
         return new GetRoomAuthTokenResponseDto(liveblockApiAdapter.Test(test.userId(),test.roomId()).token());
+    }
+
+    @Override
+    public DeleteProjectResponseDto deleteProject(DeleteProjectRequestDto requestDto) {
+        Project project = readProjectPort.findProjectByProjectId(requestDto.projectId());
+        checkHost(project, requestDto.userId());
+        writeProjectPort.RemoveProject(requestDto.projectId());
+        return new DeleteProjectResponseDto(requestDto.projectId());
+    }
+
+    private void checkHost(Project project, String userId){
+        if(project.getHost()!=userId){
+            throw new ProjectAlreadyExistsException(project.getId());
+        }
+    }
+
+    @Override
+    public InviteUserInProjectResponseDto inviteUserInProject(InviteUserInProjectRequestDto requestDto) {
+        Project project = readProjectPort.findProjectByProjectId(requestDto.projectId());
+        checkHost(project,requestDto.userId());
+        List<UserInProject> users = requestDto.users().stream().map(userId -> new UserInProject(userId, Role.MEMBER))
+                .collect(Collectors.toList());
+
+        project.addUsers(users);
+
+        String projectId = writeProjectPort.UpdateProject(project);
+        return new InviteUserInProjectResponseDto(projectId);
+    }
+
+    @Override
+    public UpdateProjectResponseDto updateProject(UpdateProjectRequestDto requestDto) {
+        Project project = readProjectPort.findProjectByProjectId(requestDto.projectId());
+        checkHost(project,requestDto.userId());
+        project.setName(requestDto.projectName());
+        project.setDescription(requestDto.description());
+        project.setImg(requestDto.image());
+
+        String projectId = writeProjectPort.UpdateProject(project);
+        return new UpdateProjectResponseDto(projectId);
+    }
+
+    @Override
+    public WithdrawUserInProjectResponseDto withdrawUserInProject(WithdrawUserInProjectRequestDto requestDto) {
+        Project project = readProjectPort.findProjectByProjectId(requestDto.projectId());
+        checkHost(project,requestDto.userId());
+        project.withdrawUsers(requestDto.users());
+
+        String projectId = writeProjectPort.UpdateProject(project);
+        return new WithdrawUserInProjectResponseDto(projectId);
     }
 }
