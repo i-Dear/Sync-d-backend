@@ -15,6 +15,7 @@ public interface DeleteProjectUsecase {
 
     }
      record DeleteProjectRequestDto (
+             String userId,
              String projectId
     ) {
     }

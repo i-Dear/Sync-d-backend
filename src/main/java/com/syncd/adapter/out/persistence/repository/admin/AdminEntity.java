@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-@Builder
 @Data
 @Document(collection = "admins")
 public class AdminEntity {

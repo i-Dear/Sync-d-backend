@@ -1,13 +1,12 @@
 package com.syncd.application.port.out.liveblock;
 
-import com.syncd.application.port.in.GetRoomAuthTokenUsecase;
-import com.syncd.application.port.out.liveblock.dto.GetRoomAuthTokenDto;
-import com.syncd.application.port.out.liveblock.dto.UserRoleForLiveblocksDto;
+import com.syncd.dto.LiveblocksTokenDto;
+import com.syncd.dto.UserRoleDto;
 
 import java.util.List;
 
 public interface LiveblocksPort {
-    GetRoomAuthTokenDto GetRoomAuthToken(String userId,List<UserRoleForLiveblocksDto> roles);
-    GetRoomAuthTokenDto Test(String userId, String roomId);
+    LiveblocksTokenDto GetRoomAuthToken(String userId, List<UserRoleDto> roles);
+    LiveblocksTokenDto Test(String userId, String roomId);
 }
 

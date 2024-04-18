@@ -1,11 +1,11 @@
-package com.syncd.application.domain.user;
+package com.syncd.domain.user;
 
 
 import com.syncd.adapter.out.persistence.repository.user.UserEntity;
 import com.syncd.application.port.in.RegitsterUserUsecase;
-import com.syncd.application.port.out.autentication.dto.UserForTokenDto;
-import com.syncd.application.port.out.persistence.project.dto.UserRoleForProjectDto;
-import com.syncd.application.port.out.persistence.user.dto.UserDto;
+import com.syncd.dto.UserDto;
+import com.syncd.dto.UserForTokenDto;
+import com.syncd.dto.UserRoleDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -19,5 +19,5 @@ public interface UserMapper {
 
     UserDto UserDtoFromEntity(UserEntity userEntity);
 
-    UserRoleForProjectDto toUserRoleForTeamDto(User user);
+    UserRoleDto toUserRoleForTeamDto(User user);
 }
