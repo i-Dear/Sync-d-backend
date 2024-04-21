@@ -2,7 +2,7 @@ name: Sonarqube Code Analysis
 
 on:
   push:
-    branches: [ "infra/#8/sonarqube" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
