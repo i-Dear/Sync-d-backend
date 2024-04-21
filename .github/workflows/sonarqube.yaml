@@ -32,4 +32,6 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-        run: ./gradlew build sonar --info
+        run: |
+          gradle wrapper
+          ./gradlew build sonar --info
