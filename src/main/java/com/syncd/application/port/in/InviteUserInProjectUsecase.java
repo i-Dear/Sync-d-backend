@@ -6,12 +6,11 @@ public interface InviteUserInProjectUsecase {
     // ======================================
     // METHOD
     // ======================================
-    InviteUserInProjectResponseDto inviteUserInProject(InviteUserInProjectRequestDto requestDto);
+    InviteUserInProjectResponseDto inviteUserInProject(String userId, String projectId, List<String> users);
     // ======================================
     // DTO
     // ======================================
     record InviteUserInProjectRequestDto(
-            String userId,
             String projectId,
             List<String> users
     ) {}

@@ -1,6 +1,5 @@
 package com.syncd.application.service;
 
-import com.syncd.application.port.in.LoginUserUsecase;
 import com.syncd.application.port.in.RegitsterUserUsecase;
 import com.syncd.application.port.out.autentication.AuthenticationPort;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
@@ -15,21 +14,16 @@ import org.springframework.stereotype.Service;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class UserService implements RegitsterUserUsecase, LoginUserUsecase {
+public class UserService implements RegitsterUserUsecase {
     private final ReadUserPort readUserPort;
     private final WriteUserPort writeUserPort;
     private final AuthenticationPort authenticationPort;
 
     @Override
     public RegisterUserResponseDto registerUser(RegisterUserRequestDto registerDto){
-        String userId = writeUserPort.createUser(registerDto.name(), registerDto.email(), registerDto.password()).value();
+        String userId = writeUserPort.createUser(registerDto.name(), registerDto.email(),"").value();
         TokenDto tokens = authenticationPort.GetJwtTokens(new UserForTokenDto(userId));
         return new RegisterUserResponseDto(tokens.accessToken(), tokens.refreshToken());
     }
 
-    public  LoginUserResponsetDto loginUser(LoginUserRequestDto requestDto){
-        String userId = readUserPort.findByEmailAndPassword(requestDto.email(), requestDto.password()).userId();
-        TokenDto tokens = authenticationPort.GetJwtTokens(new UserForTokenDto(userId));
-        return new LoginUserResponsetDto(tokens.accessToken(), tokens.refreshToken());
-    }
 }

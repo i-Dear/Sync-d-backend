@@ -21,12 +21,12 @@ public class UserPersistenceAdapter implements WriteUserPort, ReadUserPort {
     // WRITE
     // ======================================
     @Override
-    public UserId createUser(String userName, String email, String password) {
+    public UserId createUser(String userName, String email,String img) {
         // UserEntity 생성
         UserEntity newUser = new UserEntity();
         newUser.setName(userName);
         newUser.setEmail(email);
-        newUser.setPassword(password);
+        newUser.setProfileImg(img);
         newUser.setStatus(UserAccountStatus.AVAILABLE);
         // MongoDB에 저장
         UserEntity savedUser = userDao.save(newUser);
@@ -43,7 +43,13 @@ public class UserPersistenceAdapter implements WriteUserPort, ReadUserPort {
     }
 
     @Override
-    public UserDto findByEmailAndPassword(String email, String password){
-        return UserMapper.INSTANCE.UserDtoFromEntity(userDao.findByEmailAndPassword(email,password).get());
+    public UserDto findByUsername(String username) {
+        return UserMapper.INSTANCE.UserDtoFromEntity(userDao.findByName(username).get());
     }
+
+    @Override
+    public boolean isExistUser(String email) {
+        return !userDao.findByEmail(email).isEmpty();
+    }
+
 }

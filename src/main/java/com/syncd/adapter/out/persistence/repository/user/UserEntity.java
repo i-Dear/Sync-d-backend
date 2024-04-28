@@ -16,7 +16,6 @@ public class UserEntity {
     @Id
     private String id;
     private String email;
-    private String password;
     private String name;
     private UserAccountStatus status;
 

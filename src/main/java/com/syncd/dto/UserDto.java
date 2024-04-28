@@ -7,9 +7,8 @@ import lombok.Data;
 import java.util.List;
 public record UserDto(
 
-        String userId,
+        String id,
         String email,
-        String password,
         String name,
         UserAccountStatus status,
         String profileImg,
