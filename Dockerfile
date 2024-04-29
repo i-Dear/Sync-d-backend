@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 ubuntu:latest as base
+FROM ubuntu:latest as base
 WORKDIR /app
 
 RUN apt-get update && \
@@ -18,7 +18,7 @@ COPY src src
 
 RUN ./gradlew --no-daemon build
 
-FROM --platform=linux/amd64 openjdk:17
+FROM openjdk:17
 WORKDIR /app
 
 ARG SPRING_DATA_MONGODB_URI
