@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
@@ -35,8 +36,11 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
 
     @Override
-    public CreateProjectResponseDto createProject(String userId,String name, String description, String img){
-        List<UserInProject> users =Arrays.asList(new UserInProject(userId,Role.HOST));
+    public CreateProjectResponseDto createProject(String userId,String name, String description, String img, List<String> userIds){
+        List<UserInProject> users = Stream.concat(
+                Stream.of(new UserInProject(userId, Role.HOST)), // 호스트 사용자
+                userIds.stream().map(el -> new UserInProject(el, Role.MEMBER))
+        ).collect(Collectors.toList());
 
         Project project = new Project(null);
         project.setImg(img);
