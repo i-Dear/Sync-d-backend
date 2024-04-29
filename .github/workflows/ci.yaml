@@ -100,6 +100,7 @@ jobs:
           else
             yq eval -i ".spec.template.spec.containers[0].image = \"$IMAGE_TAG\"" $FILENAME
             yq eval -i ".spec.replicas = ${{ secrets.POD_REPLICAS }}" $FILENAME
+          fi
       - name: Commit and Push
         run: |
           git add .
