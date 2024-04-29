@@ -11,6 +11,10 @@ COPY gradle/ gradle/
 COPY build.gradle .
 COPY settings.gradle .
 
+# Debugging: List contents to verify
+RUN ls -al
+RUN ls -al gradle/wrapper/
+
 RUN chmod +x ./gradlew && ./gradlew --no-daemon dependencies
 
 FROM dependencies as builder
