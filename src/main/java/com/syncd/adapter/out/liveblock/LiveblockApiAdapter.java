@@ -3,6 +3,7 @@ package com.syncd.adapter.out.liveblock;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.syncd.application.port.out.liveblock.LiveblocksPort;
+import com.syncd.domain.project.Project;
 import com.syncd.dto.LiveblocksTokenDto;
 import com.syncd.dto.UserRoleDto;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
@@ -24,14 +26,14 @@ public class LiveblockApiAdapter implements LiveblocksPort {
     @Value("${spring.security.auth.liveBlockSecretKey}")
     private String secretKey;
     @Override
-    public LiveblocksTokenDto GetRoomAuthToken(String userId, List<UserRoleDto> roles) {
+    public LiveblocksTokenDto GetRoomAuthToken(String userId, String name,String img, List<String> projectIds) {
         String url = "https://api.liveblocks.io/v2/authorize-user";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer "+secretKey);
 
-        String jsonBody = createJsonBody(userId,roles);
+        String jsonBody = createJsonBody(userId,name,img,projectIds);
 
         HttpEntity<String> request = new HttpEntity<>(jsonBody, headers);
 //        System.out.print(request);
@@ -39,13 +41,12 @@ public class LiveblockApiAdapter implements LiveblocksPort {
         return restTemplate.postForObject(url, request, LiveblocksTokenDto.class);
     }
 
-    private String createJsonBody(String userId, List<UserRoleDto> roles) {
-        Map<String, List<String>> permissions = roles.stream()
+    private String createJsonBody(String userId,String name, String img, List<String> projectIds) {
+        Map<String, List<String>> permissions = projectIds.stream()
                 .collect(Collectors.groupingBy(
-                        UserRoleDto::projectId,
+                        Function.identity(), // projectId를 직접 사용
                         Collectors.mapping(role -> "room:write", Collectors.toList())
                 ));
-
         String permissionsJson = null;
         try {
             permissionsJson = objectMapper.writeValueAsString(permissions);
@@ -53,7 +54,7 @@ public class LiveblockApiAdapter implements LiveblocksPort {
             e.printStackTrace();
         }
 
-        return String.format("""
+        String data =  String.format("""
             {
               "userId": "%s",
               "userInfo": {
@@ -62,7 +63,9 @@ public class LiveblockApiAdapter implements LiveblocksPort {
               },
               "permissions": %s
             }
-            """, userId, "정준호", "https://s3.ap-northeast-2.amazonaws.com/elasticbeanstalk-ap-northeast-2-176213403491/media/magazine_img/magazine_327/7ae22985-90e8-44c3-a1d6-ee470ddc9073.jpg", permissionsJson);
+            """, userId, name, img, permissionsJson);
+        System.out.print(data);
+        return data;
     }
 
     @Override

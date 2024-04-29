@@ -30,9 +30,9 @@ public class PrincipalService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        UserDto findUser = readUserPort.findByUsername(username);
+        User findUser = readUserPort.findByUsername(username);
         if(findUser!=null) {
-            return new PrincipalDetails(UserMapper.INSTANCE.fromDto(findUser));
+            return new PrincipalDetails(findUser);
         }
 
         return null;

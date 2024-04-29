@@ -35,7 +35,7 @@ public class GoogleOauthController extends DefaultOAuth2UserService {
         if(readUserPort.isExistUser(userEmail)==false){
             user.setId(writeUserPort.createUser(user.getName(),user.getEmail(),user.getProfileImg()).value());
         }else{
-            user.setId(readUserPort.findByEmail(userEmail).id());
+            user.setId(readUserPort.findByEmail(userEmail).getId());
         }
 
         return new PrincipalDetails(user, oAuth2User.getAttributes());
