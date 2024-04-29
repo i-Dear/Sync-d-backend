@@ -105,6 +105,7 @@ jobs:
         run: |
           SHORT_SHA="${{ github.sha }}"
           SHORT_SHA="${SHORT_SHA:0:6}"
+          REPO_NAME="${{ github.repository }}"
           git add .
-          git commit -m "update: $SHORT_SHA to ${{ secrets.MANIFEST_FOLDER_NAME }}/${{ secrets.DEPLOYMENT_FILE_NAME }} "
+          git commit -m "update: $SHORT_SHA, $REPO_NAME to ${{ secrets.DEPLOYMENT_FILE_NAME }}"
           git push
