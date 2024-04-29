@@ -11,7 +11,6 @@ COPY gradle/ gradle/
 COPY build.gradle .
 COPY settings.gradle .
 
-RUN gradle wrapper --gradle-version 6.2 --distribution-type all
 RUN chmod +x ./gradlew
 RUN ./gradlew --no-daemon dependencies
 
