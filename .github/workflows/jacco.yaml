@@ -1,0 +1,26 @@
+name: Jacoco
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - development
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build and analyze
+        env:
+          APPLICATION_NAME: ${{ secrets.APPLICATION_NAME }}
+        run: ./gradlew test --info

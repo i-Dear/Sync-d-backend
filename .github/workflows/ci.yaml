@@ -1,0 +1,108 @@
+name: Image build and push
+
+on:
+  push:
+    branches: [ "infra/#8/gitaction" ]
+    tags:
+      - '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      image-tag: ${{ steps.docker_meta.outputs.tags }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Docker meta
+        id: docker_meta
+        uses: crazy-max/ghaction-docker-meta@v1
+        with:
+          images: ${{ secrets.DOCKERHUB_URL }}
+          tag-semver: |
+            {{version}}
+            {{major}}.{{minor}}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_URL }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+        env:
+          SPRING_DATA_MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          SPRING_DATA_MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE }}
+          SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY: ${{ secrets.LIVEBLOCK_SECRET_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      - name: Notify Slack
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: git_action
+          SLACK_COLOR: '#000000'
+          SLACK_MESSAGE: ${{ steps.get_commit_message.outputs.message }}
+          SLACK_TITLE: '이미지 빌드 결과'
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: success()
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ secrets.MANIFEST_REPO }}
+          ref: ${{ secrets.MANIFEST_REPO_BRANCH }}
+          token: ${{ secrets.MY_PAT }}
+      - name: Configure git
+        run: |
+          git config user.email ${{ secrets.GIT_USER_EMAIL }} 
+          git config user.name ${{ secrets.GIT_USER_NAME }}
+      - name: Make changes
+        run: |
+          cd ${{ secrets.MANIFEST_FOLDER_NAME }} 
+          FILENAME=${{ secrets.DEPLOYMENT_FILE_NAME }}
+          IMAGE_TAG=${{ needs.build.outputs.image-tag }}
+          REPO_NAME=$(echo "${{ github.repository }}" | awk -F '/' '{print $2}')
+          
+          if [ ! -f "$FILENAME" ]; then
+            echo "apiVersion: apps/v1
+                  kind: Deployment
+                  metadata:
+                    name: $REPO_NAME
+                  spec:
+                    replicas: ${{ secrets.POD_REPLICAS }}
+                    selector:
+                      matchLabels:
+                        app: $REPO_NAME
+                    template:
+                      metadata:
+                        labels:
+                          app: $REPO_NAME
+                      spec:
+                        containers:
+                          - name: $REPO_NAME
+                            image: $IMAGE_TAG
+                            ports:
+                              - containerPort: 8080" > $FILENAME
+          else
+            yq eval -i ".spec.template.spec.containers[0].image = \"$IMAGE_TAG\"" $FILENAME
+            yq eval -i ".spec.replicas = ${{ secrets.POD_REPLICAS }}" $FILENAME
+      - name: Commit and Push
+        run: |
+          git add .
+          git commit -m "Automated changes"
+          git push
