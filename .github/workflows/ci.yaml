@@ -103,6 +103,8 @@ jobs:
           fi
       - name: Commit and Push
         run: |
+          SHORT_SHA="${{ github.sha }}"
+          SHORT_SHA="${SHORT_SHA:0:6}"
           git add .
-          git commit -m "update:  ${{ github.sha }} to ${{ secrets.DEPLOYMENT_FILE_NAME }} in ${{ secrets.MANIFEST_FOLDER_NAME }} "
+          git commit -m "update: $SHORT_SHA to ${{ secrets.MANIFEST_FOLDER_NAME }}/${{ secrets.DEPLOYMENT_FILE_NAME }} "
           git push
