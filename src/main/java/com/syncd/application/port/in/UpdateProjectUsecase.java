@@ -4,13 +4,15 @@ public interface UpdateProjectUsecase {
     // ======================================
     // METHOD
     // ======================================
-    UpdateProjectResponseDto updateProject(UpdateProjectRequestDto requestDto);
+    UpdateProjectResponseDto updateProject(String userId,  String projectId,
+                                           String projectName,
+                                           String description,
+                                           String image );
 
     // ======================================
     // DTO
     // ======================================
     record UpdateProjectRequestDto(
-            String userId,
             String projectId,
             String projectName,
             String description,

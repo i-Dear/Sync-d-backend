@@ -8,7 +8,7 @@ public interface GetAllRoomsByUserIdUsecase {
     // ======================================
     // METHOD
     // ======================================
-    GetAllRoomsByUserIdResponseDto getAllRoomsByUserId(GetAllRoomsByUserIdRequestDto requestDto);
+    GetAllRoomsByUserIdResponseDto getAllRoomsByUserId(String userId);
 
     // ======================================
     // DTO

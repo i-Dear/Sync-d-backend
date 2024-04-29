@@ -4,7 +4,7 @@ public interface DeleteProjectUsecase {
     // ======================================
     // METHOD
     // ======================================
-    DeleteProjectResponseDto deleteProject(DeleteProjectRequestDto requestDto);
+    DeleteProjectResponseDto deleteProject(String userId, String projectId);
 
     // ======================================
     // DTO
@@ -15,7 +15,6 @@ public interface DeleteProjectUsecase {
 
     }
      record DeleteProjectRequestDto (
-             String userId,
              String projectId
     ) {
     }

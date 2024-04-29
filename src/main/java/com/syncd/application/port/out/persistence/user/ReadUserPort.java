@@ -6,5 +6,6 @@ import com.syncd.dto.UserDto;
 public interface ReadUserPort {
     UserDto findByEmail(String email);
 
-    UserDto findByEmailAndPassword(String email, String password);
+    UserDto findByUsername(String username);
+    boolean isExistUser(String email);
 }

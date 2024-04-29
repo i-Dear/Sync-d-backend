@@ -19,5 +19,7 @@ public interface UserMapper {
 
     UserDto UserDtoFromEntity(UserEntity userEntity);
 
+    User fromDto(UserDto dto);
+
     UserRoleDto toUserRoleForTeamDto(User user);
 }
