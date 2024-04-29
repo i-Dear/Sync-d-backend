@@ -38,12 +38,12 @@ jobs:
             ${{ secrets.DOCKERHUB_URL }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-        env:
-          SPRING_DATA_MONGODB_URI: ${{ secrets.MONGODB_URI }}
-          SPRING_DATA_MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE }}
-          SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY: ${{ secrets.LIVEBLOCK_SECRET_KEY }}
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          build-args: |
+            SPRING_DATA_MONGODB_URI=${{ secrets.MONGODB_URI }}
+            SPRING_DATA_MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }}
+            SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY=${{ secrets.LIVEBLOCK_SECRET_KEY }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
 
       - name: Notify Slack
         uses: rtCamp/action-slack-notify@v2
