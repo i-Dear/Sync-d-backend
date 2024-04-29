@@ -11,8 +11,6 @@ COPY gradle/ gradle/
 COPY build.gradle .
 COPY settings.gradle .
 
-COPY gradle/wrapper/gradle-wrapper.jar gradle/wrapper/gradle-wrapper.jar
-
 RUN chmod +x ./gradlew && ./gradlew --no-daemon dependencies
 
 FROM dependencies as builder
