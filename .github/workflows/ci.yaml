@@ -104,5 +104,5 @@ jobs:
       - name: Commit and Push
         run: |
           git add .
-          git commit -m "Automated changes"
+          git commit -m "update:  $IMAGE_TAG $FILENAME in ${{ secrets.DEPLOYMENT_FILE_NAME }}"
           git push
