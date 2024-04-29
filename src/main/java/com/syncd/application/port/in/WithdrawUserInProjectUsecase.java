@@ -5,12 +5,11 @@ public interface WithdrawUserInProjectUsecase {
     // ======================================
     // METHOD
     // ======================================
-    WithdrawUserInProjectResponseDto withdrawUserInProject(WithdrawUserInProjectRequestDto requestDto);
+    WithdrawUserInProjectResponseDto withdrawUserInProject(String userId, String projectId, List<String> users);
     // ======================================
     // DTO
     // ======================================
     record WithdrawUserInProjectRequestDto(
-            String userId,
             String projectId,
             List<String> users
     ) {
