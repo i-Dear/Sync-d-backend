@@ -4,6 +4,7 @@ import com.syncd.adapter.out.persistence.repository.user.UserDao;
 import com.syncd.adapter.out.persistence.repository.user.UserEntity;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
 import com.syncd.application.port.out.persistence.user.WriteUserPort;
+import com.syncd.domain.user.User;
 import com.syncd.domain.user.UserMapper;
 import com.syncd.dto.UserDto;
 import com.syncd.dto.UserId;
@@ -38,13 +39,18 @@ public class UserPersistenceAdapter implements WriteUserPort, ReadUserPort {
     // READ
     // ======================================
     @Override
-    public UserDto findByEmail(String email){
-        return UserMapper.INSTANCE.UserDtoFromEntity(userDao.findByEmail(email).get());
+    public User findByEmail(String email){
+        return UserMapper.INSTANCE.fromEntity(userDao.findByEmail(email).get());
     }
 
     @Override
-    public UserDto findByUsername(String username) {
-        return UserMapper.INSTANCE.UserDtoFromEntity(userDao.findByName(username).get());
+    public User findByUsername(String username) {
+        return UserMapper.INSTANCE.fromEntity(userDao.findByName(username).get());
+    }
+
+    @Override
+    public User findByUserId(String userId) {
+        return UserMapper.INSTANCE.fromEntity(userDao.findById(userId).get());
     }
 
     @Override
