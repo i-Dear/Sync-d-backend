@@ -11,9 +11,7 @@ COPY gradle/ gradle/
 COPY build.gradle .
 COPY settings.gradle .
 
-# Debugging: List contents to verify
-RUN ls -al
-RUN ls -al gradle/wrapper/
+COPY gradle/wrapper/gradle-wrapper.jar gradle/wrapper/gradle-wrapper.jar
 
 RUN chmod +x ./gradlew && ./gradlew --no-daemon dependencies
 
