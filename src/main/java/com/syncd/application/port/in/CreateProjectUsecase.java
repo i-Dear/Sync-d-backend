@@ -1,10 +1,12 @@
 package com.syncd.application.port.in;
 
+import java.util.List;
+
 public interface CreateProjectUsecase {
     // ======================================
     // METHOD
     // ======================================
-    CreateProjectResponseDto createProject(String userId,String name, String description, String img);
+    CreateProjectResponseDto createProject(String userId,String name, String description, String img, List<String> users);
 
     // ======================================
     // DTO
@@ -12,7 +14,8 @@ public interface CreateProjectUsecase {
     record CreateProjectRequestDto(
             String name,
             String description,
-            String img
+            String img,
+            List<String> users
     ) {
     }
 

@@ -4,6 +4,7 @@ import com.syncd.adapter.out.liveblock.LiveblockApiAdapter;
 import com.syncd.adapter.out.persistence.exception.ProjectAlreadyExistsException;
 import com.syncd.application.port.in.*;
 import com.syncd.application.port.out.autentication.AuthenticationPort;
+import com.syncd.application.port.out.liveblock.LiveblocksPort;
 import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
@@ -11,6 +12,7 @@ import com.syncd.application.port.out.persistence.user.WriteUserPort;
 import com.syncd.domain.project.Project;
 import com.syncd.domain.project.ProjectMapper;
 import com.syncd.domain.project.UserInProject;
+import com.syncd.domain.user.User;
 import com.syncd.dto.TokenDto;
 import com.syncd.dto.UserForTokenDto;
 import com.syncd.dto.UserRoleDto;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
@@ -31,12 +34,17 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     private final ReadProjectPort readProjectPort;
     private final WriteProjectPort writeProjectPort;
 
-    private final LiveblockApiAdapter liveblockApiAdapter;
+    private final ReadUserPort readUserPort;
+
+    private final LiveblocksPort liveblocksPort;
 
 
     @Override
-    public CreateProjectResponseDto createProject(String userId,String name, String description, String img){
-        List<UserInProject> users =Arrays.asList(new UserInProject(userId,Role.HOST));
+    public CreateProjectResponseDto createProject(String userId,String name, String description, String img, List<String> userIds){
+        List<UserInProject> users = Stream.concat(
+                Stream.of(new UserInProject(userId, Role.HOST)), // 호스트 사용자
+                userIds.stream().map(el -> new UserInProject(el, Role.MEMBER))
+        ).collect(Collectors.toList());
 
         Project project = new Project(null);
         project.setImg(img);
@@ -82,29 +90,31 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         );
     }
 
-    private List<UserRoleDto> mapUserRoleDto(String userId, List<Project> projects) {
-        return projects.stream()
-                .flatMap(project -> project.getUsers().stream()
-                        .map(user -> convertUserToUserRoleDto(project.getId(), user)))
-                .filter(userRoleDto -> userId.equals(userRoleDto.projectId()))
-                .collect(Collectors.toList());
-    }
+//    private List<UserRoleDto> mapUserRoleDto(String userId, List<Project> projects) {
+//        return projects.stream()
+//                .flatMap(project -> project.getUsers().stream()
+//                        .map(user -> convertUserToUserRoleDto(project.getId(), user)))
+//                .filter(userRoleDto -> userId.equals(userRoleDto.projectId()))
+//                .collect(Collectors.toList());
+//    }
 
     private UserRoleDto convertUserToUserRoleDto(String projectId, UserInProject user) {
         return new UserRoleDto(projectId,user.getUserId(),user.getRole());
     }
 
-
     @Override
     public GetRoomAuthTokenResponseDto getRoomAuthToken(String userId) {
         List<Project> projects = readProjectPort.findAllProjectByUserId(userId);
-        List<UserRoleDto> userRole = mapUserRoleDto(userId, projects);
-        return new GetRoomAuthTokenResponseDto(liveblockApiAdapter.GetRoomAuthToken(userId,userRole).token());
+        List<String> projectIds = projects.stream()
+                .map(Project::getId)
+                .collect(Collectors.toList());
+        User userInfo = readUserPort.findByUserId(userId);
+        return new GetRoomAuthTokenResponseDto(liveblocksPort.GetRoomAuthToken(userId, userInfo.getName(),userInfo.getProfileImg(),projectIds).token());
     }
 
     @Override
     public GetRoomAuthTokenResponseDto Test(String uesrId, String roomId) {
-        return new GetRoomAuthTokenResponseDto(liveblockApiAdapter.Test(uesrId,roomId).token());
+        return new GetRoomAuthTokenResponseDto(liveblocksPort.Test(uesrId,roomId).token());
     }
 
     @Override
