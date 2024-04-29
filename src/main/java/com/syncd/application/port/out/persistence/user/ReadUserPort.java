@@ -1,11 +1,14 @@
 package com.syncd.application.port.out.persistence.user;
 
 
+import com.syncd.domain.user.User;
 import com.syncd.dto.UserDto;
 
 public interface ReadUserPort {
-    UserDto findByEmail(String email);
+    User findByEmail(String email);
 
-    UserDto findByUsername(String username);
+    User findByUsername(String username);
+
+    User findByUserId(String username);
     boolean isExistUser(String email);
 }

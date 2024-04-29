@@ -17,7 +17,7 @@ public interface UserMapper {
     User fromRegisterUserRequestDto(RegitsterUserUsecase.RegisterUserRequestDto requestDto);
     UserForTokenDto toUserForTokenDto(User user);
 
-    UserDto UserDtoFromEntity(UserEntity userEntity);
+    User fromEntity(UserEntity userEntity);
 
     User fromDto(UserDto dto);
 

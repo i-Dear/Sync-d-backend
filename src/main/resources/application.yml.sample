@@ -1,0 +1,17 @@
+spring:
+  data:
+    mongodb:
+      database:
+      uri:
+  security:
+    auth:
+      liveBlockSecretKey:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id:
+            client-secret:
+            scope:
+              - email
+              - profile

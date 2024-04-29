@@ -20,6 +20,6 @@ public class AuthController {
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         System.out.println("OAuth2User:" + oauth.getAttributes());
-        return readUserPort.findByEmail(oAuth2User.getAttributes().get("email").toString()).id();
+        return readUserPort.findByEmail(oAuth2User.getAttributes().get("email").toString()).getId();
     }
 }

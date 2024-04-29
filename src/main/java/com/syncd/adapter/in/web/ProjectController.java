@@ -31,7 +31,7 @@ public class ProjectController {
 
     @PostMapping("/create")
     public CreateProjectResponseDto createProject(@AuthenticationPrincipal PrincipalDetails principalDetails,@RequestBody CreateProjectRequestDto requestDto){
-        return createProjectUsecase.createProject(principalDetails.getUser().getId(),requestDto.name(),requestDto.description(),requestDto.img());
+        return createProjectUsecase.createProject(principalDetails.getUser().getId(),requestDto.name(),requestDto.description(),requestDto.img(), requestDto.users());
     }
 
     @PostMapping("/invite")
