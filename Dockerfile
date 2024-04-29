@@ -11,7 +11,9 @@ COPY gradle/ gradle/
 COPY build.gradle .
 COPY settings.gradle .
 
-RUN chmod +x ./gradlew && ./gradlew --no-daemon dependencies
+RUN gradle wrapper --gradle-version 6.2 --distribution-type all
+RUN chmod +x ./gradlew
+RUN ./gradlew --no-daemon dependencies
 
 FROM dependencies as builder
 COPY src src
