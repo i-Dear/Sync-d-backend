@@ -104,5 +104,5 @@ jobs:
       - name: Commit and Push
         run: |
           git add .
-          git commit -m "update:  $IMAGE_TAG $FILENAME in ${{ secrets.DEPLOYMENT_FILE_NAME }}"
+          git commit -m "update:  ${{ github.sha }} to ${{ secrets.DEPLOYMENT_FILE_NAME }} in ${{ secrets.MANIFEST_FOLDER_NAME }} "
           git push
