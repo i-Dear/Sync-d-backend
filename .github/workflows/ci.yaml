@@ -73,8 +73,6 @@ jobs:
           git config user.name ${{ secrets.GIT_USER_NAME }}
       - name: Make changes
         run: |
-          ls -al
-          cd ${{ secrets.MANIFEST_FOLDER_NAME }} 
           FILENAME=${{ secrets.DEPLOYMENT_FILE_NAME }}
           IMAGE_TAG=${{ needs.build.outputs.image-tag }}
           REPO_NAME=$(echo "${{ github.repository }}" | awk -F '/' '{print $2}')
