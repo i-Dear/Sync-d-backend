@@ -7,7 +7,7 @@ RUN apt-get update && \
 
 FROM base as dependencies
 COPY gradlew .
-COPY gradle gradle
+COPY gradle gradle/
 COPY build.gradle .
 COPY settings.gradle .
 
