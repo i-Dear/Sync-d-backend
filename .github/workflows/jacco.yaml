@@ -19,7 +19,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-
+      - name: Ensure gradlew is executable
+        run: chmod +x ./gradlew
+      - name: List files
+        run: ls -al
       - name: Build and analyze
         env:
           APPLICATION_NAME: ${{ secrets.APPLICATION_NAME }}
