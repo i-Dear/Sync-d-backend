@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      image-tag: ${{ steps.docker_meta.outputs.tags }}
+      image-tag: ${{ steps.build_and_push.outputs.tag }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -46,6 +46,9 @@ jobs:
           SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY: ${{ secrets.LIVEBLOCK_SECRET_KEY }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      - name: Output the image tag
+        run: echo "::set-output name=tag::${{ secrets.DOCKERHUB_URL }}:${{ github.sha }}"
+
       - name: Notify Slack
         uses: rtCamp/action-slack-notify@v2
         env:
