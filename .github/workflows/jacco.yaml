@@ -2,9 +2,7 @@ name: Jacoco
 
 on:
   push:
-    branches-ignore:
-      - main
-      - development
+    branches: [ "main" ]
 
 jobs:
   build:
