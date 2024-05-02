@@ -11,6 +11,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class GoogleOauthController extends DefaultOAuth2UserService {
@@ -37,6 +39,11 @@ public class GoogleOauthController extends DefaultOAuth2UserService {
         }else{
             user.setId(readUserPort.findByEmail(userEmail).getId());
         }
+
+        Map<String, Object> oAuth2UserAttributes = super.loadUser(userRequest).getAttributes();
+
+        String accessToken = JwtUtils.generateToken(new PrincipalDetails(user, oAuth2UserAttributes));
+        System.out.println("JWT accessToken : " + accessToken);
 
         return new PrincipalDetails(user, oAuth2User.getAttributes());
     }
