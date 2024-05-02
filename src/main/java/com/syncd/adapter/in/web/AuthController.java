@@ -7,6 +7,7 @@ import com.syncd.dto.TokenDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,11 +21,13 @@ import org.springframework.web.servlet.view.RedirectView;
 public class AuthController {
     private final ReadUserPort readUserPort;
     private final LoginService loginService;
+    @Value("${spring.security.oauth2.client.provider.google.user-info-uri}")
+    private String resourceUri;
 
     @GetMapping("/code/{registrationId}")
     public RedirectView googleLogin(@RequestParam String code, @PathVariable String registrationId, HttpServletResponse response) {
         TokenDto token = loginService.socialLogin(code, registrationId);
         response.setHeader("Authorization", "Bearer " + token.accessToken());
-        return new RedirectView("http://localhost:3000");
+        return new RedirectView(resourceUri);
     }
 }
