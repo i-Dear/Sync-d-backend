@@ -19,7 +19,7 @@ spring:
           google:
             client-id: 70988875044-9nmbvd2suleub4ja095mrh83qbi7140j.apps.googleusercontent.com
             client-secret: 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
-            redirect-uri: http://localhost:8080/login/oauth2/code/google
+            redirect-uri: https://syncd.i-dear.org/login/oauth2/code/google
             scope:
               - email
               - profile
