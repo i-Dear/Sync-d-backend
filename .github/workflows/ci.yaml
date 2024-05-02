@@ -2,8 +2,6 @@ name: Image build and push
 
 on:
   push:
-    branches: [ "main", "infra/#13/ci-setting" ]
-  pull_request:
     branches: [ "main" ]
 
 jobs:
