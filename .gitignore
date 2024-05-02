@@ -197,5 +197,5 @@ atlassian-ide-plugin.xml
 
 cached-antora-playbook.yml
 
-application.yml
+#application.yml
 application.properties

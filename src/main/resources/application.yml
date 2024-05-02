@@ -1,0 +1,17 @@
+spring:
+  data:
+    mongodb:
+      database: syncd
+      uri: "mongodb+srv://dongjae:qwe1356@syncd.m98ytka.mongodb.net/?retryWrites=true&w=majority"
+  security:
+    auth:
+      liveBlockSecretKey: "sk_dev_q7DugH6NAP_T02pSlEBP79sOujz_tqvM9Tf5eA8doLL1nrjyuASP0KPRvp0hGpYr"
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 70988875044-9nmbvd2suleub4ja095mrh83qbi7140j.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - email
+              - profile

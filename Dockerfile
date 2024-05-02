@@ -1,23 +1,40 @@
-# Use an official OpenJDK runtime as a parent image
-FROM openjdk:17-oracle
-
-# Set the working directory to /app
+FROM ubuntu:latest as base
 WORKDIR /app
 
-# Copy the jar file into the image
-COPY ./build/libs/syncd-0.0.1-SNAPSHOT.jar /app/syncd-0.0.1-SNAPSHOT.jar
-# Environment variables for MongoDB configuration
-ENV SPRING_DATA_MONGODB_URI="mongodb+srv://dongjae:qwe1356@syncd.m98ytka.mongodb.net/?retryWrites=true&w=majority"
-ENV SPRING_DATA_MONGODB_DATABASE="syncd"
+RUN apt-get update && \
+    apt-get install -y openjdk-17-jdk-headless gradle && \
+    apt-get clean
 
-# Environment variables for Spring security
-ENV SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY="sk_dev_q7DugH6NAP_T02pSlEBP79sOujz_tqvM9Tf5eA8doLL1nrjyuASP0KPRvp0hGpYr"
+FROM base as dependencies
+COPY gradlew .
+COPY gradle/ gradle/
+COPY build.gradle .
+COPY settings.gradle .
 
-ENV GOOGLE_CLIENT_ID="70988875044-9nmbvd2suleub4ja095mrh83qbi7140j.apps.googleusercontent.com"
-ENV GOOGLE_CLIENT_SECRET="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"
+RUN chmod +x ./gradlew
+RUN ./gradlew --no-daemon dependencies
 
-# Make port 8080 available to the world outside this container
-EXPOSE 8080
+FROM dependencies as builder
+COPY src src
 
-# Run the jar file
-CMD ["java", "-jar", "syncd-0.0.1-SNAPSHOT.jar"]
+RUN ./gradlew --no-daemon build
+
+FROM openjdk:17
+WORKDIR /app
+
+ARG SPRING_DATA_MONGODB_URI
+ARG SPRING_DATA_MONGODB_DATABASE
+ARG SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY
+ARG GOOGLE_CLIENT_ID
+ARG GOOGLE_CLIENT_SECRET
+
+ENV SPRING_DATA_MONGODB_URI=$SPRING_DATA_MONGODB_URI
+ENV SPRING_DATA_MONGODB_DATABASE=$SPRING_DATA_MONGODB_DATABASE
+ENV SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY=$SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY
+ENV GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID
+ENV GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET
+
+# Copy the built jar file
+COPY --from=builder /app/build/libs/*.jar app.jar
+
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
