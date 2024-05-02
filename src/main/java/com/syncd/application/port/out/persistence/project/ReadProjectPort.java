@@ -1,7 +1,6 @@
 package com.syncd.application.port.out.persistence.project;
 
 import com.syncd.domain.project.Project;
-import com.syncd.domain.project.UserInProject;
 
 import java.util.List;
 

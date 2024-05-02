@@ -35,7 +35,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     private final WriteProjectPort writeProjectPort;
 
     private final ReadUserPort readUserPort;
-
     private final LiveblocksPort liveblocksPort;
 
 

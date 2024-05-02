@@ -1,8 +1,6 @@
 package com.syncd.application.port.out.liveblock;
 
-import com.syncd.domain.project.Project;
 import com.syncd.dto.LiveblocksTokenDto;
-import com.syncd.dto.UserRoleDto;
 
 import java.util.List;
 

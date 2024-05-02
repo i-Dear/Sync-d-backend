@@ -1,7 +1,6 @@
 package com.syncd.adapter.out.persistence.repository.user;
 
 import com.syncd.enums.UserAccountStatus;
-import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

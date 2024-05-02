@@ -1,11 +1,9 @@
 package com.syncd.adapter.in.web;
 
-import com.syncd.adapter.out.persistence.repository.user.UserDao;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.servlet.view.RedirectView;
