@@ -1,4 +1,11 @@
 spring:
+  jwt:
+    secret: aS1kZWFyLXN5bmNkLXNlY3JldC1rZXktaS1kZWFyLXN5bmNkLXNlY3JldC1rZXk=
+    expiration: 1000000
+  cors:
+    allowed-origins: "http://localhost:3000"  # 허용할 출처 설정
+    allowed-methods: "*"  # 허용할 HTTP 메서드 설정
+    allowed-headers: "*"  # 허용할 헤더 설정
   data:
     mongodb:
       database: syncd
@@ -12,6 +19,11 @@ spring:
           google:
             client-id: 70988875044-9nmbvd2suleub4ja095mrh83qbi7140j.apps.googleusercontent.com
             client-secret: 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
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
             scope:
               - email
               - profile
+        provider:
+          google:
+            token-uri: "https://oauth2.googleapis.com/token"
+            user-info-uri: "https://www.googleapis.com/oauth2/v3/userinfo"

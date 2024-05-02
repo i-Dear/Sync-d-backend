@@ -1,5 +1,6 @@
 package com.syncd.adapter.in.oauth;
 
+import com.syncd.domain.user.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -11,11 +12,11 @@ public class JwtUtils {
 
     private static String accessTokenSecretKey;
 
-    public static String generateToken(PrincipalDetails principalDetails) {
+    public static String generateToken(User user) {
 
         return Jwts.builder()
                 .setHeader(createHeader())
-                .setClaims(createClaims(principalDetails))
+                .setClaims(createClaims(user))
                 .setIssuedAt(new Date())
                 .setExpiration(createExpireDateForAccessToken())
                 .signWith(SignatureAlgorithm.HS256, createSigningKey())
@@ -30,11 +31,12 @@ public class JwtUtils {
         return header;
     }
 
-    private static Map<String, Object> createClaims(PrincipalDetails principalDetails) {
+    private static Map<String, Object> createClaims(User user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("id", principalDetails.getAttribute("email"));
-        claims.put("username", principalDetails.getAttribute("name"));
-        claims.put("Profile", principalDetails.getAttribute("picture"));
+        claims.put("id", user.getId());
+        claims.put("email", user.getEmail());
+        claims.put("name", user.getName());
+        claims.put("img", user.getProfileImg());
         return claims;
     }
 
