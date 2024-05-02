@@ -63,57 +63,57 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
         if: success()
 
-#  deploy:
-#    needs: build
-#    runs-on: ubuntu-latest
-#    environment: production
-#    steps:
-#      - name: Checkout the repository
-#        uses: actions/checkout@v2
-#        with:
-#          repository: ${{ secrets.MANIFEST_REPO }}
-#          ref: ${{ secrets.MANIFEST_REPO_BRANCH }}
-#          token: ${{ secrets.MY_PAT }}
-#      - name: Configure git
-#        run: |
-#          git config user.email ${{ secrets.GIT_USER_EMAIL }}
-#          git config user.name ${{ secrets.GIT_USER_NAME }}
-#      - name: Make changes
-#        run: |
-#          cd ${{ secrets.MANIFEST_FOLDER_NAME }}
-#          FILENAME=${{ secrets.DEPLOYMENT_FILE_NAME }}
-#          IMAGE_TAG=${{ secrets.DOCKERHUB_URL }}:${{ github.sha }}
-#          REPO_NAME=$(echo "${{ github.repository }}" | awk -F '/' '{print $2}')
-#
-#          if [ ! -f "$FILENAME" ]; then
-#            echo "apiVersion: apps/v1
-#                  kind: Deployment
-#                  metadata:
-#                    name: $REPO_NAME
-#                  spec:
-#                    replicas: ${{ secrets.POD_REPLICAS }}
-#                    selector:
-#                      matchLabels:
-#                        app: $REPO_NAME
-#                    template:
-#                      metadata:
-#                        labels:
-#                          app: $REPO_NAME
-#                      spec:
-#                        containers:
-#                          - name: $REPO_NAME
-#                            image: $IMAGE_TAG
-#                            ports:
-#                              - containerPort: 8080" > $FILENAME
-#          else
-#            yq eval -i ".spec.template.spec.containers[0].image = \"$IMAGE_TAG\"" $FILENAME
-#            yq eval -i ".spec.replicas = ${{ secrets.POD_REPLICAS }}" $FILENAME
-#          fi
-#      - name: Commit and Push
-#        run: |
-#          SHORT_SHA="${{ github.sha }}"
-#          SHORT_SHA="${SHORT_SHA:0:6}"
-#          REPO_NAME="${{ github.repository }}"
-#          git add .
-#          git commit -m "update: $SHORT_SHA, $REPO_NAME to ${{ secrets.DEPLOYMENT_FILE_NAME }}"
-#          git push
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ secrets.MANIFEST_REPO }}
+          ref: ${{ secrets.MANIFEST_REPO_BRANCH }}
+          token: ${{ secrets.MY_PAT }}
+      - name: Configure git
+        run: |
+          git config user.email ${{ secrets.GIT_USER_EMAIL }}
+          git config user.name ${{ secrets.GIT_USER_NAME }}
+      - name: Make changes
+        run: |
+          cd ${{ secrets.MANIFEST_FOLDER_NAME }}
+          FILENAME=${{ secrets.DEPLOYMENT_FILE_NAME }}
+          IMAGE_TAG=${{ secrets.DOCKERHUB_URL }}:${{ github.sha }}
+          REPO_NAME=$(echo "${{ github.repository }}" | awk -F '/' '{print $2}')
+
+          if [ ! -f "$FILENAME" ]; then
+            echo "apiVersion: apps/v1
+                  kind: Deployment
+                  metadata:
+                    name: $REPO_NAME
+                  spec:
+                    replicas: ${{ secrets.POD_REPLICAS }}
+                    selector:
+                      matchLabels:
+                        app: $REPO_NAME
+                    template:
+                      metadata:
+                        labels:
+                          app: $REPO_NAME
+                      spec:
+                        containers:
+                          - name: $REPO_NAME
+                            image: $IMAGE_TAG
+                            ports:
+                              - containerPort: 8080" > $FILENAME
+          else
+            yq eval -i ".spec.template.spec.containers[0].image = \"$IMAGE_TAG\"" $FILENAME
+            yq eval -i ".spec.replicas = ${{ secrets.POD_REPLICAS }}" $FILENAME
+          fi
+      - name: Commit and Push
+        run: |
+          SHORT_SHA="${{ github.sha }}"
+          SHORT_SHA="${SHORT_SHA:0:6}"
+          REPO_NAME="${{ github.repository }}"
+          git add .
+          git commit -m "update: $SHORT_SHA, $REPO_NAME to ${{ secrets.DEPLOYMENT_FILE_NAME }}"
+          git push
