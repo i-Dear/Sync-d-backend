@@ -2,7 +2,7 @@ name: Image build and push
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "feat/#5/jwt-header" ]
   pull_request:
     branches: [ "main" ]
 
