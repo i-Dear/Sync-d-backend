@@ -1,17 +1,31 @@
 spring:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: ${JWT_EXPIRATION}
+  cors:
+    allowed-origins:
+      - ${CORS_ALLOWED_DEV_ORIGINS}  # 허용할 출처 설정
+      - ${CORS_ALLOWED_PROD_ORIGINS}
+    allowed-methods: ${CORS_ALLOWED_METHODS} # 허용할 HTTP 메서드 설정
+    allowed-headers: ${CORS_ALLOWED_HEADERS}  # 허용할 헤더 설정
   data:
     mongodb:
-      database:
-      uri:
+      database: ${SPRING_DATA_MONGODB_DATABASE}
+      uri: ${SPRING_DATA_MONGODB_URI}
   security:
     auth:
-      liveBlockSecretKey:
+      liveBlockSecretKey: ${SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY}
     oauth2:
       client:
         registration:
           google:
-            client-id:
-            client-secret:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri: ${GOOGLE_REDIRECT_URI}
             scope:
               - email
               - profile
+        provider:
+          google:
+            token-uri: ${GOOGLE_TOKEN_URI}
+            user-info-uri: ${GOOGLE_USER_INFO_URI}
