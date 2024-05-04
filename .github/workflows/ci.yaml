@@ -44,6 +44,15 @@ jobs:
             SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY=${{ secrets.LIVEBLOCK_SECRET_KEY }}
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            GOOGLE_REDIRECT_URI=${{ secrets.GOOGLE_REDIRECT_URI }}
+            GOOGLE_TOKEN_URI=${{ secrets.GOOGLE_TOKEN_URI }}
+            GOOGLE_USER_INFO_URI=${{ secrets.GOOGLE_USER_INFO_URI }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_EXPIRATION=${{ secrets.JWT_EXPIRATION }}
+            CORS_ALLOWED_DEV_ORIGINS=${{ secrets.CORS_ALLOWED_DEV_ORIGINS }}
+            CORS_ALLOWED_PROD_ORIGINS=${{ secrets.CORS_ALLOWED_PROD_ORIGINS }}
+            CORS_ALLOWED_METHODS=${{ secrets.CORS_ALLOWED_METHODS }}
+            CORS_ALLOWED_HEADERS=${{ secrets.CORS_ALLOWED_HEADERS }}
 
       - name: Notify Slack
         uses: rtCamp/action-slack-notify@v2
