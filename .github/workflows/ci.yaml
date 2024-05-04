@@ -12,40 +12,40 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Create or Update application.yml
         run: |
-           echo "
-          spring:
-            jwt:
-              secret: \${{ secrets.JWT_SECRET }}
-              expiration: \${{ secrets.JWT_EXPIRATION }}
-            cors:
-              allowed-origins:
-                - \${{ secrets.CORS_ALLOWED_DEV_ORIGINS }}
-                - \${{ secrets.CORS_ALLOWED_PROD_ORIGINS }}
-              allowed-methods: \${{ secrets.CORS_ALLOWED_METHODS }}
-              allowed-headers: \${{ secrets.CORS_ALLOWED_HEADERS }}
-            data:
-              mongodb:
-                database: \${{ secrets.SPRING_DATA_MONGODB_DATABASE }}
-                uri: \${{ secrets.SPRING_DATA_MONGODB_URI }}
-            security:
-              auth:
-                liveBlockSecretKey: \${{ secrets.SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY }}
-              oauth2:
-                client:
-                  registration:
-                    google:
-                      client-id: \${{ secrets.GOOGLE_CLIENT_ID }}
-                      client-secret: \${{ secrets.GOOGLE_CLIENT_SECRET }}
-                      redirect-uri: \${{ secrets.GOOGLE_REDIRECT_URI }}
-                      scope:
-                        - email
-                        - profile
-                  provider:
-                    google:
-                      token-uri: \${{ secrets.GOOGLE_TOKEN_URI }}
-                      user-info-uri: \${{ secrets.GOOGLE_USER_INFO_URI }}" > src/main/resources/application.yml
+           echo "spring:
+                 jwt:
+                   secret: \${{ secrets.JWT_SECRET }}
+                   expiration: \${{ secrets.JWT_EXPIRATION }}
+                 cors:
+                   allowed-origins:
+                     - \${{ secrets.CORS_ALLOWED_DEV_ORIGINS }}
+                     - \${{ secrets.CORS_ALLOWED_PROD_ORIGINS }}
+                   allowed-methods: \${{ secrets.CORS_ALLOWED_METHODS }}
+                   allowed-headers: \${{ secrets.CORS_ALLOWED_HEADERS }}
+                 data:
+                   mongodb:
+                     database: \${{ secrets.SPRING_DATA_MONGODB_DATABASE }}
+                     uri: \${{ secrets.SPRING_DATA_MONGODB_URI }}
+                 security:
+                   auth:
+                     liveBlockSecretKey: \${{ secrets.SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY }}
+                   oauth2:
+                     client:
+                       registration:
+                         google:
+                           client-id: \${{ secrets.GOOGLE_CLIENT_ID }}
+                           client-secret: \${{ secrets.GOOGLE_CLIENT_SECRET }}
+                           redirect-uri: \${{ secrets.GOOGLE_REDIRECT_URI }}
+                           scope:
+                            - email
+                            - profile
+                       provider:
+                         google:
+                           token-uri: \${{ secrets.GOOGLE_TOKEN_URI }}
+                           user-info-uri: \${{ secrets.GOOGLE_USER_INFO_URI }}" > src/main/resources/application.yml
       - name: Checkout
         uses: actions/checkout@v2
       - name: Docker meta
