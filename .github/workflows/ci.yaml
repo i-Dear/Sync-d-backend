@@ -14,6 +14,8 @@ jobs:
         run: |
           echo \${{ secrets.ENCODED_APPLICATION_YML }} | base64 --decode > src/main/resources/application.yml
           ls -al
+          cat ./src/main/resources/application.yml
+          ls ./src/main/resources/
       - name: Checkout
         uses: actions/checkout@v2
       - name: Docker meta
