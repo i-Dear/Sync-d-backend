@@ -2,9 +2,7 @@ name: Image build and push
 
 on:
   push:
-    branches: [ "main", "feat/#5/jwt-header" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: [ "main" , "feat/#5/jwt-header"]
 
 jobs:
   build:
@@ -15,54 +13,57 @@ jobs:
 
       - name: Create or Update application.yml
         run: |
+          mkdir -p src/main/resources
           echo "spring:
-          jwt:
-            secret: ${{ secrets.JWT_SECRET }}
-            expiration: ${{ secrets.JWT_EXPIRATION }}
-          cors:
-            allowed-origins:
-              - ${{ secrets.CORS_ALLOWED_DEV_ORIGINS }}
-              - ${{ secrets.CORS_ALLOWED_PROD_ORIGINS }}
-            allowed-methods: ${{ secrets.CORS_ALLOWED_METHODS }}
-            allowed-headers: ${{ secrets.CORS_ALLOWED_HEADERS }}
-          data:
-            mongodb:
-              database: ${{ secrets.SPRING_DATA_MONGODB_DATABASE }}
-              uri: ${{ secrets.SPRING_DATA_MONGODB_URI }}
-          security:
-            auth:
-              liveBlockSecretKey: ${{ secrets.SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY }}
-            oauth2:
-              client:
-                registration:
-                  google:
-                    client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
-                    client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-                    redirect-uri: ${{ secrets.GOOGLE_REDIRECT_URI }}
-                    scope:
-                      - email
-                      - profile
-                provider:
-                  google:
-                    token-uri: ${{ secrets.GOOGLE_TOKEN_URI }}
-                    user-info-uri: ${{ secrets.GOOGLE_USER_INFO_URI }}" > src/main/resources/application.yml
-      - name: Checkout
-        uses: actions/checkout@v2
+            jwt:
+              secret: \${{ secrets.JWT_SECRET }}
+              expiration: \${{ secrets.JWT_EXPIRATION }}
+            cors:
+              allowed-origins:
+                - \${{ secrets.CORS_ALLOWED_DEV_ORIGINS }}
+                - \${{ secrets.CORS_ALLOWED_PROD_ORIGINS }}
+              allowed-methods: \${{ secrets.CORS_ALLOWED_METHODS }}
+              allowed-headers: \${{ secrets.CORS_ALLOWED_HEADERS }}
+            data:
+              mongodb:
+                database: \${{ secrets.SPRING_DATA_MONGODB_DATABASE }}
+                uri: \${{ secrets.SPRING_DATA_MONGODB_URI }}
+            security:
+              auth:
+                liveBlockSecretKey: \${{ secrets.SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY }}
+              oauth2:
+                client:
+                  registration:
+                    google:
+                      client-id: \${{ secrets.GOOGLE_CLIENT_ID }}
+                      client-secret: \${{ secrets.GOOGLE_CLIENT_SECRET }}
+                      redirect-uri: \${{ secrets.GOOGLE_REDIRECT_URI }}
+                      scope:
+                        - email
+                        - profile
+                  provider:
+                    google:
+                      token-uri: \${{ secrets.GOOGLE_TOKEN_URI }}
+                      user-info-uri: \${{ secrets.GOOGLE_USER_INFO_URI }}" > src/main/resources/application.yml
+
       - name: Docker meta
         id: docker_meta
         uses: crazy-max/ghaction-docker-meta@v1
         with:
-          images: ${{ secrets.DOCKERHUB_URL }}
+          images: \${{ secrets.DOCKERHUB_URL }}
           tag-semver: |
             {{version}}
             {{major}}.{{minor}}
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: \${{ secrets.DOCKERHUB_USERNAME }}
+          password: \${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
@@ -70,34 +71,33 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_URL }}:${{ github.sha }}
+          tags: \${{ secrets.DOCKERHUB_URL }}:\${{ github.sha }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-to: type=gha, mode=max
           build-args: |
-            SPRING_DATA_MONGODB_URI=${{ secrets.MONGODB_URI }}
-            SPRING_DATA_MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }}
-            SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY=${{ secrets.LIVEBLOCK_SECRET_KEY }}
-            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
-            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
-            GOOGLE_REDIRECT_URI=${{ secrets.GOOGLE_REDIRECT_URI }}
-            GOOGLE_TOKEN_URI=${{ secrets.GOOGLE_TOKEN_URI }}
-            GOOGLE_USER_INFO_URI=${{ secrets.GOOGLE_USER_INFO_URI }}
-            JWT_SECRET=${{ secrets.JWT_SECRET }}
-            JWT_EXPIRATION=${{ secrets.JWT_EXPIRATION }}
-            CORS_ALLOWED_DEV_ORIGINS=${{ secrets.CORS_ALLOWED_DEV_ORIGINS }}
-            CORS_ALLOWED_PROD_ORIGINS=${{ secrets.CORS_ALLOWED_PROD_ORIGINS }}
-            CORS_ALLOWED_METHODS=${{ secrets.CORS_ALLOWED_METHODS }}
-            CORS_ALLOWED_HEADERS=${{ secrets.CORS_ALLOWED_HEADERS }}
+            SPRING_DATA_MONGODB_URI=\${{ secrets.MONGODB_URI }}
+            SPRING_DATA_MONGODB_DATABASE=\${{ secrets.MONGODB_DATABASE }}
+            SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY=\${{ secrets.LIVEBLOCK_SECRET_KEY }}
+            GOOGLE_CLIENT_ID=\${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_SECRET=\${{ secrets.GOOGLE_CLIENT_SECRET }}
+            GOOGLE_REDIRECT_URI=\${{ secrets.GOOGLE_REDIRECT_URI }}
+            GOOGLE_TOKEN_URI=\${{ secrets.GOOGLE_TOKEN_URI }}
+            GOOGLE_USER_INFO_URI=\${{ secrets.GOOGLE_USER_INFO_URI }}
+            JWT_SECRET=\${{ secrets.JWT_SECRET }}
+            JWT_EXPIRATION=\${{ secrets.JWT_EXPIRATION }}
+            CORS_ALLOWED_DEV_ORIGINS=\${{ secrets.CORS_ALLOWED_DEV_ORIGINS }}
+            CORS_ALLOWED_PROD_ORIGINS=\${{ secrets.CORS_ALLOWED_PROD_ORIGINS }}
+            CORS_ALLOWED_METHODS=\${{ secrets.CORS_ALLOWED_METHODS }}
+            CORS_ALLOWED_HEADERS=\${{ secrets.CORS_ALLOWED_HEADERS }}
 
       - name: Notify Slack
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_CHANNEL: git_action
           SLACK_COLOR: '#000000'
-          SLACK_MESSAGE: ${{ steps.get_commit_message.outputs.message }}
+          SLACK_MESSAGE: \${{ steps.get_commit_message.outputs.message }}
           SLACK_TITLE: '이미지 빌드 결과'
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK: \${{ secrets.SLACK_WEBHOOK_URL }}
         if: success()
 
   deploy:
@@ -108,27 +108,28 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v2
         with:
-          repository: ${{ secrets.MANIFEST_REPO }}
-          ref: ${{ secrets.MANIFEST_REPO_BRANCH }}
-          token: ${{ secrets.MY_PAT }}
+          repository: \${{ secrets.MANIFEST_REPO }}
+          ref: \${{ secrets.MANIFEST_REPO_BRANCH }}
+          token: \${{ secrets.MY_PAT }}
+
       - name: Configure git
         run: |
-          git config user.email ${{ secrets.GIT_USER_EMAIL }} 
-          git config user.name ${{ secrets.GIT_USER_NAME }}
+          git config user.email \${{ secrets.GIT_USER_EMAIL }} 
+          git config user.name \${{ secrets.GIT_USER_NAME }}
+
       - name: Make changes
         run: |
-          cd ${{ secrets.MANIFEST_FOLDER_NAME }}
-          FILENAME=${{ secrets.DEPLOYMENT_FILE_NAME }}
-          IMAGE_TAG=${{ secrets.DOCKERHUB_URL }}:${{ github.sha }}
-          REPO_NAME=$(echo "${{ github.repository }}" | awk -F '/' '{print $2}')
-          
+          cd \${{ secrets.MANIFEST_FOLDER_NAME }}
+          FILENAME=\${{ secrets.DEPLOYMENT_FILE_NAME }}
+          IMAGE_TAG=\${{ secrets.DOCKERHUB_URL }}:\${{ github.sha }}
+          REPO_NAME=\$(echo "\${{ github.repository }}" | awk -F '/' '{print $2}')
           if [ ! -f "$FILENAME" ]; then
             echo "apiVersion: apps/v1
                   kind: Deployment
                   metadata:
                     name: $REPO_NAME
                   spec:
-                    replicas: ${{ secrets.POD_REPLICAS }}
+                    replicas: \${{ secrets.POD_REPLICAS }}
                     selector:
                       matchLabels:
                         app: $REPO_NAME
@@ -144,13 +145,13 @@ jobs:
                               - containerPort: 8080" > $FILENAME
           else
             yq eval -i ".spec.template.spec.containers[0].image = \"$IMAGE_TAG\"" $FILENAME
-            yq eval -i ".spec.replicas = ${{ secrets.POD_REPLICAS }}" $FILENAME
-          fi
+            yq eval -i ".spec.replicas = \${{ secrets.POD_REPLICAS }}" $FILENAME
+
       - name: Commit and Push
         run: |
-          SHORT_SHA="${{ github.sha }}"
-          SHORT_SHA="${SHORT_SHA:0:6}"
-          REPO_NAME="${{ github.repository }}"
+          SHORT_SHA="\${{ github.sha }}"
+          SHORT_SHA="\${SHORT_SHA:0:6}"
+          REPO_NAME="\${{ github.repository }}"
           git add .
-          git commit -m "update: $SHORT_SHA, $REPO_NAME to ${{ secrets.DEPLOYMENT_FILE_NAME }}"
+          git commit -m "update: $SHORT_SHA, $REPO_NAME to \${{ secrets.DEPLOYMENT_FILE_NAME }}"
           git push
