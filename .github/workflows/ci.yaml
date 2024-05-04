@@ -46,7 +46,7 @@ jobs:
                 provider:
                   google:
                     token-uri: ${{ secrets.GOOGLE_TOKEN_URI }}
-                    user-info-uri: ${{ secrets.GOOGLE_USER_INFO_URI }}" > src/main/resources/application.yml" > src/main/resources/application.yml
+                    user-info-uri: ${{ secrets.GOOGLE_USER_INFO_URI }}" > src/main/resources/application.yml"
       - name: Checkout
         uses: actions/checkout@v2
       - name: Docker meta
