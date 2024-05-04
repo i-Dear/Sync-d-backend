@@ -15,7 +15,6 @@ jobs:
 
       - name: Create or Update application.yml
         run: |
-          mkdir -p src/main/resources
           echo "spring:
           jwt:
             secret: ${{ secrets.JWT_SECRET }}
