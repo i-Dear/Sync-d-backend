@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Decode and create application.yml
         run: |
-          echo \${{ secrets.ENCODED_APPLICATION_YML }} | base64 --decode > src/main/resources/application.yml
+          echo \${{ secrets.ENCODED_APPLICATION_YML }} | base64 --decode > src/main/resources/application.yml #
       - name: Checkout
         uses: actions/checkout@v2
       - name: Docker meta
