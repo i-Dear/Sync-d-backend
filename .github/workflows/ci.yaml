@@ -54,15 +54,13 @@ jobs:
 
       - name: Notify Slack
         uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: git_action
+          SLACK_COLOR: '#000000'
+          SLACK_MESSAGE: ${{ steps.get_commit_message.outputs.message }}
+          SLACK_TITLE: '이미지 빌드 결과'
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
         if: success()
-        with:
-          status: ${{ job.status }}
-          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          channel: 'git_action'
-          username: 'GitHub Actions'
-          icon_url: 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png'
-          title: 'Deployment Status'
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took # default fields
 
   deploy:
     needs: build
