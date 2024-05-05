@@ -60,6 +60,7 @@ jobs:
                       token-uri: ${GOOGLE_TOKEN_URI}
                       user-info-uri: ${GOOGLE_USER_INFO_URI}
           EOF
+          cat ./src/main/resources/application.yml
         shell: bash
       - name: Checkout
         uses: actions/checkout@v2
