@@ -1,6 +1,6 @@
 spring:
   jwt:
-    secret: aS1kZWFyLXN5bmNkLXNlY3JldC1rZXktaS1kZWFyLXN5bmNkLXNlY3JldC1rZXk=
+    secret: ${JWT_SECRET}
     expiration: ${JWT_EXPIRATION}
   cors:
     allowed-origins:
