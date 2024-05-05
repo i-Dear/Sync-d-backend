@@ -8,14 +8,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Decode and create application.yml
-        run: |
-          ls -al ./src/main/resources/
-           mv ./src/main/resources/application.yml.sample ./src/main/resources/application.yml
-           ls -al
-           ls -al ./src/main/resources/
 
       - name: Checkout
         uses: actions/checkout@v2
