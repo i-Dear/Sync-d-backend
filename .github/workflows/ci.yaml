@@ -10,57 +10,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Decode and create application.yml
+      - name: Decode application.yml
         run: |
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
-          JWT_EXPIRATION=${{ secrets.JWT_EXPIRATION }}
-          CORS_ALLOWED_DEV_ORIGINS=${{ secrets.CORS_ALLOWED_DEV_ORIGINS }}
-          CORS_ALLOWED_PROD_ORIGINS=${{ secrets.CORS_ALLOWED_PROD_ORIGINS }}
-          CORS_ALLOWED_METHODS=${{ secrets.CORS_ALLOWED_METHODS }}
-          CORS_ALLOWED_HEADERS=${{ secrets.CORS_ALLOWED_HEADERS }}
-          SPRING_DATA_MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE}}
-          SPRING_DATA_MONGODB_URI=${{ secrets.MONGODB_URI}}
-          SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY=${{ secrets.LIVEBLOCK_SECRET_KEY }}
-          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
-          GOOGLE_REDIRECT_URI=${{ secrets.GOOGLE_REDIRECT_URI }}
-          GOOGLE_TOKEN_URI=${{ secrets.GOOGLE_TOKEN_URI }}
-          GOOGLE_USER_INFO_URI=${{ secrets.GOOGLE_USER_INFO_URI }}
-          
-          cat << EOF > ./src/main/resources/application.yml
-          spring:
-            jwt:
-              secret: ${JWT_SECRET}
-              expiration: ${JWT_EXPIRATION}
-            cors:
-              allowed-origins:
-                - ${CORS_ALLOWED_DEV_ORIGINS}
-                - ${CORS_ALLOWED_PROD_ORIGINS}
-              allowed-methods: ${CORS_ALLOWED_METHODS} # 허용할 HTTP 메서드 설정
-              allowed-headers: ${CORS_ALLOWED_HEADERS}  # 허용할 헤더 설정
-            data:
-              mongodb:
-                database: ${SPRING_DATA_MONGODB_DATABASE}
-                uri: ${SPRING_DATA_MONGODB_URI}
-            security:
-              auth:
-                liveBlockSecretKey: ${SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY}
-              oauth2:
-                client:
-                  registration:
-                    google:
-                      client-id: ${GOOGLE_CLIENT_ID}
-                      client-secret: ${GOOGLE_CLIENT_SECRET}
-                      redirect-uri: ${GOOGLE_REDIRECT_URI}
-                      scope:
-                        - email
-                        - profile
-                  provider:
-                    google:
-                      token-uri: ${GOOGLE_TOKEN_URI}
-                      user-info-uri: ${GOOGLE_USER_INFO_URI}
-          EOF
-          cat ./src/main/resources/application.yml
+          echo "${{ secrets.ENCODED_APPLICATION_YML }}" | base64 --decode > ./src/main/resources/application.yml
         shell: bash
       - name: Checkout
         uses: actions/checkout@v2
