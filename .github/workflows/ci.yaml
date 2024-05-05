@@ -13,6 +13,8 @@ jobs:
       - name: Decode and create application.yml
         run: |
           mv ./src/main/resources/application.yml.sample ./src/main/resources/application.yml
+          echo ${{ secrets.JWT_SECRET }}
+          echo ${{ secrets.JWT_EXPIRATION }}
       - name: Checkout
         uses: actions/checkout@v2
       - name: Docker meta
