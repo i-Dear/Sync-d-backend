@@ -4,7 +4,7 @@ spring:
     expiration: ${JWT_EXPIRATION}
   cors:
     allowed-origins:
-      - ${CORS_ALLOWED_DEV_ORIGINS}  # 허용할 출처 설정
+      - ${CORS_ALLOWED_DEV_ORIGINS}
       - ${CORS_ALLOWED_PROD_ORIGINS}
     allowed-methods: ${CORS_ALLOWED_METHODS} # 허용할 HTTP 메서드 설정
     allowed-headers: ${CORS_ALLOWED_HEADERS}  # 허용할 헤더 설정
