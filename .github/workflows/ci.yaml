@@ -13,6 +13,8 @@ jobs:
       - name: Decode application.yml
         run: |
           echo "${{ secrets.ENCODED_APPLICATION_YML }}" | base64 --decode > ./src/main/resources/application.yml
+          ls -al
+          cat ./src/main/resources/application.yml
         shell: bash
       - name: Checkout
         uses: actions/checkout@v2
