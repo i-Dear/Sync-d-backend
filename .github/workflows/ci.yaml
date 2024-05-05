@@ -50,7 +50,7 @@ jobs:
             GOOGLE_REDIRECT_URI=${{ secrets.GOOGLE_REDIRECT_URI }}
             GOOGLE_TOKEN_URI=${{ secrets.GOOGLE_TOKEN_URI }}
             GOOGLE_USER_INFO_URI=${{ secrets.GOOGLE_USER_INFO_URI }}
-            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_SECRET=${{ secrets.JWT_SECRET_TEST }}
             JWT_EXPIRATION=${{ secrets.JWT_EXPIRATION }}
             CORS_ALLOWED_DEV_ORIGINS=${{ secrets.CORS_ALLOWED_DEV_ORIGINS }}
             CORS_ALLOWED_PROD_ORIGINS=${{ secrets.CORS_ALLOWED_PROD_ORIGINS }}
