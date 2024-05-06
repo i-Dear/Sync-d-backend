@@ -16,7 +16,7 @@ public class AuthController {
     @GetMapping("/code/{registrationId}")
     public RedirectView googleLogin(@RequestParam String code, @PathVariable String registrationId, HttpServletResponse response) {
         TokenDto token = loginService.socialLogin(code, registrationId);
-        String redirectUrl = "https://syncd.i-dear.org#token=" + token.accessToken();
+        String redirectUrl = "https://syncd.i-dear.org/org/dashboard?token=" + token.accessToken();
         return new RedirectView(redirectUrl);
     }
 }
