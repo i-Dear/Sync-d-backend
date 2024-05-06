@@ -1,5 +1,6 @@
 package com.syncd.application.service;
 
+import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase;
 import com.syncd.application.port.in.GetUserInfoUsecase;
 import com.syncd.application.port.in.RegitsterUserUsecase;
 import com.syncd.application.port.out.autentication.AuthenticationPort;
@@ -24,6 +25,8 @@ public class UserService implements RegitsterUserUsecase, GetUserInfoUsecase {
 
     private final AuthenticationPort authenticationPort;
 
+    private final GetAllRoomsByUserIdUsecase getAllRoomsByUserIdUsecase;
+
     @Override
     public RegisterUserResponseDto registerUser(RegisterUserRequestDto registerDto){
         String userId = writeUserPort.createUser(registerDto.name(), registerDto.email(),"").value();
@@ -35,7 +38,9 @@ public class UserService implements RegitsterUserUsecase, GetUserInfoUsecase {
     public GetUserInfoResponseDto getUserInfo(String userId) {
         User user = readUserPort.findByUserId(userId);
 
-        return new GetUserInfoResponseDto(user.getName(), user.getProfileImg(), user.getEmail());
+        GetAllRoomsByUserIdUsecase.GetAllRoomsByUserIdResponseDto projects = getAllRoomsByUserIdUsecase.getAllRoomsByUserId(userId);
+
+        return new GetUserInfoResponseDto(userId, user.getName(), user.getProfileImg(), user.getEmail(), projects.projects());
 
     }
 

@@ -15,9 +15,13 @@ public interface GetUserInfoUsecase {
     // ======================================
 
     record GetUserInfoResponseDto(
+
+            String userId,
             String name,
             String img,
-            String email
+            String email,
+
+            List<GetAllRoomsByUserIdUsecase.ProjectForGetAllInfoAboutRoomsByUserIdResponseDto> projects
     ) {
     }
 
