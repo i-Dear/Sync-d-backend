@@ -1,49 +1,56 @@
-name: Image build and push
+name: Build and Deploy
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
+      - 'feat/#5/jwt-header'
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Docker meta
-        id: docker_meta
-        uses: crazy-max/ghaction-docker-meta@v1
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
         with:
-          images: ${{ secrets.DOCKERHUB_URL }}
-          tag-semver: |
-            {{version}}
-            {{major}}.{{minor}}
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Login to DockerHub
+          java-version: '17'
+          distribution: 'adopt'
+
+      - name: Decode application.yml
+        run: |
+          echo "${{ secrets.ENCODED_APPLICATION_YML }}" | base64 --decode > ./src/main/resources/application.yml
+
+      - name: Grant execute permission for Gradlew
+        run: chmod +x ./gradlew
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Build with Gradle
+        run: ./gradlew build --no-daemon
+
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKERHUB_URL }}:${{ github.sha }} .
+
+      - name: Log in to Docker Hub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./Dockerfile
-          platforms: linux/amd64
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_URL }}:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          build-args: |
-            SPRING_DATA_MONGODB_URI=${{ secrets.MONGODB_URI }}
-            SPRING_DATA_MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }}
-            SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY=${{ secrets.LIVEBLOCK_SECRET_KEY }}
-            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
-            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKERHUB_URL }}:${{ github.sha }}
 
       - name: Notify Slack
         uses: rtCamp/action-slack-notify@v2
