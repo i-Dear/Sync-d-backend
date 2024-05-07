@@ -25,18 +25,18 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
                 .map(ProjectMapper.INSTANCE::fromProjectEntity)
                 .collect(Collectors.toList());
 
-        Project project = findProjectByProjectId("6620eb32d8c4d81b573abc4d");
         return projects;
     }
 
     public Project findProjectByProjectId(String projectId){
-        ProjectEntity projectEntity = projectDao.findById(projectId).orElse(null);
-        return ProjectMapper.INSTANCE.fromProjectEntity(projectEntity);
+        return projectDao.findById(projectId)
+                .map(ProjectMapper.INSTANCE::fromProjectEntity)
+                .orElseThrow(() -> new ProjectNotFoundException("No project found with ID: " + projectId));
     }
 
     public String CreateProject(Project project) {
         if (project.getId() != null && projectDao.existsById(project.getId())) {
-            throw new ProjectAlreadyExistsException();
+            throw new ProjectAlreadyExistsException(project.getId());
         }
         ProjectEntity projectEntity = ProjectMapper.INSTANCE.toProjectEntity(project);
         ProjectEntity savedProjectEntity = projectDao.save(projectEntity);
@@ -44,12 +44,15 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
     }
 
     public void RemoveProject(String projectId){
+        if (!projectDao.existsById(projectId)) {
+            throw new ProjectNotFoundException(projectId);
+        }
         projectDao.deleteById(projectId);
     }
 
     public String UpdateProject(Project project) {
         if (project.getId() == null || !projectDao.existsById(project.getId())) {
-            throw new ProjectNotFoundException();
+            throw new ProjectNotFoundException(project.getId());
         }
         ProjectEntity projectEntity = ProjectMapper.INSTANCE.toProjectEntity(project);
         ProjectEntity savedEntity = projectDao.save(projectEntity);
