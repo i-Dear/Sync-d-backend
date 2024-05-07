@@ -1,13 +1,13 @@
 package com.syncd.adapter.out.persistence;
 
-import com.syncd.adapter.out.persistence.exception.ProjectAlreadyExistsException;
-import com.syncd.adapter.out.persistence.exception.ProjectNotFoundException;
 import com.syncd.adapter.out.persistence.repository.project.ProjectDao;
 import com.syncd.adapter.out.persistence.repository.project.ProjectEntity;
 import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
 import com.syncd.domain.project.Project;
 import com.syncd.domain.project.ProjectMapper;
+import com.syncd.exceptions.ProjectAlreadyExistsException;
+import com.syncd.exceptions.ProjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -36,7 +36,7 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
 
     public String CreateProject(Project project) {
         if (project.getId() != null && projectDao.existsById(project.getId())) {
-            throw new ProjectAlreadyExistsException(project.getId());
+            throw new ProjectAlreadyExistsException();
         }
         ProjectEntity projectEntity = ProjectMapper.INSTANCE.toProjectEntity(project);
         ProjectEntity savedProjectEntity = projectDao.save(projectEntity);
@@ -49,7 +49,7 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
 
     public String UpdateProject(Project project) {
         if (project.getId() == null || !projectDao.existsById(project.getId())) {
-            throw new ProjectNotFoundException(project.getId());
+            throw new ProjectNotFoundException();
         }
         ProjectEntity projectEntity = ProjectMapper.INSTANCE.toProjectEntity(project);
         ProjectEntity savedEntity = projectDao.save(projectEntity);
