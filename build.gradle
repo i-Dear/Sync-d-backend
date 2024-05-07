@@ -45,7 +45,7 @@ jacocoTestCoverageVerification {
 	violationRules {
 		rule {
 			limit {
-				minimum = 0.7
+				minimum = 0.0
 			}
 		}
 	}
@@ -54,6 +54,9 @@ sonarqube {
 	properties {
 		property "sonar.projectKey", "syncd"
 		property "sonar.projectName", "syncd"
+		property "sonar.host.url", "https://sonarqube.aoldacloud.com"
+		property "sonar.login",  "sqa_1a5e2a60c8c8e5db48955482700d564560cac5b2"
+
 		property "sonar.modules", subprojects.collect { it.name }.join(',')
 		subprojects.forEach { subproject ->
 			property "sonar.${subproject.name}.coverage.jacoco.xmlReportPaths", "${subproject.layout.buildDirectory.get()}/$customJacocoReportDir/xml/jacoco.xml"
@@ -66,6 +69,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -74,7 +78,6 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'

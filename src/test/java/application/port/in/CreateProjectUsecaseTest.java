@@ -9,7 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,4 +37,24 @@ public class CreateProjectUsecaseTest {
         assertEquals("proj123", result.projectId());
         verify(createProjectUsecase).createProject(userId, name, description, img, users);
     }
+
+    @Test
+    void testCreateProjectWhenServiceThrowsException() {
+        // Setup
+        String userId = "user123";
+        String name = "New Project";
+        String description = "Description of new project";
+        String img = "image/path.png";
+        List<String> users = Arrays.asList("user1", "user2");
+
+        // Mock exception throwing
+        when(createProjectUsecase.createProject(userId, name, description, img, users))
+                .thenThrow(new IllegalStateException("Database error"));
+
+        // Execution and Verification
+        assertThrows(IllegalStateException.class, () -> {
+            createProjectUsecase.createProject(userId, name, description, img, users);
+        });
+    }
+
 }
