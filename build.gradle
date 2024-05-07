@@ -83,6 +83,7 @@ dependencies {
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 	testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final' // if you are using mapstruct in test code
+	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
 	// jjwt
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
