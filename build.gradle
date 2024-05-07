@@ -54,8 +54,6 @@ sonarqube {
 	properties {
 		property "sonar.projectKey", "syncd"
 		property "sonar.projectName", "syncd"
-		property "sonar.host.url", "https://sonarqube.aoldacloud.com"
-		property "sonar.login",  "sqa_1a5e2a60c8c8e5db48955482700d564560cac5b2"
 
 		property "sonar.modules", subprojects.collect { it.name }.join(',')
 		subprojects.forEach { subproject ->
