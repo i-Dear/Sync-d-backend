@@ -28,6 +28,7 @@ public class UserPersistenceAdapter implements WriteUserPort, ReadUserPort {
         // UserEntity 생성
         UserEntity newUser = new UserEntity();
         newUser.setName(userName);
+        newUser.setId(email);
         newUser.setEmail(email);
         newUser.setProfileImg(img);
         newUser.setStatus(UserAccountStatus.AVAILABLE);

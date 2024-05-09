@@ -145,22 +145,36 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     }
 
     private void checkHost(Project project, String userId){
-        if(project.getHost()!=userId){
+        System.out.println(project.getHost());
+        System.out.println(userId);
+        if(!project.getHost().equals(userId)){
             throw new ProjectAlreadyExistsException();
         }
     }
 
     @Override
-    public InviteUserInProjectResponseDto inviteUserInProject(String userId, String projectId, List<String> userIds) {
+    public InviteUserInProjectResponseDto inviteUserInProject(String userId, String projectId, List<String> userEmails) {
         Project project = readProjectPort.findProjectByProjectId(projectId);
         checkHost(project,userId);
-        List<UserInProject> users = userIds.stream().map(el -> new UserInProject(el, Role.MEMBER))
+//        List<UserInProject> users = userEmails.stream().map(el -> new UserInProject(el, Role.MEMBER))
+//                .collect(Collectors.toList());
+
+        User host = readUserPort.findByUserId(userId);
+        List<UserInProject> users = userEmails.stream()
+                .map(email -> createUserInProjectWithRoleMember(email, host.getName(), project.getName()))
                 .collect(Collectors.toList());
 
         project.addUsers(users);
 
         writeProjectPort.UpdateProject(project);
         return new InviteUserInProjectResponseDto(projectId);
+    }
+    // 메소드 참조를 사용하여 UserInProject 객체를 생성하는 로직 분리
+    private UserInProject createUserInProjectWithRoleMember(String userEmail, String hostName, String projectName) {
+        // 여기에 사용자 생성 및 역할 부여 로직 추가
+        User user = readUserPort.findByEmail(userEmail);
+        sendMailPort.sendInviteMail(userEmail,hostName, user.getName(),projectName);
+        return new UserInProject(user.getId(), Role.MEMBER);
     }
 
     @Override
