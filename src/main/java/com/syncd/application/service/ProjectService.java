@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase,UpdateProjectUsecase,WithdrawUserInProjectUsecase,InviteUserInProjectUsecase,DeleteProjectUsecase {
+public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase, UpdateProjectUsecase, WithdrawUserInProjectUsecase, InviteUserInProjectUsecase, DeleteProjectUsecase {
     private final ReadProjectPort readProjectPort;
     private final WriteProjectPort writeProjectPort;
 
