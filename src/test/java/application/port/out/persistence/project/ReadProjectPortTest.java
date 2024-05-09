@@ -40,24 +40,25 @@ public class ReadProjectPortTest {
         projectEntity2.setName("Project Two");
         projectEntity2.setDescription("Description of Project Two");
         projectEntity2.setImg("image2.jpg");
-
-        lenient().when(projectDao.findByUsersUserId("user1")).thenReturn(Arrays.asList(projectEntity1, projectEntity2));
-        when(projectDao.findById("1")).thenReturn(Optional.of(projectEntity1));
     }
 
     @Test
     void testFindAllProjectsByUserId() {
         List<Project> projects = projectPersistenceAdapter.findAllProjectByUserId("user1");
+        when(projectDao.findById("1")).thenReturn(Optional.of(projectEntity1));
 
         assertNotNull(projects);
         assertFalse(projects.isEmpty());
         assertEquals(2, projects.size());
         assertEquals("Project One", projects.get(0).getName());
         assertEquals("Project Two", projects.get(1).getName());
+        lenient().when(projectDao.findByUsersUserId("user1")).thenReturn(Arrays.asList(projectEntity1, projectEntity2));
     }
 
     @Test
     void testFindProjectByProjectId() {
+        when(projectDao.findById("1")).thenReturn(Optional.of(projectEntity1));
+
         Project project = projectPersistenceAdapter.findProjectByProjectId("1");
 
         assertNotNull(project);

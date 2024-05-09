@@ -1,4 +1,4 @@
-package domain.user;
+package domain.project;
 
 import com.syncd.domain.project.Project;
 import com.syncd.domain.project.UserInProject;
