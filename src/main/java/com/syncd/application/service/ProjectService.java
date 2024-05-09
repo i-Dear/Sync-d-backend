@@ -11,10 +11,12 @@ import com.syncd.domain.user.User;
 import com.syncd.dto.UserRoleDto;
 import com.syncd.enums.Role;
 import com.syncd.exceptions.ProjectAlreadyExistsException;
+import com.syncd.exceptions.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,7 +34,19 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
 
     @Override
-    public CreateProjectResponseDto createProject(String userId,String name, String description, String img, List<String> userIds){
+    public CreateProjectResponseDto createProject(String userId, String name, String description, String img, List<String> userEmails){
+        List<String> userIds = new ArrayList<>();
+        for (String email : userEmails) {
+            User user = readUserPort.findByEmail(email);
+            System.out.println(user);
+            if (user != null) {
+                userIds.add(user.getId());
+            } else {
+                throw new UserNotFoundException("User not found for email: " + email);
+            }
+        }
+
+        System.out.println(userIds);
         List<UserInProject> users = Stream.concat(
                 Stream.of(new UserInProject(userId, Role.HOST)), // 호스트 사용자
                 userIds.stream().map(el -> new UserInProject(el, Role.MEMBER))

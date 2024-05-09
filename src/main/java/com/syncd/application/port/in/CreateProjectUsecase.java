@@ -11,7 +11,7 @@ public interface CreateProjectUsecase {
     // ======================================
     // METHOD
     // ======================================
-    CreateProjectResponseDto createProject(String userId, String name, String description, String img, List<String> users);
+    CreateProjectResponseDto createProject(String userId, String name, String description, String img, List<String> userEmails);
 
     // ======================================
     // DTO
@@ -24,7 +24,7 @@ public interface CreateProjectUsecase {
             String img,
             @NotNull(message = ValidationMessages.USERS_NOT_NULL)
             @Size(min = 1, message = ValidationMessages.USERS_SIZE)
-            List<String> users
+            List<String> userEmails
     ) {
     }
 
