@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase,UpdateProjectUsecase,WithdrawUserInProjectUsecase,InviteUserInProjectUsecase,DeleteProjectUsecase {
+public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase, UpdateProjectUsecase, WithdrawUserInProjectUsecase, InviteUserInProjectUsecase, DeleteProjectUsecase {
     private final ReadProjectPort readProjectPort;
     private final WriteProjectPort writeProjectPort;
 
@@ -72,6 +72,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     }
 
     private ProjectForGetAllInfoAboutRoomsByUserIdResponseDto convertProjectToDto(String userId, Project project) {
+        List<UserInProject> usersInProject = project.getUsers();
         // Find the user's role in this project
         Role userRole = project.getUsers().stream()
                 .filter(user -> userId.equals(user.getUserId()))
@@ -81,12 +82,23 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
         if (userRole == null) return null;  // If the user does not have a role in this project, skip it
 
+        // Get emails of users in the project
+        List<String> userEmails = usersInProject.stream()
+                .map(UserInProject::getUserId)
+                .map(readUserPort::findByUserId) // Find user by ID
+                .filter(user -> user != null) // Filter out non-existing users
+                .map(User::getEmail) // Get email of the user
+                .collect(Collectors.toList());
+
         // Create the DTO
         return new ProjectForGetAllInfoAboutRoomsByUserIdResponseDto(
                 project.getName(),
                 project.getId(),
                 project.getDescription(),
-                userRole
+                userRole,
+                userEmails,
+                0,
+                0
         );
     }
 
