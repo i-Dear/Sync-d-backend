@@ -4,6 +4,7 @@ import com.syncd.application.port.out.gmail.SendMailPort;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,6 +15,7 @@ public class GmailAdapter implements SendMailPort {
     private static final String senderEmail= "syncd.official@gmail.com";
     private static int number;  // 랜덤 인증 코드
     @Override
+    @Async
     public String sendInviteMail(String email, String hostName, String userName, String projectName) {
         MimeMessage message = createMail(email, hostName, userName, projectName);
         // 실제 메일 전송

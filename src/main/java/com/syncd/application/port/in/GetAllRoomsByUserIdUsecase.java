@@ -31,7 +31,7 @@ public interface GetAllRoomsByUserIdUsecase {
             Role role,
             List<String> userEmails,
             int progress,
-            int lastModifiedDate
+            String lastModifiedDate
     ){}
 
     record GetAllRoomsByUserIdRequestDto(

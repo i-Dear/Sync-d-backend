@@ -32,7 +32,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
     private final ReadUserPort readUserPort;
     private final LiveblocksPort liveblocksPort;
-
     private final SendMailPort sendMailPort;
 
 
@@ -52,7 +51,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         List<UserInProject> users = Stream.concat(
                 Stream.of(new UserInProject(hostId, Role.HOST)), // 호스트 사용자
                 userIds.stream().map(el -> new UserInProject(el, Role.MEMBER))
-
         ).collect(Collectors.toList());
 
         Project project = new Project(null);
@@ -107,7 +105,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
                 userRole,
                 userEmails,
                 0,
-                0
+                ""
         );
     }
 
