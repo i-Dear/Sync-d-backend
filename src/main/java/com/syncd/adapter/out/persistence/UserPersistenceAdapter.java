@@ -6,7 +6,6 @@ import com.syncd.application.port.out.persistence.user.ReadUserPort;
 import com.syncd.application.port.out.persistence.user.WriteUserPort;
 import com.syncd.domain.user.User;
 import com.syncd.domain.user.UserMapper;
-import com.syncd.dto.UserDto;
 import com.syncd.dto.UserId;
 import com.syncd.enums.UserAccountStatus;
 import com.syncd.exceptions.UserNotFoundException;
@@ -32,7 +31,6 @@ public class UserPersistenceAdapter implements WriteUserPort, ReadUserPort {
         newUser.setStatus(UserAccountStatus.AVAILABLE);
         // MongoDB에 저장
         UserEntity savedUser = userDao.save(newUser);
-
         // 저장된 User의 ID 반환
         return new UserId(savedUser.getId());
     }
@@ -43,21 +41,21 @@ public class UserPersistenceAdapter implements WriteUserPort, ReadUserPort {
     public User findByEmail(String email) {
         return userDao.findByEmail(email)
                 .map(UserMapper.INSTANCE::fromEntity)
-                .orElseThrow(() -> new UserNotFoundException("email " + email));
+                .orElseThrow(() -> new UserNotFoundException(email));
     }
 
     @Override
     public User findByUsername(String username) {
         return userDao.findByName(username)
                 .map(UserMapper.INSTANCE::fromEntity)
-                .orElseThrow(() -> new UserNotFoundException("username " + username));
+                .orElseThrow(() -> new UserNotFoundException( username));
     }
 
     @Override
     public User findByUserId(String userId) {
         return userDao.findById(userId)
                 .map(UserMapper.INSTANCE::fromEntity)
-                .orElseThrow(() -> new UserNotFoundException("ID " + userId));
+                .orElseThrow(() -> new UserNotFoundException(userId));
     }
 
     @Override

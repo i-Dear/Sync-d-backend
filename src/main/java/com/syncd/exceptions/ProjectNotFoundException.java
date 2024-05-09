@@ -7,7 +7,7 @@ public class ProjectNotFoundException extends RuntimeException {
         super(ExceptionType.PROJECT_NOT_FOUND.getMessage());
     }
     public ProjectNotFoundException(String projectId) {
-        super("Project with ID " + projectId + " not found: " + ExceptionType.PROJECT_NOT_FOUND.getMessage());
+        super("Project ID " + projectId + " : " + ExceptionType.PROJECT_NOT_FOUND.getMessage());
     }
 }
 

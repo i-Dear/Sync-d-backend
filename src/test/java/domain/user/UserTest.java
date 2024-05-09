@@ -33,7 +33,6 @@ public class UserTest {
         assertThat(user1.getProfileImg()).isEqualTo("profile.jpg");
     }
 
-
     @Test
     @DisplayName("동일한 User에 대한 동등성과 해시 일관성 테스트")
     public void testUserEquality() {
