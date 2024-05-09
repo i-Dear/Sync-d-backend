@@ -37,7 +37,7 @@ public class ProjectController {
     @PostMapping("/create")
     public CreateProjectResponseDto createProject(HttpServletRequest request, @Valid @RequestBody CreateProjectRequestDto requestDto){
         String token = jwtTokenProvider.resolveToken(request);
-        return createProjectUsecase.createProject(jwtTokenProvider.getUserIdFromToken(token),requestDto.name(),requestDto.description(),requestDto.img(), requestDto.users());
+        return createProjectUsecase.createProject(jwtTokenProvider.getUserIdFromToken(token),jwtTokenProvider.getUsernameFromToken(token), requestDto.name(), requestDto.description(), requestDto.img(), requestDto.userEmails());
     }
 
     @PostMapping("/invite")

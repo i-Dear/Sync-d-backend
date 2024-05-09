@@ -1,7 +1,6 @@
 package com.syncd.domain.project;
 
 import com.syncd.enums.Role;
-import lombok.Builder;
 import lombok.Data;
 
 @Data
