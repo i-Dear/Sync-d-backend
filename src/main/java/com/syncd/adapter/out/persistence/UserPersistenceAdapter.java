@@ -9,6 +9,7 @@ import com.syncd.domain.user.UserMapper;
 import com.syncd.dto.UserDto;
 import com.syncd.dto.UserId;
 import com.syncd.enums.UserAccountStatus;
+import com.syncd.exceptions.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -39,18 +40,24 @@ public class UserPersistenceAdapter implements WriteUserPort, ReadUserPort {
     // READ
     // ======================================
     @Override
-    public User findByEmail(String email){
-        return UserMapper.INSTANCE.fromEntity(userDao.findByEmail(email).get());
+    public User findByEmail(String email) {
+        return userDao.findByEmail(email)
+                .map(UserMapper.INSTANCE::fromEntity)
+                .orElseThrow(() -> new UserNotFoundException("email " + email));
     }
 
     @Override
     public User findByUsername(String username) {
-        return UserMapper.INSTANCE.fromEntity(userDao.findByName(username).get());
+        return userDao.findByName(username)
+                .map(UserMapper.INSTANCE::fromEntity)
+                .orElseThrow(() -> new UserNotFoundException("username " + username));
     }
 
     @Override
     public User findByUserId(String userId) {
-        return UserMapper.INSTANCE.fromEntity(userDao.findById(userId).get());
+        return userDao.findById(userId)
+                .map(UserMapper.INSTANCE::fromEntity)
+                .orElseThrow(() -> new UserNotFoundException("ID " + userId));
     }
 
     @Override

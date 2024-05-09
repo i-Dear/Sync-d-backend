@@ -1,13 +1,13 @@
 package com.syncd.adapter.out.persistence;
 
-import com.syncd.adapter.out.persistence.exception.ProjectAlreadyExistsException;
-import com.syncd.adapter.out.persistence.exception.ProjectNotFoundException;
 import com.syncd.adapter.out.persistence.repository.project.ProjectDao;
 import com.syncd.adapter.out.persistence.repository.project.ProjectEntity;
 import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
 import com.syncd.domain.project.Project;
 import com.syncd.domain.project.ProjectMapper;
+import com.syncd.exceptions.ProjectAlreadyExistsException;
+import com.syncd.exceptions.ProjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -25,13 +25,13 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
                 .map(ProjectMapper.INSTANCE::fromProjectEntity)
                 .collect(Collectors.toList());
 
-        Project project = findProjectByProjectId("6620eb32d8c4d81b573abc4d");
         return projects;
     }
 
     public Project findProjectByProjectId(String projectId){
-        ProjectEntity projectEntity = projectDao.findById(projectId).orElse(null);
-        return ProjectMapper.INSTANCE.fromProjectEntity(projectEntity);
+        return projectDao.findById(projectId)
+                .map(ProjectMapper.INSTANCE::fromProjectEntity)
+                .orElseThrow(() -> new ProjectNotFoundException("No project found with ID: " + projectId));
     }
 
     public String CreateProject(Project project) {
@@ -44,6 +44,9 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
     }
 
     public void RemoveProject(String projectId){
+        if (!projectDao.existsById(projectId)) {
+            throw new ProjectNotFoundException(projectId);
+        }
         projectDao.deleteById(projectId);
     }
 

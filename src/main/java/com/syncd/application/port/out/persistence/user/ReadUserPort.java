@@ -2,7 +2,6 @@ package com.syncd.application.port.out.persistence.user;
 
 
 import com.syncd.domain.user.User;
-import com.syncd.dto.UserDto;
 
 public interface ReadUserPort {
     User findByEmail(String email);
