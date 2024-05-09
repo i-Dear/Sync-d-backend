@@ -19,7 +19,7 @@ public class UserController {
 //    public RegisterUserResponseDto registerUser(@RequestBody RegisterUserRequestDto requestDto){
 //        return regitsterUserUsecase.registerUser(requestDto);
 //    }
-    @GetMapping("/userinfo")
+    @GetMapping("/info")
     public GetUserInfoUsecase.GetUserInfoResponseDto getUserInfo(HttpServletRequest request){
 
         String token = jwtTokenProvider.resolveToken(request);

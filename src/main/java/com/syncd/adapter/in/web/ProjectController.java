@@ -8,6 +8,7 @@ import com.syncd.application.port.in.WithdrawUserInProjectUsecase.*;
 import com.syncd.application.port.in.UpdateProjectUsecase.*;
 import com.syncd.application.port.in.DeleteProjectUsecase.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,31 +35,31 @@ public class ProjectController {
 
 
     @PostMapping("/create")
-    public CreateProjectResponseDto createProject(HttpServletRequest request,@RequestBody CreateProjectRequestDto requestDto){
+    public CreateProjectResponseDto createProject(HttpServletRequest request, @Valid @RequestBody CreateProjectRequestDto requestDto){
         String token = jwtTokenProvider.resolveToken(request);
         return createProjectUsecase.createProject(jwtTokenProvider.getUserIdFromToken(token),requestDto.name(),requestDto.description(),requestDto.img(), requestDto.users());
     }
 
     @PostMapping("/invite")
-    public InviteUserInProjectResponseDto inviteUser(HttpServletRequest request,@RequestBody InviteUserInProjectRequestDto requestDto){
+    public InviteUserInProjectResponseDto inviteUser(HttpServletRequest request, @Valid @RequestBody InviteUserInProjectRequestDto requestDto){
         String token = jwtTokenProvider.resolveToken(request);
         return inviteUserInProjectUsecase.inviteUserInProject(jwtTokenProvider.getUserIdFromToken(token),requestDto.projectId(),requestDto.users());
     }
 
     @PostMapping("/withdraw")
-    public WithdrawUserInProjectResponseDto withdrawUser(HttpServletRequest request,@RequestBody WithdrawUserInProjectRequestDto requestDto){
+    public WithdrawUserInProjectResponseDto withdrawUser(HttpServletRequest request,@Valid @RequestBody WithdrawUserInProjectRequestDto requestDto){
         String token = jwtTokenProvider.resolveToken(request);
         return withdrawUserInProjectUsecase.withdrawUserInProject(jwtTokenProvider.getUserIdFromToken(token), requestDto.projectId(),requestDto.users());
     }
 
     @PostMapping("/delete")
-    public DeleteProjectResponseDto deleteProject(HttpServletRequest request,@RequestBody DeleteProjectRequestDto requestDto){
+    public DeleteProjectResponseDto deleteProject(HttpServletRequest request,@Valid @RequestBody DeleteProjectRequestDto requestDto){
         String token = jwtTokenProvider.resolveToken(request);
         return deleteProjectUsecase.deleteProject(jwtTokenProvider.getUserIdFromToken(token),requestDto.projectId());
     }
 
     @PostMapping("/update")
-    public UpdateProjectResponseDto updateProject(HttpServletRequest request,@RequestBody UpdateProjectRequestDto requestDto){
+    public UpdateProjectResponseDto updateProject(HttpServletRequest request, @Valid @RequestBody UpdateProjectRequestDto requestDto){
         String token = jwtTokenProvider.resolveToken(request);
         return updateProjectUsecase.updateProject(jwtTokenProvider.getUserIdFromToken(token),requestDto.projectId(),requestDto.projectName(),requestDto.description(),requestDto.image());
     }

@@ -7,6 +7,7 @@ import com.syncd.application.port.in.GetRoomAuthTokenUsecase;
 import com.syncd.application.port.in.GetRoomAuthTokenUsecase.*;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class RoomController {
     }
 
     @PostMapping("/test-auth")
-    public GetRoomAuthTokenResponseDto getRoomAuthToken(@RequestBody GetRoomAuthTokenUsecase.TestDto getRoomAuthToken,HttpServletRequest request){
+    public GetRoomAuthTokenResponseDto getRoomAuthToken(@RequestBody @Valid GetRoomAuthTokenUsecase.TestDto getRoomAuthToken, HttpServletRequest request){
         String token = jwtTokenProvider.resolveToken(request);
         return getRoomAuthTokenUsecase.Test(jwtTokenProvider.getUserIdFromToken(token),getRoomAuthToken.roomId());
 

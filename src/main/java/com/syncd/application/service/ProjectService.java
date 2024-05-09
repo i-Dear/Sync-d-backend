@@ -1,27 +1,20 @@
 package com.syncd.application.service;
 
-import com.syncd.adapter.out.liveblock.LiveblockApiAdapter;
-import com.syncd.adapter.out.persistence.exception.ProjectAlreadyExistsException;
 import com.syncd.application.port.in.*;
-import com.syncd.application.port.out.autentication.AuthenticationPort;
 import com.syncd.application.port.out.liveblock.LiveblocksPort;
 import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
-import com.syncd.application.port.out.persistence.user.WriteUserPort;
 import com.syncd.domain.project.Project;
-import com.syncd.domain.project.ProjectMapper;
 import com.syncd.domain.project.UserInProject;
 import com.syncd.domain.user.User;
-import com.syncd.dto.TokenDto;
-import com.syncd.dto.UserForTokenDto;
 import com.syncd.dto.UserRoleDto;
 import com.syncd.enums.Role;
+import com.syncd.exceptions.ProjectAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,12 +23,11 @@ import java.util.stream.Stream;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase,UpdateProjectUsecase,WithdrawUserInProjectUsecase,InviteUserInProjectUsecase,DeleteProjectUsecase {
+public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase, UpdateProjectUsecase, WithdrawUserInProjectUsecase, InviteUserInProjectUsecase, DeleteProjectUsecase {
     private final ReadProjectPort readProjectPort;
     private final WriteProjectPort writeProjectPort;
 
     private final ReadUserPort readUserPort;
-
     private final LiveblocksPort liveblocksPort;
 
 
@@ -81,12 +73,25 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
         if (userRole == null) return null;  // If the user does not have a role in this project, skip it
 
+        List<UserInProject> usersInProject = project.getUsers();
+
+        // Get emails of users in the project
+        List<String> userEmails = usersInProject.stream()
+                .map(UserInProject::getUserId)
+                .map(readUserPort::findByUserId) // Find user by ID
+                .filter(user -> user != null) // Filter out non-existing users
+                .map(User::getEmail) // Get email of the user
+                .collect(Collectors.toList());
+
         // Create the DTO
         return new ProjectForGetAllInfoAboutRoomsByUserIdResponseDto(
                 project.getName(),
                 project.getId(),
                 project.getDescription(),
-                userRole
+                userRole,
+                userEmails,
+                0,
+                0
         );
     }
 
@@ -127,7 +132,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
     private void checkHost(Project project, String userId){
         if(project.getHost()!=userId){
-            throw new ProjectAlreadyExistsException(project.getId());
+            throw new ProjectAlreadyExistsException();
         }
     }
 

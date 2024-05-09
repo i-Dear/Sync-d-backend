@@ -1,6 +1,9 @@
 package com.syncd.application.port.in;
 
+import com.syncd.domain.project.UserInProject;
 import com.syncd.enums.Role;
+import com.syncd.exceptions.validation.ValidationMessages;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
@@ -8,7 +11,10 @@ public interface GetAllRoomsByUserIdUsecase {
     // ======================================
     // METHOD
     // ======================================
-    GetAllRoomsByUserIdResponseDto getAllRoomsByUserId(String userId);
+    GetAllRoomsByUserIdResponseDto getAllRoomsByUserId(
+            @NotBlank(message = ValidationMessages.USER_ID_NOT_BLANK)
+            String userId
+    );
 
     // ======================================
     // DTO
@@ -22,9 +28,14 @@ public interface GetAllRoomsByUserIdUsecase {
             String name,
             String id,
             String description,
-            Role role
+            Role role,
+            List<String> userEmails,
+            int progress,
+            int lastModifiedDate
     ){}
 
-    record GetAllRoomsByUserIdRequestDto(String userId){}
+    record GetAllRoomsByUserIdRequestDto(
+            @NotBlank(message = ValidationMessages.USER_ID_NOT_BLANK)
+            String userId){}
 
     }
