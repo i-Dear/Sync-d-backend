@@ -27,7 +27,10 @@ public interface GetAllRoomsByUserIdUsecase {
             String name,
             String id,
             String description,
-            Role role
+            Role role,
+            List<String> userEmails,
+            int progress,
+            int lastModifiedDate
     ){}
 
     record GetAllRoomsByUserIdRequestDto(
