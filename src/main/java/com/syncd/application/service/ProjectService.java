@@ -1,6 +1,7 @@
 package com.syncd.application.service;
 
 import com.syncd.application.port.in.*;
+import com.syncd.application.port.out.gmail.SendMailPort;
 import com.syncd.application.port.out.liveblock.LiveblocksPort;
 import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
@@ -32,13 +33,15 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     private final ReadUserPort readUserPort;
     private final LiveblocksPort liveblocksPort;
 
+    private final SendMailPort sendMailPort;
+
 
     @Override
-    public CreateProjectResponseDto createProject(String userId, String name, String description, String img, List<String> userEmails){
+    public CreateProjectResponseDto createProject(String hostId,String hostName, String projectName, String description, String img, List<String> userEmails){
         List<String> userIds = new ArrayList<>();
         for (String email : userEmails) {
             User user = readUserPort.findByEmail(email);
-            System.out.println(user);
+            sendMailPort.sendInviteMail(email,hostName, user.getName(),projectName);
             if (user != null) {
                 userIds.add(user.getId());
             } else {
@@ -46,18 +49,17 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
             }
         }
 
-        System.out.println(userIds);
         List<UserInProject> users = Stream.concat(
-                Stream.of(new UserInProject(userId, Role.HOST)), // 호스트 사용자
+                Stream.of(new UserInProject(hostId, Role.HOST)), // 호스트 사용자
                 userIds.stream().map(el -> new UserInProject(el, Role.MEMBER))
+
         ).collect(Collectors.toList());
 
         Project project = new Project(null);
         project.setImg(img);
-        project.setName(name);
+        project.setName(projectName);
         project.setDescription(description);
         project.setUsers(users);
-
         return new CreateProjectResponseDto(writeProjectPort.CreateProject(project));
     }
 
