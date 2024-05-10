@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +26,7 @@ import java.util.stream.Stream;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase, UpdateProjectUsecase, WithdrawUserInProjectUsecase, InviteUserInProjectUsecase, DeleteProjectUsecase {
+public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase, UpdateProjectUsecase, WithdrawUserInProjectUsecase, InviteUserInProjectUsecase, DeleteProjectUsecase, SyncProjectUsecase {
     private final ReadProjectPort readProjectPort;
     private final WriteProjectPort writeProjectPort;
 
@@ -57,6 +58,8 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         project.setName(name);
         project.setDescription(description);
         project.setUsers(users);
+        project.setProgress(0);
+        project.setLastModifiedDate(LocalDateTime.now().toString());
 
         return new CreateProjectResponseDto(writeProjectPort.CreateProject(project));
     }
@@ -105,7 +108,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
                 userRole,
                 userEmails,
                 0,
-                0
+                null
         );
     }
 
@@ -186,5 +189,15 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
         writeProjectPort.UpdateProject(project);
         return new WithdrawUserInProjectResponseDto(projectId);
+    }
+
+    @Override
+    public SyncProjectResponseDto syncProject(String userId, String projectId, int projectStage) {
+        Project project = readProjectPort.findProjectByProjectId(projectId);
+        writeProjectPort.AddProgress(projectId, projectStage);
+        writeProjectPort.updateLastModifiedDate(projectId);
+        System.out.println(projectStage);
+
+        return new SyncProjectResponseDto(projectId);
     }
 }

@@ -11,6 +11,7 @@ import com.syncd.exceptions.ProjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,4 +60,20 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
         return savedEntity.getId();
     }
 
+    @Override
+    public String AddProgress(String projectId, int projectStage) {
+        ProjectEntity projectEntity = projectDao.findById(projectId)
+                .orElseThrow(() -> new ProjectNotFoundException("No project found with ID: " + projectId));
+        projectEntity.setProgress(projectStage);
+        ProjectEntity savedEntity = projectDao.save(projectEntity);
+        return savedEntity.getId();
+    }
+
+    public String updateLastModifiedDate(String projectId) {
+        ProjectEntity projectEntity = projectDao.findById(projectId)
+                .orElseThrow(() -> new ProjectNotFoundException("No project found with ID: " + projectId));
+        projectEntity.setLastModifiedDate(LocalDateTime.now().toString()); // 현재 시간 설정
+        ProjectEntity savedEntity = projectDao.save(projectEntity);
+        return savedEntity.getId();
+    }
 }
