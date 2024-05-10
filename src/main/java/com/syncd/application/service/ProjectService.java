@@ -107,8 +107,8 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
                 project.getDescription(),
                 userRole,
                 userEmails,
-                0,
-                null
+                project.getProgress(),
+                project.getLastModifiedDate()
         );
     }
 
