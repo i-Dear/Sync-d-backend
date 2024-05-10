@@ -24,8 +24,8 @@ public class GetAllRoomsByUserIdUsecaseTest {
     void testGetAllRoomByUserId() {
         String userId = "user1";
         List<ProjectForGetAllInfoAboutRoomsByUserIdResponseDto> projects = List.of(
-                new ProjectForGetAllInfoAboutRoomsByUserIdResponseDto("Project A", "1", "Description A", Role.HOST, List.of("userA@example.com"), 90, 20200101),
-                new ProjectForGetAllInfoAboutRoomsByUserIdResponseDto("Project B", "2", "Description B", Role.MEMBER, List.of("userB@example.com"), 75, 20200201)
+                new ProjectForGetAllInfoAboutRoomsByUserIdResponseDto("Project A", "1", "Description A", Role.HOST, List.of("userA@example.com"), 90, "20200101"),
+                new ProjectForGetAllInfoAboutRoomsByUserIdResponseDto("Project B", "2", "Description B", Role.MEMBER, List.of("userB@example.com"), 75, "20200201")
         );
 
         GetAllRoomsByUserIdResponseDto expectedResponse = new GetAllRoomsByUserIdResponseDto(userId, projects);
