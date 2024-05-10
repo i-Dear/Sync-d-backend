@@ -39,7 +39,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         List<String> userIds = new ArrayList<>();
         for (String email : userEmails) {
             User user = readUserPort.findByEmail(email);
-            System.out.println(user);
             if (user != null) {
                 userIds.add(user.getId());
             } else {
@@ -47,7 +46,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
             }
         }
 
-        System.out.println(userIds);
         List<UserInProject> users = Stream.concat(
                 Stream.of(new UserInProject(userId, Role.HOST)), // 호스트 사용자
                 userIds.stream().map(el -> new UserInProject(el, Role.MEMBER))
@@ -196,7 +194,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         Project project = readProjectPort.findProjectByProjectId(projectId);
         writeProjectPort.AddProgress(projectId, projectStage);
         writeProjectPort.updateLastModifiedDate(projectId);
-        System.out.println(projectStage);
 
         return new SyncProjectResponseDto(projectId);
     }
