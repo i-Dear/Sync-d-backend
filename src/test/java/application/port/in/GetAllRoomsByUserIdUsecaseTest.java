@@ -20,12 +20,12 @@ public class GetAllRoomsByUserIdUsecaseTest {
     private GetAllRoomsByUserIdUsecase getAllRoomsByUserIdUsecase;
 
     @Test
-    @DisplayName("")
-    void testGetAllRoomByUserId(){
+    @DisplayName("Test fetching all rooms by user ID")
+    void testGetAllRoomByUserId() {
         String userId = "user1";
         List<ProjectForGetAllInfoAboutRoomsByUserIdResponseDto> projects = List.of(
-                new ProjectForGetAllInfoAboutRoomsByUserIdResponseDto("Project A", "1", "Description A", Role.HOST),
-                new ProjectForGetAllInfoAboutRoomsByUserIdResponseDto("Project B", "2", "Description B", Role.MEMBER)
+                new ProjectForGetAllInfoAboutRoomsByUserIdResponseDto("Project A", "1", "Description A", Role.HOST, List.of("userA@example.com"), 90, "20200101"),
+                new ProjectForGetAllInfoAboutRoomsByUserIdResponseDto("Project B", "2", "Description B", Role.MEMBER, List.of("userB@example.com"), 75, "20200201")
         );
 
         GetAllRoomsByUserIdResponseDto expectedResponse = new GetAllRoomsByUserIdResponseDto(userId, projects);
@@ -34,8 +34,7 @@ public class GetAllRoomsByUserIdUsecaseTest {
 
         GetAllRoomsByUserIdResponseDto actualResponse = getAllRoomsByUserIdUsecase.getAllRoomsByUserId(userId);
 
-        assertEquals(expectedResponse.userId(), actualResponse.userId(), "User ID가 다릅니다.");
-        assertIterableEquals(expectedResponse.projects(), actualResponse.projects(), "Project 이름이 다릅니다.");
-
+        assertEquals(expectedResponse.userId(), actualResponse.userId(), "User ID does not match.");
+        assertIterableEquals(expectedResponse.projects(), actualResponse.projects(), "Projects do not match.");
     }
 }

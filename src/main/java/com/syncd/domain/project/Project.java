@@ -1,9 +1,6 @@
 package com.syncd.domain.project;
 
-
-import com.syncd.domain.user.User;
 import com.syncd.enums.Role;
-import lombok.Builder;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -17,6 +14,8 @@ public class Project {
     private  String description;
     private  String img;
     private  List<UserInProject> users;
+    private int progress;
+    private String lastModifiedDate;
 
     public void addUsers(List<UserInProject> newUsers) {
         if (this.users == null) {
