@@ -61,7 +61,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         project.setUsers(users);
         project.setProgress(0);
         project.setLastModifiedDate(LocalDateTime.now().toString());
-      
+
         return new CreateProjectResponseDto(writeProjectPort.CreateProject(project));
     }
 
@@ -108,8 +108,8 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
                 project.getDescription(),
                 userRole,
                 userEmails,
-                0,
-                ""
+                project.getProgress(),
+                project.getLastModifiedDate()
         );
     }
 
