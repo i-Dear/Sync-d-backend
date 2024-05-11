@@ -142,8 +142,8 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
     @Override
     public DeleteProjectResponseDto deleteProject(String userId, String projectId) {
-        Project project = readProjectPort.findProjectByProjectId(projectId);
-        checkHost(project, userId);
+//        Project project = readProjectPort.findProjectByProjectId(projectId);
+//        checkHost(project, userId);
         writeProjectPort.RemoveProject(projectId);
         return new DeleteProjectResponseDto(projectId);
     }
