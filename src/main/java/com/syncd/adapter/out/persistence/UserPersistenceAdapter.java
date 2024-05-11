@@ -14,6 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class UserPersistenceAdapter implements WriteUserPort, ReadUserPort {
@@ -80,6 +84,14 @@ public class UserPersistenceAdapter implements WriteUserPort, ReadUserPort {
     @Override
     public boolean isExistUser(String email) {
         return !userDao.findByEmail(email).isEmpty();
+    }
+
+    @Override
+    public List<User> usersFromEmails(List<String> emails) {
+        return emails.stream().map(el->(
+                findByEmail(el)
+                ))
+                .toList();
     }
 
 }

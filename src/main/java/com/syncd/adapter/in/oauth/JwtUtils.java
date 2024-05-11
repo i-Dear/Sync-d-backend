@@ -3,6 +3,7 @@ package com.syncd.adapter.in.oauth;
 import com.syncd.domain.user.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
@@ -10,6 +11,7 @@ import java.util.*;
 
 public class JwtUtils {
 
+    @Value("${spring.jwt.secret}")
     private static String accessTokenSecretKey;
 
     public static String generateToken(User user) {
