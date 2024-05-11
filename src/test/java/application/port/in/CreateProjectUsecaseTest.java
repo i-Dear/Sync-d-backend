@@ -22,38 +22,40 @@ public class CreateProjectUsecaseTest {
     void testCreateProject() {
         // Setup
         String userId = "user123";
+        String userName = "user";
         String name = "New Project";
         String description = "Description of new project";
         String img = "image/path.png";
         List<String> users = Arrays.asList("user1", "user2");
 
         CreateProjectResponseDto response = new CreateProjectResponseDto("proj123");
-        when(createProjectUsecase.createProject(userId, name, description, img, users)).thenReturn(response);
+        when(createProjectUsecase.createProject(userId,userName, name, description, img, users)).thenReturn(response);
 
         // Execution
-        CreateProjectResponseDto result = createProjectUsecase.createProject(userId, name, description, img, users);
+        CreateProjectResponseDto result = createProjectUsecase.createProject(userId,userName, name, description, img, users);
 
         // Verification
         assertEquals("proj123", result.projectId());
-        verify(createProjectUsecase).createProject(userId, name, description, img, users);
+        verify(createProjectUsecase).createProject(userId,userName, name, description, img, users);
     }
 
     @Test
     void testCreateProjectWhenServiceThrowsException() {
         // Setup
         String userId = "user123";
+        String userName = "user";
         String name = "New Project";
         String description = "Description of new project";
         String img = "image/path.png";
         List<String> users = Arrays.asList("user1", "user2");
 
         // Mock exception throwing
-        when(createProjectUsecase.createProject(userId, name, description, img, users))
+        when(createProjectUsecase.createProject(userId,userName, name, description, img, users))
                 .thenThrow(new IllegalStateException("Database error"));
 
         // Execution and Verification
         assertThrows(IllegalStateException.class, () -> {
-            createProjectUsecase.createProject(userId, name, description, img, users);
+            createProjectUsecase.createProject(userId,userName, name, description, img, users);
         });
     }
 
