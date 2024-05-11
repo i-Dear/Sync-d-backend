@@ -62,7 +62,7 @@ public class LiveblockApiAdapter implements LiveblocksPort {
               "permissions": %s
             }
             """, userId, name, img, permissionsJson);
-        System.out.print(data);
+        System.out.println(data);
         return data;
     }
 
@@ -91,7 +91,6 @@ public class LiveblockApiAdapter implements LiveblocksPort {
 
         HttpEntity<String> request = new HttpEntity<>(jsonBody, headers);
 
-        System.out.print(request);
         return restTemplate.postForObject(url, request, LiveblocksTokenDto.class);
     }
 

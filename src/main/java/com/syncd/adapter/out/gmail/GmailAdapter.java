@@ -1,11 +1,14 @@
 package com.syncd.adapter.out.gmail;
 
 import com.syncd.application.port.out.gmail.SendMailPort;
+import com.syncd.domain.user.User;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -21,7 +24,16 @@ public class GmailAdapter implements SendMailPort {
         // 실제 메일 전송
         javaMailSender.send(message);
 
-        return "good";
+        return projectName;
+    }
+
+    @Override
+    public String sendIviteMailBatch(String hostName, String projectName, List<User> users) {
+        users.forEach(user -> {
+            MimeMessage message = createMail(user.getEmail(), hostName, user.getName(), projectName);
+            javaMailSender.send(message);
+        });
+        return projectName;
     }
 
     // 메일 양식 작성
