@@ -211,7 +211,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         Project project = readProjectPort.findProjectByProjectId(projectId);
         writeProjectPort.AddProgress(projectId, projectStage);
         writeProjectPort.updateLastModifiedDate(projectId);
-        System.out.println(projectStage);
 
         return new SyncProjectResponseDto(projectId);
     }
