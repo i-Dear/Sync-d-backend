@@ -11,6 +11,7 @@ import com.syncd.dto.UserId;
 import com.syncd.enums.UserAccountStatus;
 import com.syncd.exceptions.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -27,6 +28,7 @@ public class UserPersistenceAdapter implements WriteUserPort, ReadUserPort {
         // UserEntity 생성
         UserEntity newUser = new UserEntity();
         newUser.setName(userName);
+        newUser.setId(email);
         newUser.setEmail(email);
         newUser.setProfileImg(img);
         newUser.setStatus(UserAccountStatus.AVAILABLE);
@@ -36,6 +38,21 @@ public class UserPersistenceAdapter implements WriteUserPort, ReadUserPort {
         // 저장된 User의 ID 반환
         return new UserId(savedUser.getId());
     }
+
+    @Override
+    public UserId updateUser(User user) {
+        // 사용자 정보를 가져옴
+        UserEntity existingUser = userDao.findById(user.getId()).orElse(null);
+
+        existingUser.setName(user.getName());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setProfileImg(user.getProfileImg());
+
+        UserEntity updatedUser = userDao.save(existingUser);
+
+        return new UserId(updatedUser.getId());
+    }
+
     // ======================================
     // READ
     // ======================================

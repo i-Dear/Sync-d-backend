@@ -11,7 +11,7 @@ public interface CreateProjectUsecase {
     // ======================================
     // METHOD
     // ======================================
-    CreateProjectResponseDto createProject(String userId, String name, String description, String img, List<String> userEmails);
+    CreateProjectResponseDto createProject(String hostId,String hostName, String name, String description, String img, List<String> userEmails);
 
     // ======================================
     // DTO
