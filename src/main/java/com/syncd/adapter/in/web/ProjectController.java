@@ -7,14 +7,11 @@ import com.syncd.application.port.in.InviteUserInProjectUsecase.*;
 import com.syncd.application.port.in.WithdrawUserInProjectUsecase.*;
 import com.syncd.application.port.in.UpdateProjectUsecase.*;
 import com.syncd.application.port.in.DeleteProjectUsecase.*;
+import com.syncd.application.port.in.SyncProjectUsecase.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,13 +28,15 @@ public class ProjectController {
 
     private final UpdateProjectUsecase updateProjectUsecase;
 
+    private final SyncProjectUsecase syncProjectUsecase;
+
     private final JwtTokenProvider jwtTokenProvider;
 
 
     @PostMapping("/create")
     public CreateProjectResponseDto createProject(HttpServletRequest request, @Valid @RequestBody CreateProjectRequestDto requestDto){
         String token = jwtTokenProvider.resolveToken(request);
-        return createProjectUsecase.createProject(jwtTokenProvider.getUserIdFromToken(token),requestDto.name(),requestDto.description(),requestDto.img(), requestDto.users());
+        return createProjectUsecase.createProject(jwtTokenProvider.getUserIdFromToken(token),jwtTokenProvider.getUsernameFromToken(token), requestDto.name(), requestDto.description(), requestDto.img(), requestDto.userEmails());
     }
 
     @PostMapping("/invite")
@@ -63,4 +62,11 @@ public class ProjectController {
         String token = jwtTokenProvider.resolveToken(request);
         return updateProjectUsecase.updateProject(jwtTokenProvider.getUserIdFromToken(token),requestDto.projectId(),requestDto.projectName(),requestDto.description(),requestDto.image());
     }
+
+    @PostMapping("/sync")
+    public SyncProjectResponseDto syncProject(HttpServletRequest request, @Valid @RequestBody SyncProjectRequestDto requestDto){
+        String token = jwtTokenProvider.resolveToken(request);
+        return syncProjectUsecase.syncProject(jwtTokenProvider.getUserIdFromToken(token), requestDto.projectId(), requestDto.projectStage());
+    }
+
 }
