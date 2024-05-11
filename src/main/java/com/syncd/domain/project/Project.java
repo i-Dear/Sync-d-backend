@@ -43,6 +43,17 @@ public class Project {
                 .orElse(null);  // Returns null if no host is found
     }
 
+    public void updateProjectInfo(String projectName, String description, String img){
+        this.img = img;
+        this.name = projectName;
+        this.description = description;
+    }
+
+    public void syncProject(int progress){
+        this.progress = progress;
+        this.lastModifiedDate = LocalDateTime.now().toString();
+    }
+
     public Project(String projectName, String description, String img, List<UserInProject> users){
         this.img = img;
         this.users = users;

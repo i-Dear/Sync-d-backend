@@ -50,6 +50,93 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         return responseDto;
     }
 
+
+    @Override
+    public GetRoomAuthTokenResponseDto getRoomAuthToken(String userId) {
+        List<Project> projects = readProjectPort.findAllProjectByUserId(userId);
+        List<String> projectIds = projects.stream()
+                .map(Project::getId)
+                .collect(Collectors.toList());
+        User userInfo = readUserPort.findByUserId(userId);
+        return new GetRoomAuthTokenResponseDto(liveblocksPort.GetRoomAuthToken(userId, userInfo.getName(),userInfo.getProfileImg(),projectIds).token());
+    }
+
+    @Override
+    public GetRoomAuthTokenResponseDto Test(String uesrId, String roomId) {
+        return new GetRoomAuthTokenResponseDto(liveblocksPort.Test(uesrId,roomId).token());
+    }
+
+    @Override
+    public DeleteProjectResponseDto deleteProject(String userId, String projectId) {
+        writeProjectPort.RemoveProject(projectId);
+        return new DeleteProjectResponseDto(projectId);
+    }
+
+
+    @Override
+    public InviteUserInProjectResponseDto inviteUserInProject(String userId, String projectId, List<String> userEmails) {
+        Project project = readProjectPort.findProjectByProjectId(projectId);
+        checkHost(project,userId);
+
+        User host = readUserPort.findByUserId(userId);
+        List<UserInProject> users = userEmails.stream()
+                .map(email -> createUserInProjectWithRoleMember(email, host.getName(), project.getName()))
+                .collect(Collectors.toList());
+
+        project.addUsers(users);
+
+        writeProjectPort.UpdateProject(project);
+        return new InviteUserInProjectResponseDto(projectId);
+    }
+
+    @Override
+    public UpdateProjectResponseDto updateProject(String userId,  String projectId,
+                                                  String projectName,
+                                                  String description,
+                                                  String image ){
+        Project project = readProjectPort.findProjectByProjectId(projectId);
+        checkHost(project,userId);
+
+        project.updateProjectInfo(projectName,description,image);
+        writeProjectPort.UpdateProject(project);
+        return new UpdateProjectResponseDto(projectId);
+    }
+
+    @Override
+    public WithdrawUserInProjectResponseDto withdrawUserInProject(String userId, String projectId, List<String> userIds) {
+        Project project = readProjectPort.findProjectByProjectId(projectId);
+        checkHost(project,userId);
+        project.withdrawUsers(userIds);
+
+        writeProjectPort.UpdateProject(project);
+        return new WithdrawUserInProjectResponseDto(projectId);
+    }
+
+    @Override
+    public SyncProjectResponseDto syncProject(String userId, String projectId, int projectStage) {
+        Project project = readProjectPort.findProjectByProjectId(projectId);
+        writeProjectPort.AddProgress(projectId, projectStage);
+        writeProjectPort.updateLastModifiedDate(projectId);
+
+        return new SyncProjectResponseDto(projectId);
+    }
+
+    // ======================================
+    // private methods (implements)
+    // ======================================
+
+    private void checkHost(Project project, String userId){
+        if(!project.getHost().equals(userId)){
+            throw new ProjectAlreadyExistsException();
+        }
+    }
+    private UserInProject createUserInProjectWithRoleMember(String userEmail, String hostName, String projectName) {
+        // 여기에 사용자 생성 및 역할 부여 로직 추가
+        User user = readUserPort.findByEmail(userEmail);
+        sendMailPort.sendInviteMail(userEmail,hostName, user.getName(),projectName);
+        return new UserInProject(user.getId(), Role.MEMBER);
+    }
+
     private GetAllRoomsByUserIdResponseDto mapProjectsToResponse(String userId, List<Project> projects) {
         List<ProjectForGetAllInfoAboutRoomsByUserIdResponseDto> projectDtos = projects.stream()
                 .map(project -> convertProjectToDto(userId, project))
@@ -92,88 +179,4 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         return new UserRoleDto(projectId,user.getUserId(),user.getRole());
     }
 
-    @Override
-    public GetRoomAuthTokenResponseDto getRoomAuthToken(String userId) {
-        List<Project> projects = readProjectPort.findAllProjectByUserId(userId);
-        List<String> projectIds = projects.stream()
-                .map(Project::getId)
-                .collect(Collectors.toList());
-        User userInfo = readUserPort.findByUserId(userId);
-        return new GetRoomAuthTokenResponseDto(liveblocksPort.GetRoomAuthToken(userId, userInfo.getName(),userInfo.getProfileImg(),projectIds).token());
-    }
-
-    @Override
-    public GetRoomAuthTokenResponseDto Test(String uesrId, String roomId) {
-        return new GetRoomAuthTokenResponseDto(liveblocksPort.Test(uesrId,roomId).token());
-    }
-
-    @Override
-    public DeleteProjectResponseDto deleteProject(String userId, String projectId) {
-        writeProjectPort.RemoveProject(projectId);
-        return new DeleteProjectResponseDto(projectId);
-    }
-
-    private void checkHost(Project project, String userId){
-        System.out.println(project.getHost());
-        System.out.println(userId);
-        if(!project.getHost().equals(userId)){
-            throw new ProjectAlreadyExistsException();
-        }
-    }
-
-    @Override
-    public InviteUserInProjectResponseDto inviteUserInProject(String userId, String projectId, List<String> userEmails) {
-        Project project = readProjectPort.findProjectByProjectId(projectId);
-        checkHost(project,userId);
-
-        User host = readUserPort.findByUserId(userId);
-        List<UserInProject> users = userEmails.stream()
-                .map(email -> createUserInProjectWithRoleMember(email, host.getName(), project.getName()))
-                .collect(Collectors.toList());
-
-        project.addUsers(users);
-
-        writeProjectPort.UpdateProject(project);
-        return new InviteUserInProjectResponseDto(projectId);
-    }
-    private UserInProject createUserInProjectWithRoleMember(String userEmail, String hostName, String projectName) {
-        // 여기에 사용자 생성 및 역할 부여 로직 추가
-        User user = readUserPort.findByEmail(userEmail);
-        sendMailPort.sendInviteMail(userEmail,hostName, user.getName(),projectName);
-        return new UserInProject(user.getId(), Role.MEMBER);
-    }
-
-    @Override
-    public UpdateProjectResponseDto updateProject(String userId,  String projectId,
-                                                  String projectName,
-                                                  String description,
-                                                  String image ){
-        Project project = readProjectPort.findProjectByProjectId(projectId);
-        checkHost(project,userId);
-        project.setName(projectName);
-        project.setDescription(description);
-        project.setImg(image);
-
-        writeProjectPort.UpdateProject(project);
-        return new UpdateProjectResponseDto(projectId);
-    }
-
-    @Override
-    public WithdrawUserInProjectResponseDto withdrawUserInProject(String userId, String projectId, List<String> userIds) {
-        Project project = readProjectPort.findProjectByProjectId(projectId);
-        checkHost(project,userId);
-        project.withdrawUsers(userIds);
-
-        writeProjectPort.UpdateProject(project);
-        return new WithdrawUserInProjectResponseDto(projectId);
-    }
-
-    @Override
-    public SyncProjectResponseDto syncProject(String userId, String projectId, int projectStage) {
-        Project project = readProjectPort.findProjectByProjectId(projectId);
-        writeProjectPort.AddProgress(projectId, projectStage);
-        writeProjectPort.updateLastModifiedDate(projectId);
-
-        return new SyncProjectResponseDto(projectId);
-    }
 }
