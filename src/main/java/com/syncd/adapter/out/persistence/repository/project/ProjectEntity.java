@@ -16,6 +16,8 @@ public class ProjectEntity {
     private String description;
     private String img;
     private List<UserInProjectEntity> users;
+    private int progress;
+    private String lastModifiedDate;
 
     @Data
     public static class UserInProjectEntity {
