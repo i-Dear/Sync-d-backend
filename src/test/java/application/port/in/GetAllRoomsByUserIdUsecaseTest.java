@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase;
 import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase.*;
 import com.syncd.enums.Role;
+import com.syncd.exceptions.UserNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,5 +37,18 @@ public class GetAllRoomsByUserIdUsecaseTest {
 
         assertEquals(expectedResponse.userId(), actualResponse.userId(), "User ID does not match.");
         assertIterableEquals(expectedResponse.projects(), actualResponse.projects(), "Projects do not match.");
+    }
+
+
+    @Test
+    @DisplayName("Test fetching all rooms by user ID when user not found")
+    void testGetAllRoomByUserIdWhenUserNotFound() {
+        String invalidUserId = "userNotFound";
+
+        when(getAllRoomsByUserIdUsecase.getAllRoomsByUserId(invalidUserId))
+                .thenThrow(new UserNotFoundException("User not found with ID: " + invalidUserId));
+
+        assertThrows(UserNotFoundException.class, () -> getAllRoomsByUserIdUsecase.getAllRoomsByUserId(invalidUserId),
+                "Fetching rooms for a non-existent user should throw UserNotFoundException.");
     }
 }

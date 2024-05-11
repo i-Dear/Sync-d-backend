@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.syncd.application.port.in.InviteUserInProjectUsecase;
 import com.syncd.application.port.in.InviteUserInProjectUsecase.*;
 
+import com.syncd.exceptions.ProjectNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +22,6 @@ public class InviteUserInProjectUsecaseTest {
     private InviteUserInProjectUsecase inviteUserInProjectUsecase;
 
     @Test
-    @DisplayName("")
     void testInviteUserInProject(){
         String userId = "user123";
         String projectId = "project456";
@@ -32,5 +32,18 @@ public class InviteUserInProjectUsecaseTest {
         InviteUserInProjectResponseDto actualResponse = inviteUserInProjectUsecase.inviteUserInProject(userId, projectId, users);
         assertEquals(expectedResponse.projectId(), actualResponse.projectId());
         verify(inviteUserInProjectUsecase).inviteUserInProject(userId, projectId, users);
+    }
+    @Test
+    @DisplayName("Project 초대 시 존재하지 않는 Project에 대한 예외 처리")
+    void testInviteUserInNonExistingProject() {
+        String userId = "user123";
+        String projectId = "nonExistingProject";
+        List<String> users = List.of("user234", "user345");
+
+        when(inviteUserInProjectUsecase.inviteUserInProject(userId, projectId, users))
+                .thenThrow(new ProjectNotFoundException("Project not found"));
+
+        assertThrows(ProjectNotFoundException.class, () -> inviteUserInProjectUsecase.inviteUserInProject(userId, projectId, users),
+                "Should throw ProjectNotFoundException if the project does not exist");
     }
 }

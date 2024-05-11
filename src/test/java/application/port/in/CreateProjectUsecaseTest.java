@@ -4,6 +4,8 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 import com.syncd.application.port.in.CreateProjectUsecase;
 import com.syncd.application.port.in.CreateProjectUsecase.*;
+import com.syncd.exceptions.ProjectAlreadyExistsException;
+import com.syncd.exceptions.UserNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -41,7 +43,6 @@ public class CreateProjectUsecaseTest {
 
     @Test
     void testCreateProjectWhenServiceThrowsException() {
-        // Setup
         String userId = "user123";
         String userName = "user";
         String name = "New Project";
@@ -49,14 +50,49 @@ public class CreateProjectUsecaseTest {
         String img = "image/path.png";
         List<String> users = Arrays.asList("user1", "user2");
 
-        // Mock exception throwing
         when(createProjectUsecase.createProject(userId,userName, name, description, img, users))
                 .thenThrow(new IllegalStateException("Database error"));
 
-        // Execution and Verification
         assertThrows(IllegalStateException.class, () -> {
             createProjectUsecase.createProject(userId,userName, name, description, img, users);
         });
     }
 
+    @Test
+    void testCreateProjectWhenUserNotFoundException() {
+        // Setup
+        String userId = "user123";
+        String userName = "user";
+        String name = "New Project";
+        String description = "Description of new project";
+        String img = "image/path.png";
+        List<String> users = Arrays.asList("invalidUser@example.com");
+
+        when(createProjectUsecase.createProject(userId, userName, name, description, img, users))
+                .thenThrow(new UserNotFoundException("User not found for email: invalidUser@example.com"));
+
+        // Execution and Verification
+        assertThrows(UserNotFoundException.class, () -> {
+            createProjectUsecase.createProject(userId, userName, name, description, img, users);
+        });
+    }
+
+    @Test
+    void testCreateProjectWhenProjectAlreadyExistsException() {
+        // Setup
+        String userId = "user123";
+        String userName = "user";
+        String name = "Existing Project";
+        String description = "This project already exists";
+        String img = "image/path.png";
+        List<String> users = Arrays.asList("user1@example.com");
+
+        when(createProjectUsecase.createProject(userId, userName, name, description, img, users))
+                .thenThrow(new ProjectAlreadyExistsException("Project already exists with name: Existing Project"));
+
+        // Execution and Verification
+        assertThrows(ProjectAlreadyExistsException.class, () -> {
+            createProjectUsecase.createProject(userId, userName, name, description, img, users);
+        });
+    }
 }

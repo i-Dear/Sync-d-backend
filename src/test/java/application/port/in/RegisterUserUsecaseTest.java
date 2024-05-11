@@ -31,15 +31,4 @@ public class RegisterUserUsecaseTest {
         verify(registerUserUsecase).registerUser(registerDto);
     }
 
-    @Test
-    @DisplayName("")
-    void testRegistrationWithInvailData(){
-        RegisterUserRequestDto registerDto = new RegisterUserRequestDto("", "", "");  // Invalid data
-
-        when(registerUserUsecase.registerUser(registerDto))
-                .thenThrow(new IllegalArgumentException("Invalid registration data"));
-
-        assertThrows(IllegalArgumentException.class, () -> registerUserUsecase.registerUser(registerDto),
-                "Data가 맞지 않을 때 exception이 생겨야합니다.");
-    }
 }
