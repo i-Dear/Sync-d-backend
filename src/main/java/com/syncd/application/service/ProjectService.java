@@ -30,7 +30,6 @@ import java.util.stream.Stream;
 public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase, UpdateProjectUsecase, WithdrawUserInProjectUsecase, InviteUserInProjectUsecase, DeleteProjectUsecase, SyncProjectUsecase {
     private final ReadProjectPort readProjectPort;
     private final WriteProjectPort writeProjectPort;
-
     private final ReadUserPort readUserPort;
     private final LiveblocksPort liveblocksPort;
     private final SendMailPort sendMailPort;
@@ -38,30 +37,9 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
     @Override
     public CreateProjectResponseDto createProject(String hostId,String hostName, String projectName, String description, String img, List<String> userEmails){
-        List<String> userIds = new ArrayList<>();
-        for (String email : userEmails) {
-            User user = readUserPort.findByEmail(email);
-            sendMailPort.sendInviteMail(email,hostName, user.getName(),projectName);
-            if (user != null) {
-                userIds.add(user.getId());
-            } else {
-                throw new UserNotFoundException("User not found for email: " + email);
-            }
-        }
-
-        List<UserInProject> users = Stream.concat(
-                Stream.of(new UserInProject(hostId, Role.HOST)), // 호스트 사용자
-                userIds.stream().map(el -> new UserInProject(el, Role.MEMBER))
-        ).collect(Collectors.toList());
-
-        Project project = new Project(null);
-        project.setImg(img);
-        project.setName(projectName);
-        project.setDescription(description);
-        project.setUsers(users);
-        project.setProgress(0);
-        project.setLastModifiedDate(LocalDateTime.now().toString());
-
+        List<User> users = readUserPort.usersFromEmails(userEmails);
+        sendMailPort.sendIviteMailBatch(hostName,projectName,users);
+        Project project = new Project(projectName,description,img,hostId, users);
         return new CreateProjectResponseDto(writeProjectPort.CreateProject(project));
     }
 
@@ -82,26 +60,23 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     }
 
     private ProjectForGetAllInfoAboutRoomsByUserIdResponseDto convertProjectToDto(String userId, Project project) {
-        // Find the user's role in this project
         Role userRole = project.getUsers().stream()
                 .filter(user -> userId.equals(user.getUserId()))
                 .map(UserInProject::getRole)
                 .findFirst()
-                .orElse(null);  // Default to null if the user is not found
+                .orElse(null);
 
-        if (userRole == null) return null;  // If the user does not have a role in this project, skip it
+        if (userRole == null) return null;
 
         List<UserInProject> usersInProject = project.getUsers();
 
-        // Get emails of users in the project
         List<String> userEmails = usersInProject.stream()
                 .map(UserInProject::getUserId)
-                .map(readUserPort::findByUserId) // Find user by ID
-                .filter(user -> user != null) // Filter out non-existing users
-                .map(User::getEmail) // Get email of the user
+                .map(readUserPort::findByUserId)
+                .filter(user -> user != null)
+                .map(User::getEmail)
                 .collect(Collectors.toList());
 
-        // Create the DTO
         return new ProjectForGetAllInfoAboutRoomsByUserIdResponseDto(
                 project.getName(),
                 project.getId(),
@@ -112,14 +87,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
                 project.getLastModifiedDate()
         );
     }
-
-//    private List<UserRoleDto> mapUserRoleDto(String userId, List<Project> projects) {
-//        return projects.stream()
-//                .flatMap(project -> project.getUsers().stream()
-//                        .map(user -> convertUserToUserRoleDto(project.getId(), user)))
-//                .filter(userRoleDto -> userId.equals(userRoleDto.projectId()))
-//                .collect(Collectors.toList());
-//    }
 
     private UserRoleDto convertUserToUserRoleDto(String projectId, UserInProject user) {
         return new UserRoleDto(projectId,user.getUserId(),user.getRole());
@@ -142,8 +109,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
     @Override
     public DeleteProjectResponseDto deleteProject(String userId, String projectId) {
-//        Project project = readProjectPort.findProjectByProjectId(projectId);
-//        checkHost(project, userId);
         writeProjectPort.RemoveProject(projectId);
         return new DeleteProjectResponseDto(projectId);
     }
@@ -160,8 +125,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     public InviteUserInProjectResponseDto inviteUserInProject(String userId, String projectId, List<String> userEmails) {
         Project project = readProjectPort.findProjectByProjectId(projectId);
         checkHost(project,userId);
-//        List<UserInProject> users = userEmails.stream().map(el -> new UserInProject(el, Role.MEMBER))
-//                .collect(Collectors.toList());
 
         User host = readUserPort.findByUserId(userId);
         List<UserInProject> users = userEmails.stream()
@@ -173,7 +136,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         writeProjectPort.UpdateProject(project);
         return new InviteUserInProjectResponseDto(projectId);
     }
-    // 메소드 참조를 사용하여 UserInProject 객체를 생성하는 로직 분리
     private UserInProject createUserInProjectWithRoleMember(String userEmail, String hostName, String projectName) {
         // 여기에 사용자 생성 및 역할 부여 로직 추가
         User user = readUserPort.findByEmail(userEmail);
