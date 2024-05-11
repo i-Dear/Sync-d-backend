@@ -19,8 +19,6 @@ public interface ProjectMapper {
     Project fromProjectEntity(ProjectEntity projectEntity);
 
     ProjectEntity toProjectEntity(Project project);
-
-
 }
 
 

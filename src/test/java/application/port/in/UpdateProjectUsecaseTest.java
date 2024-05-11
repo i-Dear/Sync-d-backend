@@ -16,16 +16,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class UpdateProjectUsecaseTest {
     @Mock
     private UpdateProjectUsecase updateProjectUsecase;
-
+    String userId = "user123";
+    String projectName = "공감대";
+    String description = "이해하지마 공감해";
+    String image = "updated_image.jpg";
     @Test
     @DisplayName("ProjectID를 기반으로 Project 정보 업데이트 테스트")
     void testUpdateProject(){
-        String userId = "user123";
-        String projectId = "project456";
-        String projectName = "공감대";
-        String description = "이해하지마 공감해";
-        String image = "updated_image.jpg";
 
+        String projectId = "project456";
         UpdateProjectResponseDto expectedResponse = new UpdateProjectResponseDto(projectId);
         when(updateProjectUsecase.updateProject(userId, projectId, projectName, description, image))
                 .thenReturn(expectedResponse);
@@ -38,11 +37,7 @@ public class UpdateProjectUsecaseTest {
     @Test
     @DisplayName("Project 업데이트 시 존재하지 않는 프로젝트에 대한 예외 처리")
     void testUpdateNonExistingProject() {
-        String userId = "user123";
         String projectId = "nonExistingProject";
-        String projectName = "공감대";
-        String description = "이해하지마 공감해";
-        String image = "updated_image.jpg";
 
         when(updateProjectUsecase.updateProject(userId, projectId, projectName, description, image))
                 .thenThrow(new ProjectNotFoundException("Project not found with ID: " + projectId));

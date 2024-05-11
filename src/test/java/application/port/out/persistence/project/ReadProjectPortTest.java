@@ -1,6 +1,7 @@
 package com.syncd.application.port.out.persistence.project;
 
 import com.syncd.domain.project.Project;
+import com.syncd.domain.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -8,6 +9,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,11 +20,12 @@ public class ReadProjectPortTest {
     private Project project;
     @BeforeEach
     void setUp(){
-        project = new Project("1");
-        project.setName("Project Name");
-        project.setImg("img");
-        project.setUsers(null);
-        project.setDescription("Description");
+        String hostId = "hostUserId";
+        List<User> emptyUserList = new ArrayList<>();
+        project = new Project("Project Name", "Description", "img", hostId, emptyUserList);
+        project.setId("1");
+        project.setLastModifiedDate(LocalDateTime.now().toString());
+        project.setProgress(0);
     }
 
     @Test

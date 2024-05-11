@@ -20,12 +20,11 @@ import java.util.List;
 public class InviteUserInProjectUsecaseTest {
     @Mock
     private InviteUserInProjectUsecase inviteUserInProjectUsecase;
-
+    String userId = "user123";
+    List<String> users = List.of("user234", "user345");
     @Test
     void testInviteUserInProject(){
-        String userId = "user123";
         String projectId = "project456";
-        List<String> users = List.of("user234","user345");
         InviteUserInProjectResponseDto expectedResponse = new InviteUserInProjectResponseDto(projectId);
         when(inviteUserInProjectUsecase.inviteUserInProject(userId, projectId, users)).thenReturn(expectedResponse);
 
@@ -36,9 +35,7 @@ public class InviteUserInProjectUsecaseTest {
     @Test
     @DisplayName("Project 초대 시 존재하지 않는 Project에 대한 예외 처리")
     void testInviteUserInNonExistingProject() {
-        String userId = "user123";
         String projectId = "nonExistingProject";
-        List<String> users = List.of("user234", "user345");
 
         when(inviteUserInProjectUsecase.inviteUserInProject(userId, projectId, users))
                 .thenThrow(new ProjectNotFoundException("Project not found"));

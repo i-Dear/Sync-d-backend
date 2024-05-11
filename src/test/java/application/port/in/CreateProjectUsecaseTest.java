@@ -20,16 +20,16 @@ import java.util.List;
 public class CreateProjectUsecaseTest {
     @Mock
     private CreateProjectUsecase createProjectUsecase;
+
+    String userId = "user123";
+    String userName = "user";
+    String name = "New Project";
+    String description = "Description of new project";
+    String img = "image/path.png";
+
     @Test
     void testCreateProject() {
-        // Setup
-        String userId = "user123";
-        String userName = "user";
-        String name = "New Project";
-        String description = "Description of new project";
-        String img = "image/path.png";
         List<String> users = Arrays.asList("user1", "user2");
-
         CreateProjectResponseDto response = new CreateProjectResponseDto("proj123");
         when(createProjectUsecase.createProject(userId,userName, name, description, img, users)).thenReturn(response);
 
@@ -43,13 +43,7 @@ public class CreateProjectUsecaseTest {
 
     @Test
     void testCreateProjectWhenServiceThrowsException() {
-        String userId = "user123";
-        String userName = "user";
-        String name = "New Project";
-        String description = "Description of new project";
-        String img = "image/path.png";
         List<String> users = Arrays.asList("user1", "user2");
-
         when(createProjectUsecase.createProject(userId,userName, name, description, img, users))
                 .thenThrow(new IllegalStateException("Database error"));
 
@@ -60,12 +54,6 @@ public class CreateProjectUsecaseTest {
 
     @Test
     void testCreateProjectWhenUserNotFoundException() {
-        // Setup
-        String userId = "user123";
-        String userName = "user";
-        String name = "New Project";
-        String description = "Description of new project";
-        String img = "image/path.png";
         List<String> users = Arrays.asList("invalidUser@example.com");
 
         when(createProjectUsecase.createProject(userId, userName, name, description, img, users))
@@ -79,12 +67,6 @@ public class CreateProjectUsecaseTest {
 
     @Test
     void testCreateProjectWhenProjectAlreadyExistsException() {
-        // Setup
-        String userId = "user123";
-        String userName = "user";
-        String name = "Existing Project";
-        String description = "This project already exists";
-        String img = "image/path.png";
         List<String> users = Arrays.asList("user1@example.com");
 
         when(createProjectUsecase.createProject(userId, userName, name, description, img, users))

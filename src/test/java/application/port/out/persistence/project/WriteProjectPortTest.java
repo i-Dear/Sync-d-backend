@@ -2,9 +2,13 @@ package application.port.out.persistence.project;
 
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
 import com.syncd.domain.project.Project;
+import com.syncd.domain.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -13,11 +17,10 @@ public class WriteProjectPortTest {
     private Project project;
     @BeforeEach
     void setUp(){
-        project = new Project("1");
-        project.setName("Project Name");
-        project.setImg("img");
-        project.setUsers(null);
-        project.setDescription("Description");
+        String hostId = "hostUserId";
+        List<User> userList = new ArrayList<>();
+        project = new Project("Project Name", "Description", "img", hostId, userList);
+        project.setId("1");
     }
     @Test
     void createProjectShouldReturnNonNullId() {

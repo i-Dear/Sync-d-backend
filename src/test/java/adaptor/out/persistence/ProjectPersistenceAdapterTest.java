@@ -7,6 +7,7 @@ import com.syncd.adapter.out.persistence.ProjectPersistenceAdapter;
 import com.syncd.adapter.out.persistence.repository.project.ProjectDao;
 import com.syncd.adapter.out.persistence.repository.project.ProjectEntity;
 import com.syncd.domain.project.Project;
+import com.syncd.domain.user.User;
 import com.syncd.exceptions.ProjectAlreadyExistsException;
 import com.syncd.exceptions.ProjectNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -33,9 +35,12 @@ public class ProjectPersistenceAdapterTest {
 
     @BeforeEach
     void setup() {
-        project = new Project("1");
         projectEntity = new ProjectEntity();
         projectEntity.setId("1");
+        String hostId = "hostId";
+        List<User> userList = new ArrayList<>();
+        project = new Project("Project Name", "Description", "img", hostId, userList);
+        project.setId("1");
     }
 
     @Test

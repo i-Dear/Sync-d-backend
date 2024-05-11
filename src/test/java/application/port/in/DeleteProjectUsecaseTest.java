@@ -16,11 +16,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class DeleteProjectUsecaseTest {
     @Mock
     private DeleteProjectUsecase deleteProjectUsecase;
-
+    String userId = "user1";
     @Test
     @DisplayName("")
     void testDeleteProject(){
-        String userId = "user1";
         String projectId = "project123";
         DeleteProjectResponseDto expectedResponse = new DeleteProjectResponseDto(projectId);
 
@@ -31,7 +30,6 @@ public class DeleteProjectUsecaseTest {
     @Test
     @DisplayName("Throw exception when project does not exist")
     void testDeleteNonExistingProject() {
-        String userId = "user1";
         String projectId = "nonExistingProject";
 
         when(deleteProjectUsecase.deleteProject(userId, projectId))
