@@ -13,6 +13,11 @@ spring:
       database: ${SPRING_DATA_MONGODB_DATABASE}
       uri: ${SPRING_DATA_MONGODB_URI}
   security:
+    openai:
+      secretKey: ${OPENAI_SECRET_KEY}
+      model: ${OPENAI_MODEL}
+      promptForEpic: ${OPENAI_PROMPT_FOR_EPIC}
+      promptForUserstory:  ${OPENAI_PROMPT_FOR_USERSTORY}
     auth:
       liveBlockSecretKey: ${SPRING_SECURITY_AUTH_LIVEBLOCKSECRETKEY}
     oauth2:
