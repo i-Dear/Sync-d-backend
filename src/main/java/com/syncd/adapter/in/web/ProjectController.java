@@ -77,7 +77,7 @@ public class ProjectController {
     @PostMapping("/userstory")
     public ResponseEntity<MakeUserStoryResponseDto> makeUserStory(HttpServletRequest request, @RequestBody MakeUserStoryReauestDto makeUserStoryReauestDto) {
         String token = jwtTokenProvider.resolveToken(request);
-        MakeUserStoryResponseDto result = makeUserstoryUsecase.makeUserstory(jwtTokenProvider.getUserIdFromToken(token), makeUserStoryReauestDto.getProjectId(), makeUserStoryReauestDto.getSenario());
+        MakeUserStoryResponseDto result = makeUserstoryUsecase.makeUserstory(jwtTokenProvider.getUserIdFromToken(token), makeUserStoryReauestDto.getProjectId(), makeUserStoryReauestDto.getScenario());
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

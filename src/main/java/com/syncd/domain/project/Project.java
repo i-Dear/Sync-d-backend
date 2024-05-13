@@ -76,6 +76,7 @@ public class Project {
         project.setDescription(description);
         project.setProgress(0);
         project.setLastModifiedDate(LocalDateTime.now().toString());
+        project.setLeftChanceForUserstory(3);
         return project;
     }
      private List<UserInProject> userInProjectsFromUsers(String hostId, List<User> members){

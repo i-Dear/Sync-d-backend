@@ -13,6 +13,7 @@ import com.syncd.domain.user.User;
 import com.syncd.dto.MakeUserStoryResponseDto;
 import com.syncd.dto.UserRoleDto;
 import com.syncd.enums.Role;
+import com.syncd.exceptions.NotIncludeProjectException;
 import com.syncd.exceptions.NotLeftChanceException;
 import com.syncd.exceptions.ProjectAlreadyExistsException;
 import com.syncd.exceptions.UserNotFoundException;
@@ -132,14 +133,16 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         if(project.getLeftChanceForUserstory() < 1){
             throw new NotLeftChanceException(projectId);
         }
+        System.out.println(userId);
         boolean containsUserIdA = project.getUsers().stream()
                 .anyMatch(user -> user.getUserId().equals(userId));
 
-        if(containsUserIdA){
-            throw new NotLeftChanceException(projectId);
+        if(!containsUserIdA){
+            throw new NotIncludeProjectException(projectId);
         }
         project.subLeftChanceForUserstory();
         writeProjectPort.UpdateProject(project);
+        System.out.println(senarios);
         return chatGPTPort.makeUserstory(senarios);
     }
 
