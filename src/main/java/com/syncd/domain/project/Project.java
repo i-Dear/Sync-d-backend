@@ -20,6 +20,7 @@ public class Project {
     private  List<UserInProject> users;
     private int progress;
     private String lastModifiedDate;
+    private int leftChanceForUserstory;
 
     public void addUsers(List<UserInProject> newUsers) {
         if (this.users == null) {
@@ -55,6 +56,10 @@ public class Project {
         this.lastModifiedDate = LocalDateTime.now().toString();
     }
 
+    public void subLeftChanceForUserstory(){
+        this.leftChanceForUserstory = this.leftChanceForUserstory-1;
+    }
+
 //    public Project(String projectName, String description, String img, List<UserInProject> users){
 //        this.img = img;
 //        this.users = users;
@@ -71,6 +76,7 @@ public class Project {
         project.setDescription(description);
         project.setProgress(0);
         project.setLastModifiedDate(LocalDateTime.now().toString());
+        project.setLeftChanceForUserstory(3);
         return project;
     }
      private List<UserInProject> userInProjectsFromUsers(String hostId, List<User> members){

@@ -9,9 +9,13 @@ import com.syncd.application.port.in.WithdrawUserInProjectUsecase.*;
 import com.syncd.application.port.in.UpdateProjectUsecase.*;
 import com.syncd.application.port.in.DeleteProjectUsecase.*;
 import com.syncd.application.port.in.SyncProjectUsecase.*;
+import com.syncd.dto.MakeUserStoryReauestDto;
+import com.syncd.dto.MakeUserStoryResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,6 +36,7 @@ public class ProjectController {
     private final UpdateProjectUsecase updateProjectUsecase;
 
     private final SyncProjectUsecase syncProjectUsecase;
+    private final MakeUserstoryUsecase makeUserstoryUsecase;
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -76,6 +81,13 @@ public class ProjectController {
     public SyncProjectResponseDto syncProject(HttpServletRequest request, @Valid @RequestBody SyncProjectRequestDto requestDto){
         String token = jwtTokenProvider.resolveToken(request);
         return syncProjectUsecase.syncProject(jwtTokenProvider.getUserIdFromToken(token), requestDto.projectId(), requestDto.projectStage());
+    }
+
+    @PostMapping("/userstory")
+    public ResponseEntity<MakeUserStoryResponseDto> makeUserStory(HttpServletRequest request, @RequestBody MakeUserStoryReauestDto makeUserStoryReauestDto) {
+        String token = jwtTokenProvider.resolveToken(request);
+        MakeUserStoryResponseDto result = makeUserstoryUsecase.makeUserstory(jwtTokenProvider.getUserIdFromToken(token), makeUserStoryReauestDto.getProjectId(), makeUserStoryReauestDto.getScenario());
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 }

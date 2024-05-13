@@ -18,6 +18,7 @@ public class ProjectEntity {
     private List<UserInProjectEntity> users;
     private int progress;
     private String lastModifiedDate;
+    private int leftChanceForUserstory;
 
     @Data
     public static class UserInProjectEntity {

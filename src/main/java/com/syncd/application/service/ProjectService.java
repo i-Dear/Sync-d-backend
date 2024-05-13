@@ -3,19 +3,24 @@ package com.syncd.application.service;
 import com.syncd.application.port.in.*;
 import com.syncd.application.port.out.gmail.SendMailPort;
 import com.syncd.application.port.out.liveblock.LiveblocksPort;
+import com.syncd.application.port.out.openai.ChatGPTPort;
 import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
 import com.syncd.domain.project.Project;
 import com.syncd.domain.project.UserInProject;
 import com.syncd.domain.user.User;
+import com.syncd.dto.MakeUserStoryResponseDto;
 import com.syncd.dto.UserRoleDto;
 import com.syncd.enums.Role;
+import com.syncd.exceptions.NotIncludeProjectException;
+import com.syncd.exceptions.NotLeftChanceException;
 import com.syncd.exceptions.ProjectAlreadyExistsException;
 import com.syncd.exceptions.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,12 +32,14 @@ import java.util.stream.Stream;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class ProjectService implements CreateProjectUsecase, JoinProjectUsecase, GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase, UpdateProjectUsecase, WithdrawUserInProjectUsecase, InviteUserInProjectUsecase, DeleteProjectUsecase, SyncProjectUsecase {
+
+public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase, UpdateProjectUsecase, WithdrawUserInProjectUsecase, InviteUserInProjectUsecase, DeleteProjectUsecase, SyncProjectUsecase, MakeUserstoryUsecase,SyncProjectUsecase {
     private final ReadProjectPort readProjectPort;
     private final WriteProjectPort writeProjectPort;
     private final ReadUserPort readUserPort;
     private final LiveblocksPort liveblocksPort;
     private final SendMailPort sendMailPort;
+    private final ChatGPTPort chatGPTPort;
 
     @Override
     public CreateProjectResponseDto createProject(String hostId, String hostName, String projectName, String description, String img, List<String> userEmails){
@@ -133,6 +140,25 @@ public class ProjectService implements CreateProjectUsecase, JoinProjectUsecase,
         writeProjectPort.updateLastModifiedDate(projectId);
 
         return new SyncProjectResponseDto(projectId);
+    }
+    @Override
+    @Transactional
+    public MakeUserStoryResponseDto makeUserstory(String userId, String projectId, List<String> senarios){
+        Project project = readProjectPort.findProjectByProjectId(projectId);
+        if(project.getLeftChanceForUserstory() < 1){
+            throw new NotLeftChanceException(projectId);
+        }
+        System.out.println(userId);
+        boolean containsUserIdA = project.getUsers().stream()
+                .anyMatch(user -> user.getUserId().equals(userId));
+
+        if(!containsUserIdA){
+            throw new NotIncludeProjectException(projectId);
+        }
+        project.subLeftChanceForUserstory();
+        writeProjectPort.UpdateProject(project);
+        System.out.println(senarios);
+        return chatGPTPort.makeUserstory(senarios);
     }
 
     // ======================================
