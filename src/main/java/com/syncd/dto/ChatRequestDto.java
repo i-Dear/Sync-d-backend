@@ -13,12 +13,19 @@ public class ChatRequestDto {
 
     private String model;
 
+
+    private double temperature;
+
+    private double top_p;
+
     private List<MessageDto> messages;
 
     @Builder
-    ChatRequestDto(String model, List<MessageDto> messages) {
+    ChatRequestDto(String model, List<MessageDto> messages, double temperature, double top_p) {
         this.model = model;
         this.messages = messages;
+        this.temperature = temperature;
+        this.top_p = top_p;
     }
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
