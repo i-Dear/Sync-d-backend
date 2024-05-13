@@ -19,7 +19,8 @@ public class WriteProjectPortTest {
     void setUp(){
         String hostId = "hostUserId";
         List<User> userList = new ArrayList<>();
-        project = new Project("Project Name", "Description", "img", hostId, userList);
+        project = new Project();
+        project = project.createProjectDomain("Project Name", "Description", "img", hostId, userList);
         project.setId("1");
     }
     @Test

@@ -39,7 +39,8 @@ public class ProjectPersistenceAdapterTest {
         projectEntity.setId("1");
         String hostId = "hostId";
         List<User> userList = new ArrayList<>();
-        project = new Project("Project Name", "Description", "img", hostId, userList);
+        project = new Project();
+        project = project.createProjectDomain("Project Name", "Description", "img", hostId, userList);
         project.setId("1");
     }
 
