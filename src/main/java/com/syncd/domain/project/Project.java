@@ -63,13 +63,15 @@ public class Project {
 //        this.progress = 0;
 //        this.lastModifiedDate = LocalDateTime.now().toString();
 //    }
-    public Project(String projectName, String description, String img, String hostId, List<User> users){
-        this.img = img;
-        this.users = userInProjectsFromUsers(hostId,users);
-        this.name = projectName;
-        this.description = description;
-        this.progress = 0;
-        this.lastModifiedDate = LocalDateTime.now().toString();
+    public Project createProjectDomain(String projectName, String description, String img, String hostId, List<User> users){
+        Project project = new Project();
+        project.setImg(img);
+        project.setUsers( userInProjectsFromUsers(hostId,users));
+        project.setName(projectName);
+        project.setDescription(description);
+        project.setProgress(0);
+        project.setLastModifiedDate(LocalDateTime.now().toString());
+        return project;
     }
      private List<UserInProject> userInProjectsFromUsers(String hostId, List<User> members){
          if (members == null) {
