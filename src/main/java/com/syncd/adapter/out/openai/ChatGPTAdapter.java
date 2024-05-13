@@ -57,11 +57,13 @@ public class ChatGPTAdapter implements ChatGPTPort {
     private MakeUserStoryResponseDto promptUserStory(OpenAIToken finalToken, ObjectMapper om, List<String> scenario) throws JsonProcessingException,NullPointerException {
         Logger logger = LoggerFactory.getLogger(this.getClass());
             String requestTextForEpic = createRequestForEpic(scenario);
+        System.out.println(requestTextForEpic);
             Map<String, Object> Epic = prompt(finalToken, om, requestTextForEpic);
-
-        String requestTextForUserstory = promptForUserStory.replace("{epics}", getMessage(Epic));
+            System.out.println(getMessage(Epic));
+            String requestTextForUserstory = promptForUserStory.replace("{epics}", "\""+getMessage(Epic)+"\"");
+        System.out.println(requestTextForUserstory);
             Map<String, Object> userStory = prompt(finalToken, om, requestTextForUserstory);
-
+            System.out.println(getMessage(userStory));
             String res = extractJson(getMessage(userStory));
             if (res == null) {
                 throw new NullPointerException("The response 'res' is null and cannot be processed.");
@@ -76,8 +78,6 @@ public class ChatGPTAdapter implements ChatGPTPort {
         return ResponseEntity.badRequest().body("{\"error\": \"부적절한 시나리오입니다. 시나리오를 확인해주세요.\"}");
     }
 
-
-
     private static ChatRequestDto.MessageDto createMessageDto(String role, String content) {
         return ChatRequestDto.MessageDto.builder()
                 .role(role)
@@ -90,13 +90,14 @@ public class ChatGPTAdapter implements ChatGPTPort {
 
         return  ChatRequestDto.builder()
                 .model(model)
+                .temperature(0.5)
+                .top_p(1)
                 .messages(Collections.singletonList(promptForEpic))
                 .build();
     }
 
     private String createRequestForEpic(List<String> scenario){
-        System.out.println(scenario);
-        String replacedString = promptForEpic.replace("{scenario}", "'" + String.join("','", scenario)+ "'");
+        String replacedString = promptForEpic.replace("{scenario}", "\"'" + String.join("','", scenario)+ "'\"");
         return replacedString;
     }
 
@@ -135,7 +136,6 @@ public class ChatGPTAdapter implements ChatGPTPort {
         Map<String, Object> message = (Map<String, Object>) firstChoice.get("message");
 
         String content = (String) message.get("content");
-        System.out.println(content);
         return content;
     }
 
@@ -152,15 +152,27 @@ public class ChatGPTAdapter implements ChatGPTPort {
         return token;
     }
     private static String extractJson(String text) {
-        int startIndex = text.indexOf('{');
-        int endIndex = text.lastIndexOf('}');
-
-        if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
-            return text.substring(startIndex, endIndex + 1);
-        }
-        return null;
+//        int startIndex = text.indexOf('{');
+//        int endIndex = text.lastIndexOf('}');
+//
+//        if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
+//            return text.substring(startIndex, endIndex + 1);
+//        }
+//        return null;
+        return text;
     }
 
+
+//    private String getResult( Map<String, Object> epic){
+//
+//        String content = getMessage(epic);
+//
+//        int resultIndex = content.indexOf(resultPrefix);
+//
+//        String result = resultIndex != -1 ? content.substring(resultIndex + resultPrefix.length()).trim() : "Result not found";
+//
+//        return result;
+//    }
 
     private static Map<String, Object> parseJsonResponse(ObjectMapper om,String jsonResponse) {
         try {
