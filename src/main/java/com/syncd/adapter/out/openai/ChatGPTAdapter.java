@@ -59,7 +59,7 @@ public class ChatGPTAdapter implements ChatGPTPort {
             String requestTextForEpic = createRequestForEpic(scenario);
             Map<String, Object> Epic = prompt(finalToken, om, requestTextForEpic);
 
-            String requestTextForUserstory = promptForUserStory + getMessage(Epic);
+        String requestTextForUserstory = promptForUserStory.replace("{epics}", getMessage(Epic));
             Map<String, Object> userStory = prompt(finalToken, om, requestTextForUserstory);
 
             String res = extractJson(getMessage(userStory));
@@ -95,7 +95,9 @@ public class ChatGPTAdapter implements ChatGPTPort {
     }
 
     private String createRequestForEpic(List<String> scenario){
-        return promptForEpic+"'" + String.join("','", scenario)+ "'";
+        System.out.println(scenario);
+        String replacedString = promptForEpic.replace("{scenario}", "'" + String.join("','", scenario)+ "'");
+        return replacedString;
     }
 
     private void addToken(OpenAIToken finalToken, Map<String, Object> res) {
