@@ -1,8 +1,6 @@
 package com.syncd.adapter.in.web;
 
 import com.syncd.application.port.in.GetUserInfoUsecase;
-import com.syncd.application.port.in.RegitsterUserUsecase;
-import com.syncd.application.port.in.RegitsterUserUsecase.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -25,4 +23,5 @@ public class UserController {
         String token = jwtTokenProvider.resolveToken(request);
         return getUserInfoUsecase.getUserInfo(jwtTokenProvider.getUserIdFromToken(token));
     }
+    
 }
