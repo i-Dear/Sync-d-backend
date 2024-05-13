@@ -14,10 +14,7 @@ import com.syncd.domain.user.User;
 import com.syncd.dto.MakeUserStoryResponseDto;
 import com.syncd.dto.UserRoleDto;
 import com.syncd.enums.Role;
-import com.syncd.exceptions.NotIncludeProjectException;
-import com.syncd.exceptions.NotLeftChanceException;
-import com.syncd.exceptions.ProjectAlreadyExistsException;
-import com.syncd.exceptions.UserNotFoundException;
+import com.syncd.exceptions.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -101,6 +98,17 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
     @Override
     public DeleteProjectResponseDto deleteProject(String userId, String projectId) {
+        Project project = readProjectPort.findProjectByProjectId(projectId);
+        if (project == null) {
+            throw new ProjectNotFoundException(projectId);
+        }
+
+        String imgFileName = project.getImgFileName();
+
+        if (imgFileName != null) {
+            Optional<Boolean> deletionResult = s3Port.deleteFileFromS3(imgFileName);
+        }
+
         writeProjectPort.RemoveProject(projectId);
         return new DeleteProjectResponseDto(projectId);
     }

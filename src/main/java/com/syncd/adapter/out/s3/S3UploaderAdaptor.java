@@ -40,4 +40,12 @@ public class S3UploaderAdaptor implements S3Port {
             return Optional.empty();
         }
     }
+    public Optional<Boolean> deleteFileFromS3(String filename){
+        try {
+            amazonS3.deleteObject(bucket, filename);
+            return Optional.of(true); // 파일 삭제 성공
+        } catch (Exception e) {
+            return Optional.of(false); // 파일 삭제 실패
+        }
+    }
 }
