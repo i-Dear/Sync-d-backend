@@ -34,7 +34,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     private final LiveblocksPort liveblocksPort;
     private final SendMailPort sendMailPort;
 
-
     @Override
     public CreateProjectResponseDto createProject(String hostId,String hostName, String projectName, String description, String img, List<String> userEmails){
         List<User> users = readUserPort.usersFromEmails(userEmails);
