@@ -18,10 +18,8 @@ import java.util.Map;
 @Service
 public interface ChatGPTPort {
 
-    List<Map<String, Object>> modelList();
 
     MakeUserStoryResponseDto makeUserstory(List<String> senarios);
 
-    Map<String, Object> isValidModel(String modelName);
 
 }

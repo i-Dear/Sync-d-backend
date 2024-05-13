@@ -76,49 +76,8 @@ public class ChatGPTAdapter implements ChatGPTPort {
         return ResponseEntity.badRequest().body("{\"error\": \"부적절한 시나리오입니다. 시나리오를 확인해주세요.\"}");
     }
 
-    @Override
-    public List<Map<String, Object>> modelList() {
-        List<Map<String, Object>> resultList = null;
-
-        HttpHeaders headers = chatGPTConfig.httpHeaders();
-
-        ResponseEntity response = restTemplate
-                .exchange(
-                        "https://api.openai.com/v1/models",
-                        HttpMethod.GET,
-                        new HttpEntity<>(headers),
-                        String.class);
-
-        ObjectMapper om = new ObjectMapper();
-        Map<String, Object> data = parseJsonResponse(om, (String) response.getBody());
-
-        resultList = (List<Map<String, Object>>) data.get("data");
-        for (Map<String, Object> Object : resultList) {
-            log.debug("ID: " + Object.get("id"));
-            log.debug("Object: " + Object.get("Object"));
-            log.debug("Created: " + Object.get("created"));
-            log.debug("Owned By: " + Object.get("owned_by"));
-        }
-        return resultList;
-    }
 
 
-    @Override
-    public Map<String, Object> isValidModel(String modelName) {
-        Map<String, Object> result;
-
-        HttpHeaders headers = chatGPTConfig.httpHeaders();
-
-        ResponseEntity response = restTemplate
-                .exchange(
-                        "https://api.openai.com/v1/models/" + modelName,
-                        HttpMethod.GET,
-                        new HttpEntity<>(headers),
-                        String.class);
-            ObjectMapper om = new ObjectMapper();
-            result = parseJsonResponse(om, (String) response.getBody());
-        return result;
-    }
     private static ChatRequestDto.MessageDto createMessageDto(String role, String content) {
         return ChatRequestDto.MessageDto.builder()
                 .role(role)
@@ -200,16 +159,6 @@ public class ChatGPTAdapter implements ChatGPTPort {
         return null;
     }
 
-//    private String getResult( Map<String, Object> epic){
-//
-//        String content = getMessage(epic);
-//
-//        int resultIndex = content.indexOf(resultPrefix);
-//
-//        String result = resultIndex != -1 ? content.substring(resultIndex + resultPrefix.length()).trim() : "Result not found";
-//
-//        return result;
-//    }
 
     private static Map<String, Object> parseJsonResponse(ObjectMapper om,String jsonResponse) {
         try {
