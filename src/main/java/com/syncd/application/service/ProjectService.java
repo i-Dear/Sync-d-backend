@@ -32,8 +32,8 @@ import java.util.stream.Stream;
 @Service
 @Primary
 @RequiredArgsConstructor
+public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase, UpdateProjectUsecase, WithdrawUserInProjectUsecase, InviteUserInProjectUsecase, DeleteProjectUsecase, SyncProjectUsecase, MakeUserstoryUsecase,JoinProjectUsecase {
 
-public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase, UpdateProjectUsecase, WithdrawUserInProjectUsecase, InviteUserInProjectUsecase, DeleteProjectUsecase, SyncProjectUsecase, MakeUserstoryUsecase,SyncProjectUsecase {
     private final ReadProjectPort readProjectPort;
     private final WriteProjectPort writeProjectPort;
     private final ReadUserPort readUserPort;
@@ -51,7 +51,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     }
 
     @Override
-    public JoinProjectResponseDto joinProject(String userId, String projectId) {
+    public JoinProjectUsecase.JoinProjectResponseDto joinProject(String userId, String projectId) {
         UserInProject userInProject = new UserInProject(userId, Role.MEMBER);
         Project project = readProjectPort.findProjectByProjectId(projectId);
 
@@ -61,7 +61,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
         writeProjectPort.UpdateProject(project);
 
-        return new JoinProjectResponseDto(projectId);
+        return new JoinProjectUsecase.JoinProjectResponseDto(projectId);
     }
 
     @Override
