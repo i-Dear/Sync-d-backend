@@ -26,8 +26,8 @@ public class AuthController {
         String redirectUrl = url + token.accessToken();
         return new RedirectView(redirectUrl);
     }
-    // @GetMapping("/test/sentry")
-    // public ResponseEntity<String> testSentryIntegration() {
-    //     throw new ProjectAlreadyExistsException("Test Exception to verify Sentry logging.");
-    // }
+    @GetMapping("/test/sentry")
+    public ResponseEntity<String> testSentryIntegration() {
+        throw new ProjectAlreadyExistsException("Test Exception to verify Sentry logging.");
+    }
 }
