@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface CreateProjectUsecase {
@@ -22,7 +23,7 @@ public interface CreateProjectUsecase {
             String name,
             @NotBlank(message = ValidationMessages.DESCRIPTION_NOT_BLANK)
             String description,
-            String img,
+            MultipartFile img,
             @NotNull(message = ValidationMessages.USERS_NOT_NULL)
             @Size(min = 1, message = ValidationMessages.USERS_SIZE)
             List<String> userEmails

@@ -24,9 +24,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,9 +50,15 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     public CreateProjectResponseDto createProject(String hostId, String hostName, String projectName, String description, MultipartFile img, List<String> userEmails){
         List<User> users = readUserPort.usersFromEmails(userEmails);
         sendMailPort.sendIviteMailBatch(hostName, projectName, users);
+
+        String imgURL = "";
+        if (img != null && !img.isEmpty()) {
+            Optional<String> optionalImgURL = s3Port.uploadMultipartFileToS3(img, hostName, projectName);
+            imgURL = optionalImgURL.orElseThrow(() -> new IllegalStateException("Failed to upload image to S3"));
+        }
+
         Project project = new Project();
-        String ImgURL = s3Port.uploadMultipartFileToS3(img,hostName, projectName);
-        project = project.createProjectDomain(projectName, description, ImgURL, hostId, users);
+        project = project.createProjectDomain(projectName, description, imgURL, hostId, users);
         return new CreateProjectResponseDto(writeProjectPort.CreateProject(project));
     }
 
