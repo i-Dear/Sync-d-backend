@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -54,15 +55,15 @@ public class Project {
         this.lastModifiedDate = LocalDateTime.now().toString();
     }
 
-    public Project(String projectName, String description, String img, List<UserInProject> users){
-        this.img = img;
-        this.users = users;
-        this.name = projectName;
-        this.description = description;
-        this.progress = 0;
-        this.lastModifiedDate = LocalDateTime.now().toString();
-    }
-    public Project(String projectName, String description, String img,String hostId, List<User> users){
+//    public Project(String projectName, String description, String img, List<UserInProject> users){
+//        this.img = img;
+//        this.users = users;
+//        this.name = projectName;
+//        this.description = description;
+//        this.progress = 0;
+//        this.lastModifiedDate = LocalDateTime.now().toString();
+//    }
+    public Project(String projectName, String description, String img, String hostId, List<User> users){
         this.img = img;
         this.users = userInProjectsFromUsers(hostId,users);
         this.name = projectName;
@@ -71,6 +72,9 @@ public class Project {
         this.lastModifiedDate = LocalDateTime.now().toString();
     }
      private List<UserInProject> userInProjectsFromUsers(String hostId, List<User> members){
+         if (members == null) {
+             return Collections.emptyList(); // 호스트는 존재하지만 멤버는 없을 수 있음
+         }
         return Stream.concat(
                 Stream.of(new UserInProject(hostId, Role.HOST)), // 호스트 사용자
                 members.stream().map(el -> new UserInProject(el.getId(), Role.MEMBER))
