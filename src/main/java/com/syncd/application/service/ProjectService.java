@@ -32,7 +32,8 @@ import java.util.stream.Stream;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase, UpdateProjectUsecase, WithdrawUserInProjectUsecase, InviteUserInProjectUsecase, DeleteProjectUsecase, SyncProjectUsecase, MakeUserstoryUsecase {
+
+public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase, UpdateProjectUsecase, WithdrawUserInProjectUsecase, InviteUserInProjectUsecase, DeleteProjectUsecase, SyncProjectUsecase, MakeUserstoryUsecase,SyncProjectUsecase {
     private final ReadProjectPort readProjectPort;
     private final WriteProjectPort writeProjectPort;
     private final ReadUserPort readUserPort;
@@ -41,18 +42,32 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     private final ChatGPTPort chatGPTPort;
 
     @Override
-    public CreateProjectResponseDto createProject(String hostId,String hostName, String projectName, String description, String img, List<String> userEmails){
+    public CreateProjectResponseDto createProject(String hostId, String hostName, String projectName, String description, String img, List<String> userEmails){
         List<User> users = readUserPort.usersFromEmails(userEmails);
-        sendMailPort.sendIviteMailBatch(hostName,projectName,users);
+        sendMailPort.sendIviteMailBatch(hostName, projectName, users);
         Project project = new Project();
-        project=project.createProjectDomain(projectName,description,img,hostId, users);
+        project = project.createProjectDomain(projectName, description, img, hostId, users);
         return new CreateProjectResponseDto(writeProjectPort.CreateProject(project));
+    }
+
+    @Override
+    public JoinProjectResponseDto joinProject(String userId, String projectId) {
+        UserInProject userInProject = new UserInProject(userId, Role.MEMBER);
+        Project project = readProjectPort.findProjectByProjectId(projectId);
+
+        List<UserInProject> users = project.getUsers();
+        users.add(userInProject);
+        project.setUsers(users);
+
+        writeProjectPort.UpdateProject(project);
+
+        return new JoinProjectResponseDto(projectId);
     }
 
     @Override
     public GetAllRoomsByUserIdResponseDto getAllRoomsByUserId(String userId) {
         List<Project> projects = readProjectPort.findAllProjectByUserId(userId);
-        GetAllRoomsByUserIdResponseDto responseDto =  mapProjectsToResponse(userId,projects);
+        GetAllRoomsByUserIdResponseDto responseDto =  mapProjectsToResponse(userId, projects);
         return responseDto;
     }
 
@@ -64,12 +79,12 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
                 .map(Project::getId)
                 .collect(Collectors.toList());
         User userInfo = readUserPort.findByUserId(userId);
-        return new GetRoomAuthTokenResponseDto(liveblocksPort.GetRoomAuthToken(userId, userInfo.getName(),userInfo.getProfileImg(),projectIds).token());
+        return new GetRoomAuthTokenResponseDto(liveblocksPort.GetRoomAuthToken(userId, userInfo.getName(), userInfo.getProfileImg(), projectIds).token());
     }
 
     @Override
-    public GetRoomAuthTokenResponseDto Test(String uesrId, String roomId) {
-        return new GetRoomAuthTokenResponseDto(liveblocksPort.Test(uesrId,roomId).token());
+    public GetRoomAuthTokenResponseDto Test(String userId, String roomId) {
+        return new GetRoomAuthTokenResponseDto(liveblocksPort.Test(userId, roomId).token());
     }
 
     @Override
@@ -82,7 +97,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     @Override
     public InviteUserInProjectResponseDto inviteUserInProject(String userId, String projectId, List<String> userEmails) {
         Project project = readProjectPort.findProjectByProjectId(projectId);
-        checkHost(project,userId);
+        checkHost(project, userId);
 
         User host = readUserPort.findByUserId(userId);
         List<UserInProject> users = userEmails.stream()
@@ -101,9 +116,9 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
                                                   String description,
                                                   String image ){
         Project project = readProjectPort.findProjectByProjectId(projectId);
-        checkHost(project,userId);
+        checkHost(project, userId);
 
-        project.updateProjectInfo(projectName,description,image);
+        project.updateProjectInfo(projectName,description, image);
         writeProjectPort.UpdateProject(project);
         return new UpdateProjectResponseDto(projectId);
     }
@@ -111,7 +126,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     @Override
     public WithdrawUserInProjectResponseDto withdrawUserInProject(String userId, String projectId, List<String> userIds) {
         Project project = readProjectPort.findProjectByProjectId(projectId);
-        checkHost(project,userId);
+        checkHost(project, userId);
         project.withdrawUsers(userIds);
 
         writeProjectPort.UpdateProject(project);
@@ -158,7 +173,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     private UserInProject createUserInProjectWithRoleMember(String userEmail, String hostName, String projectName) {
         // 여기에 사용자 생성 및 역할 부여 로직 추가
         User user = readUserPort.findByEmail(userEmail);
-        sendMailPort.sendInviteMail(userEmail,hostName, user.getName(),projectName);
+        sendMailPort.sendInviteMail(userEmail, hostName, user.getName(), projectName);
         return new UserInProject(user.getId(), Role.MEMBER);
     }
 
@@ -201,7 +216,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     }
 
     private UserRoleDto convertUserToUserRoleDto(String projectId, UserInProject user) {
-        return new UserRoleDto(projectId,user.getUserId(),user.getRole());
+        return new UserRoleDto(projectId, user.getUserId(), user.getRole());
     }
 
 }
