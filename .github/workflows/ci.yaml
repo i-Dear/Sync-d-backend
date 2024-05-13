@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - 'feat/#5/jwt-header'
+      - 'infra/#56/monitoring-sentry'
 
 jobs:
   build:
@@ -23,7 +23,7 @@ jobs:
       - name: Decode application.yml
         run: |
           echo "${{ secrets.ENCODED_APPLICATION_YML }}" | base64 --decode > ./src/main/resources/application.yml
-
+          cat ./src/main/resources/application.yml
       - name: Grant execute permission for Gradlew
         run: chmod +x ./gradlew
 
