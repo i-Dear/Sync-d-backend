@@ -20,7 +20,6 @@ public interface ProjectMapper {
 
     ProjectEntity toProjectEntity(Project project);
 
-
 }
 
 
