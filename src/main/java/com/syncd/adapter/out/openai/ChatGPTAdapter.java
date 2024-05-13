@@ -59,9 +59,8 @@ public class ChatGPTAdapter implements ChatGPTPort {
             String requestTextForEpic = createRequestForEpic(scenario);
         System.out.println(requestTextForEpic);
             Map<String, Object> Epic = prompt(finalToken, om, requestTextForEpic);
-            System.out.println(getMessage(Epic));
-            String requestTextForUserstory = promptForUserStory.replace("{epics}", "\""+getMessage(Epic)+"\"");
-        System.out.println(requestTextForUserstory);
+
+        String requestTextForUserstory = promptForUserStory.replace("{epics}", getMessage(Epic));
             Map<String, Object> userStory = prompt(finalToken, om, requestTextForUserstory);
             System.out.println(getMessage(userStory));
             String res = extractJson(getMessage(userStory));
