@@ -7,6 +7,7 @@ import com.syncd.application.port.out.openai.ChatGPTPort;
 import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
+import com.syncd.application.port.out.s3.S3Port;
 import com.syncd.domain.project.Project;
 import com.syncd.domain.project.UserInProject;
 import com.syncd.domain.user.User;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,13 +42,15 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     private final LiveblocksPort liveblocksPort;
     private final SendMailPort sendMailPort;
     private final ChatGPTPort chatGPTPort;
+    private final S3Port s3Port;
 
     @Override
-    public CreateProjectResponseDto createProject(String hostId, String hostName, String projectName, String description, String img, List<String> userEmails){
+    public CreateProjectResponseDto createProject(String hostId, String hostName, String projectName, String description, MultipartFile img, List<String> userEmails){
         List<User> users = readUserPort.usersFromEmails(userEmails);
         sendMailPort.sendIviteMailBatch(hostName, projectName, users);
         Project project = new Project();
-        project = project.createProjectDomain(projectName, description, img, hostId, users);
+        String ImgURL = s3Port.uploadMultipartFileToS3(img,hostName, projectName);
+        project = project.createProjectDomain(projectName, description, ImgURL, hostId, users);
         return new CreateProjectResponseDto(writeProjectPort.CreateProject(project));
     }
 
