@@ -51,4 +51,20 @@ public class UserExceptionHandler {
         return ResponseEntity.status(ExceptionType.PROJECT_ALREADY_EXISTS.getStatus())
                 .body(ExceptionType.PROJECT_ALREADY_EXISTS.getMessage());
     }
+
+    @ExceptionHandler(NotIncludeProjectException.class)
+    public ResponseEntity<String> handleProjectNotIncludeProjectException(NotIncludeProjectException ex) {
+        logger.error(ExceptionType.NOT_INCLUDE_PROJECT.getMessage(), ex);
+        Sentry.captureException(ex);
+        return ResponseEntity.status(ExceptionType.NOT_INCLUDE_PROJECT.getStatus())
+                .body(ExceptionType.NOT_INCLUDE_PROJECT.getMessage());
+    }
+
+    @ExceptionHandler(NotLeftChanceException.class)
+    public ResponseEntity<String> handleProjectNotLeftChanceException(NotLeftChanceException ex) {
+        logger.error(ExceptionType.NOT_LEFT_CHANCE.getMessage(), ex);
+        Sentry.captureException(ex);
+        return ResponseEntity.status(ExceptionType.NOT_LEFT_CHANCE.getStatus())
+                .body(ExceptionType.NOT_LEFT_CHANCE.getMessage());
+    }
 }
