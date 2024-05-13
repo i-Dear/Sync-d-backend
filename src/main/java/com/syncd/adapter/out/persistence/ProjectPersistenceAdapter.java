@@ -23,10 +23,11 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
     @Override
     public List<Project> findAllProjectByUserId(String userId){
         List<ProjectEntity> projectEntityList = projectDao.findByUsersUserId(userId);
+        System.out.println(projectEntityList);
         List<Project> projects = projectEntityList.stream()
                 .map(ProjectMapper.INSTANCE::fromProjectEntity)
                 .collect(Collectors.toList());
-
+        System.out.println(projects);
         return projects;
     }
 
@@ -36,7 +37,6 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
                 .map(ProjectMapper.INSTANCE::fromProjectEntity)
                 .orElseThrow(() -> new ProjectNotFoundException("No project found with ID: " + projectId));
     }
-
     @Override
     public String CreateProject(Project project) {
         if (project.getId() != null && projectDao.existsById(project.getId())) {

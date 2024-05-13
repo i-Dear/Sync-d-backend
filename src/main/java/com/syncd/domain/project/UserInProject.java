@@ -10,8 +10,13 @@ import java.util.stream.Stream;
 
 @Data
 public class UserInProject {
-    private final String userId;
-    private final Role role;
+    private  String userId;
+    private  Role role;
+
+    public UserInProject(String userId, Role role){
+        this.userId=userId;
+        this.role = role;
+    }
 
     public static List<UserInProject> userInProjectsFromUsers(String hostId, List<User> members){
         return Stream.concat(

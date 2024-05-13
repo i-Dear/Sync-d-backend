@@ -38,7 +38,8 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     public CreateProjectResponseDto createProject(String hostId,String hostName, String projectName, String description, String img, List<String> userEmails){
         List<User> users = readUserPort.usersFromEmails(userEmails);
         sendMailPort.sendIviteMailBatch(hostName,projectName,users);
-        Project project = new Project(projectName,description,img,hostId, users);
+        Project project = new Project();
+        project=project.createProjectDomain(projectName,description,img,hostId, users);
         return new CreateProjectResponseDto(writeProjectPort.CreateProject(project));
     }
 
