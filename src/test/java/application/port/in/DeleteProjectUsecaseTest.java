@@ -5,7 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.syncd.application.port.in.DeleteProjectUsecase;
 import com.syncd.application.port.in.DeleteProjectUsecase.*;
-import com.syncd.exceptions.ProjectNotFoundException;
+import com.syncd.exceptions.CustomException;
+import com.syncd.exceptions.ErrorInfo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,9 +34,9 @@ public class DeleteProjectUsecaseTest {
         String projectId = "nonExistingProject";
 
         when(deleteProjectUsecase.deleteProject(userId, projectId))
-                .thenThrow(new ProjectNotFoundException("Project not found"));
+                .thenThrow(new CustomException(ErrorInfo.PROJECT_NOT_FOUND, "project id : " + projectId));
 
-        assertThrows(ProjectNotFoundException.class, () -> deleteProjectUsecase.deleteProject(userId, projectId),
+        assertThrows(CustomException.class, () -> deleteProjectUsecase.deleteProject(userId, projectId),
                 "Deleting a non-existing project should throw ProjectNotFoundException.");
     }
 

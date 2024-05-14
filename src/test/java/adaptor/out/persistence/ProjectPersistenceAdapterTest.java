@@ -8,8 +8,7 @@ import com.syncd.adapter.out.persistence.repository.project.ProjectDao;
 import com.syncd.adapter.out.persistence.repository.project.ProjectEntity;
 import com.syncd.domain.project.Project;
 import com.syncd.domain.user.User;
-import com.syncd.exceptions.ProjectAlreadyExistsException;
-import com.syncd.exceptions.ProjectNotFoundException;
+import com.syncd.exceptions.CustomException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -69,7 +68,7 @@ public class ProjectPersistenceAdapterTest {
     void testFindProjectByProjectId_NotFound() {
         when(projectDao.findById("1")).thenReturn(Optional.empty());
 
-        assertThrows(ProjectNotFoundException.class, () -> adapter.findProjectByProjectId("1"));
+        assertThrows(CustomException.class, () -> adapter.findProjectByProjectId("1"));
     }
 
     @Test
@@ -87,7 +86,7 @@ public class ProjectPersistenceAdapterTest {
     void testCreateProject_AlreadyExists() {
         when(projectDao.existsById("1")).thenReturn(true);
 
-        assertThrows(ProjectAlreadyExistsException.class, () -> adapter.CreateProject(project));
+        assertThrows(CustomException.class, () -> adapter.CreateProject(project));
     }
 
     @Test
@@ -103,7 +102,7 @@ public class ProjectPersistenceAdapterTest {
     void testRemoveProject_NotFound() {
         when(projectDao.existsById("1")).thenReturn(false);
 
-        assertThrows(ProjectNotFoundException.class, () -> adapter.RemoveProject("1"));
+        assertThrows(CustomException.class, () -> adapter.RemoveProject("1"));
     }
 
     @Test
@@ -121,6 +120,6 @@ public class ProjectPersistenceAdapterTest {
     void testUpdateProject_NotFound() {
         when(projectDao.existsById("1")).thenReturn(false);
 
-        assertThrows(ProjectNotFoundException.class, () -> adapter.UpdateProject(project));
+        assertThrows(CustomException.class, () -> adapter.UpdateProject(project));
     }
 }

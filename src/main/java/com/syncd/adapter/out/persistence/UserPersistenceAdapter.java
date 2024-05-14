@@ -8,13 +8,11 @@ import com.syncd.domain.user.User;
 import com.syncd.domain.user.UserMapper;
 import com.syncd.dto.UserId;
 import com.syncd.enums.UserAccountStatus;
-import com.syncd.exceptions.UserNotFoundException;
+import com.syncd.exceptions.CustomException;
+import com.syncd.exceptions.ErrorInfo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Repository
@@ -44,7 +42,8 @@ public class UserPersistenceAdapter implements WriteUserPort, ReadUserPort {
     @Override
     public UserId updateUser(User user) {
         // 사용자 정보를 가져옴
-        UserEntity existingUser = userDao.findById(user.getId()).orElse(null);
+        UserEntity existingUser = userDao.findById(user.getId())
+                .orElseThrow(() -> new CustomException(ErrorInfo.USER_NOT_FOUND, "User ID: " + user.getId()));
 
         existingUser.setName(user.getName());
         existingUser.setEmail(user.getEmail());
@@ -62,21 +61,21 @@ public class UserPersistenceAdapter implements WriteUserPort, ReadUserPort {
     public User findByEmail(String email) {
         return userDao.findByEmail(email)
                 .map(UserMapper.INSTANCE::fromEntity)
-                .orElseThrow(() -> new UserNotFoundException(email));
+                .orElseThrow(() ->  new CustomException(ErrorInfo.USER_NOT_FOUND, "User Email: " + email));
     }
 
     @Override
     public User findByUsername(String username) {
         return userDao.findByName(username)
                 .map(UserMapper.INSTANCE::fromEntity)
-                .orElseThrow(() -> new UserNotFoundException( username));
+                .orElseThrow(() -> new CustomException(ErrorInfo.USER_NOT_FOUND, "User Name: " + username));
     }
 
     @Override
     public User findByUserId(String userId) {
         return userDao.findById(userId)
                 .map(UserMapper.INSTANCE::fromEntity)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+                .orElseThrow(() -> new CustomException(ErrorInfo.USER_NOT_FOUND, "User ID: " + userId));
     }
 
     @Override
