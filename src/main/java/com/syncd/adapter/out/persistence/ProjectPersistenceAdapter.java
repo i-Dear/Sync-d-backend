@@ -6,8 +6,8 @@ import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
 import com.syncd.domain.project.Project;
 import com.syncd.domain.project.ProjectMapper;
-import com.syncd.exceptions.ProjectAlreadyExistsException;
-import com.syncd.exceptions.ProjectNotFoundException;
+import com.syncd.exceptions.CustomException;
+import com.syncd.exceptions.ErrorInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -33,12 +33,12 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
     public Project findProjectByProjectId(String projectId){
         return projectDao.findById(projectId)
                 .map(ProjectMapper.INSTANCE::fromProjectEntity)
-                .orElseThrow(() -> new ProjectNotFoundException("No project found with ID: " + projectId));
+                .orElseThrow(() -> new CustomException(ErrorInfo.PROJECT_NOT_FOUND, "Project ID: " + projectId));
     }
     @Override
     public String CreateProject(Project project) {
         if (project.getId() != null && projectDao.existsById(project.getId())) {
-            throw new ProjectAlreadyExistsException(project.getId());
+            throw new CustomException(ErrorInfo.PROJECT_ALREADY_EXISTS, "Project ID: " + project.getId());
         }
         ProjectEntity projectEntity = ProjectMapper.INSTANCE.toProjectEntity(project);
         ProjectEntity savedProjectEntity = projectDao.save(projectEntity);
@@ -48,7 +48,7 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
     @Override
     public void RemoveProject(String projectId){
         if (!projectDao.existsById(projectId)) {
-            throw new ProjectNotFoundException(projectId);
+            throw new CustomException(ErrorInfo.PROJECT_NOT_FOUND, "Project ID: " + projectId);
         }
         projectDao.deleteById(projectId);
     }
@@ -56,7 +56,7 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
     @Override
     public String UpdateProject(Project project) {
         if (project.getId() == null || !projectDao.existsById(project.getId())) {
-            throw new ProjectNotFoundException(project.getId());
+            throw new CustomException(ErrorInfo.PROJECT_NOT_FOUND, "Project ID: " + project.getId());
         }
         ProjectEntity projectEntity = ProjectMapper.INSTANCE.toProjectEntity(project);
         ProjectEntity savedEntity = projectDao.save(projectEntity);
@@ -66,7 +66,7 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
     @Override
     public String AddProgress(String projectId, int projectStage) {
         ProjectEntity projectEntity = projectDao.findById(projectId)
-                .orElseThrow(() -> new ProjectNotFoundException("No project found with ID: " + projectId));
+                .orElseThrow(() -> new CustomException(ErrorInfo.PROJECT_NOT_FOUND, "Project ID: " + projectId));
         projectEntity.setProgress(projectStage);
         ProjectEntity savedEntity = projectDao.save(projectEntity);
         return savedEntity.getId();
@@ -74,7 +74,7 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
 
     public String updateLastModifiedDate(String projectId) {
         ProjectEntity projectEntity = projectDao.findById(projectId)
-                .orElseThrow(() -> new ProjectNotFoundException("No project found with ID: " + projectId));
+                .orElseThrow(() -> new CustomException(ErrorInfo.PROJECT_NOT_FOUND, "Project ID: " + projectId));
         projectEntity.setLastModifiedDate(LocalDateTime.now().toString()); // 현재 시간 설정
         ProjectEntity savedEntity = projectDao.save(projectEntity);
         return savedEntity.getId();

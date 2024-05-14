@@ -1,4 +1,4 @@
-package com.syncd.exceptions.validation;
+package com.syncd.exceptions;
 
 public class ValidationMessages {
     public static final String NAME_NOT_BLANK = "Name must not be blank";

@@ -6,8 +6,8 @@ import com.syncd.adapter.out.persistence.repository.user.UserEntity;
 import com.syncd.domain.user.User;
 import com.syncd.dto.UserId;
 import com.syncd.enums.UserAccountStatus;
-import com.syncd.exceptions.UserNotFoundException;
-import com.syncd.exceptions.enums.ExceptionType;
+import com.syncd.exceptions.CustomException;
+import com.syncd.exceptions.ErrorInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,11 +63,11 @@ public class UserPersistenceAdapterTest {
     void findByEmailNotFoundTest() {
         when(userDao.findByEmail("johndoe@example.com")).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(UserNotFoundException.class, () ->
+        Exception exception = assertThrows(CustomException.class, () ->
                 userPersistenceAdapter.findByEmail("johndoe@example.com")
         );
 
-        String expectedMessage = "johndoe@example.com" + ": " + ExceptionType.USER_NOT_FOUND.getMessage();
+        String expectedMessage = ErrorInfo.USER_NOT_FOUND.getMessage();
         assertEquals(expectedMessage, exception.getMessage());
     }
 

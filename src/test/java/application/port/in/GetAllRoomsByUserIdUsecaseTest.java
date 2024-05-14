@@ -6,7 +6,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase;
 import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase.*;
 import com.syncd.enums.Role;
-import com.syncd.exceptions.UserNotFoundException;
+import com.syncd.exceptions.CustomException;
+import com.syncd.exceptions.ErrorInfo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,9 +47,9 @@ public class GetAllRoomsByUserIdUsecaseTest {
         String invalidUserId = "userNotFound";
 
         when(getAllRoomsByUserIdUsecase.getAllRoomsByUserId(invalidUserId))
-                .thenThrow(new UserNotFoundException("User not found with ID: " + invalidUserId));
+                .thenThrow(new CustomException(ErrorInfo.USER_NOT_FOUND, "User id : " + invalidUserId));
 
-        assertThrows(UserNotFoundException.class, () -> getAllRoomsByUserIdUsecase.getAllRoomsByUserId(invalidUserId),
+        assertThrows(CustomException.class, () -> getAllRoomsByUserIdUsecase.getAllRoomsByUserId(invalidUserId),
                 "Fetching rooms for a non-existent user should throw UserNotFoundException.");
     }
 }

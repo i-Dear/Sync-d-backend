@@ -1,8 +1,7 @@
 package com.syncd.application.port.in;
 
-import com.syncd.domain.project.UserInProject;
 import com.syncd.enums.Role;
-import com.syncd.exceptions.validation.ValidationMessages;
+import com.syncd.exceptions.ValidationMessages;
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;

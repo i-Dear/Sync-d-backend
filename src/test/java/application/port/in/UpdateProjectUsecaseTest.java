@@ -5,7 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.syncd.application.port.in.UpdateProjectUsecase;
 import com.syncd.application.port.in.UpdateProjectUsecase.*;
-import com.syncd.exceptions.ProjectNotFoundException;
+import com.syncd.exceptions.CustomException;
+import com.syncd.exceptions.ErrorInfo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,9 +41,9 @@ public class UpdateProjectUsecaseTest {
         String projectId = "nonExistingProject";
 
         when(updateProjectUsecase.updateProject(userId, projectId, projectName, description, image))
-                .thenThrow(new ProjectNotFoundException("Project not found with ID: " + projectId));
+                .thenThrow(new CustomException(ErrorInfo.PROJECT_NOT_FOUND, "project id : " + projectId));
 
-        assertThrows(ProjectNotFoundException.class, () -> updateProjectUsecase.updateProject(userId, projectId, projectName, description, image),
+        assertThrows(CustomException.class, () -> updateProjectUsecase.updateProject(userId, projectId, projectName, description, image),
                 "Updating a non-existing project should throw ProjectNotFoundException.");
     }
 }
