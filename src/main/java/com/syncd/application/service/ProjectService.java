@@ -47,7 +47,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     @Override
     public CreateProjectResponseDto createProject(String hostId, String hostName, String projectName, String description, MultipartFile img, List<String> userEmails){
         List<User> users = readUserPort.usersFromEmails(userEmails);
-        sendMailPort.sendIviteMailBatch(hostName, projectName, users);
 
         String imgURL = "";
         if (img != null && !img.isEmpty()) {
@@ -56,7 +55,8 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         }
 
         Project project = new Project();
-        project = project.createProjectDomain(projectName, description, imgURL, hostId, users);
+        project = project.createProjectDomain(projectName, description, imgURL, hostId, null);
+        sendMailPort.sendIviteMailBatch(hostName, projectName, users,project.getId());
         return new CreateProjectResponseDto(writeProjectPort.CreateProject(project));
     }
 
@@ -125,12 +125,10 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
         User host = readUserPort.findByUserId(userId);
         List<UserInProject> users = userEmails.stream()
-                .map(email -> createUserInProjectWithRoleMember(email, host.getName(), project.getName()))
+                .map(email -> createUserInProjectWithRoleMember(email, host.getName(), project.getName(), projectId))
                 .collect(Collectors.toList());
 
-        project.addUsers(users);
 
-        writeProjectPort.UpdateProject(project);
         return new InviteUserInProjectResponseDto(projectId);
     }
 
@@ -194,10 +192,10 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
             throw new CustomException(ErrorInfo.PROJECT_ALREADY_EXISTS, "project id" +  project.getId());
         }
     }
-    private UserInProject createUserInProjectWithRoleMember(String userEmail, String hostName, String projectName) {
+    private UserInProject createUserInProjectWithRoleMember(String userEmail, String hostName, String projectName,String projectId) {
         // 여기에 사용자 생성 및 역할 부여 로직 추가
         User user = readUserPort.findByEmail(userEmail);
-        sendMailPort.sendInviteMail(userEmail, hostName, user.getName(), projectName);
+        sendMailPort.sendInviteMail(userEmail, hostName, user.getName(), projectName,projectId);
         return new UserInProject(user.getId(), Role.MEMBER);
     }
 
