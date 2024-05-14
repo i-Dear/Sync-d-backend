@@ -11,6 +11,7 @@ import com.syncd.application.port.out.s3.S3Port;
 import com.syncd.domain.project.Project;
 import com.syncd.domain.project.UserInProject;
 import com.syncd.domain.user.User;
+import com.syncd.dto.LiveblocksTokenDto;
 import com.syncd.dto.MakeUserStoryResponseDto;
 import com.syncd.dto.UserRoleDto;
 import com.syncd.enums.Role;
@@ -88,7 +89,9 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
                 .map(Project::getId)
                 .collect(Collectors.toList());
         User userInfo = readUserPort.findByUserId(userId);
-        return new GetRoomAuthTokenResponseDto(liveblocksPort.GetRoomAuthToken(userId, userInfo.getName(), userInfo.getProfileImg(), projectIds).token());
+        String liveblocksTokenDto = liveblocksPort.GetRoomAuthToken(userId, userInfo.getName(), userInfo.getProfileImg(), projectIds).token();
+        System.out.println(liveblocksTokenDto);
+        return new GetRoomAuthTokenResponseDto(liveblocksTokenDto);
     }
 
     @Override
