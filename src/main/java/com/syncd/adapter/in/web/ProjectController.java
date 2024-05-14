@@ -17,6 +17,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,8 +44,8 @@ public class ProjectController {
     private final JwtTokenProvider jwtTokenProvider;
 
 
-    @PostMapping("/create")
-    public CreateProjectResponseDto createProject(HttpServletRequest request, @Valid @RequestBody CreateProjectRequestDto requestDto){
+    @PostMapping(value = "/create")
+    public CreateProjectResponseDto createProject(HttpServletRequest request, @Valid @ModelAttribute CreateProjectRequestDto requestDto) {
         String token = jwtTokenProvider.resolveToken(request);
         return createProjectUsecase.createProject(jwtTokenProvider.getUserIdFromToken(token), jwtTokenProvider.getUsernameFromToken(token), requestDto.name(), requestDto.description(), requestDto.img(), requestDto.userEmails());
     }

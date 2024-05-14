@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +27,7 @@ public class CreateProjectUsecaseTest {
     String userName = "user";
     String name = "New Project";
     String description = "Description of new project";
-    String img = "image/path.png";
+    MockMultipartFile img = new MockMultipartFile("img", "path.png", "image/png", "Image data".getBytes());
 
     @Test
     void testCreateProject() {

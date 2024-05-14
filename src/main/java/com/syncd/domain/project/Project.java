@@ -4,6 +4,7 @@ import com.syncd.domain.user.User;
 import com.syncd.enums.Role;
 import lombok.Data;
 
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -87,5 +88,16 @@ public class Project {
                 Stream.of(new UserInProject(hostId, Role.HOST)), // 호스트 사용자
                 members.stream().map(el -> new UserInProject(el.getId(), Role.MEMBER))
         ).collect(Collectors.toList());
+    }
+
+    public String getImgFileName() {
+        try {
+            URL url = new URL(img);
+            String path = url.getPath();
+            return path.substring(path.lastIndexOf('/') + 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // URL 형식이 잘못되었거나 기타 오류 처리
+        }
     }
 }
