@@ -7,24 +7,25 @@ import com.syncd.application.port.out.openai.ChatGPTPort;
 import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
+import com.syncd.application.port.out.s3.S3Port;
 import com.syncd.domain.project.Project;
 import com.syncd.domain.project.UserInProject;
 import com.syncd.domain.user.User;
 import com.syncd.dto.MakeUserStoryResponseDto;
 import com.syncd.dto.UserRoleDto;
 import com.syncd.enums.Role;
-import com.syncd.exceptions.NotIncludeProjectException;
-import com.syncd.exceptions.NotLeftChanceException;
-import com.syncd.exceptions.ProjectAlreadyExistsException;
-import com.syncd.exceptions.UserNotFoundException;
+import com.syncd.exceptions.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,13 +41,21 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     private final LiveblocksPort liveblocksPort;
     private final SendMailPort sendMailPort;
     private final ChatGPTPort chatGPTPort;
+    private final S3Port s3Port;
 
     @Override
-    public CreateProjectResponseDto createProject(String hostId, String hostName, String projectName, String description, String img, List<String> userEmails){
+    public CreateProjectResponseDto createProject(String hostId, String hostName, String projectName, String description, MultipartFile img, List<String> userEmails){
         List<User> users = readUserPort.usersFromEmails(userEmails);
         sendMailPort.sendIviteMailBatch(hostName, projectName, users);
+
+        String imgURL = "";
+        if (img != null && !img.isEmpty()) {
+            Optional<String> optionalImgURL = s3Port.uploadMultipartFileToS3(img, hostName, projectName);
+            imgURL = optionalImgURL.orElseThrow(() -> new IllegalStateException("Failed to upload image to S3"));
+        }
+
         Project project = new Project();
-        project = project.createProjectDomain(projectName, description, img, hostId, users);
+        project = project.createProjectDomain(projectName, description, imgURL, hostId, users);
         return new CreateProjectResponseDto(writeProjectPort.CreateProject(project));
     }
 
@@ -89,6 +98,17 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
     @Override
     public DeleteProjectResponseDto deleteProject(String userId, String projectId) {
+        Project project = readProjectPort.findProjectByProjectId(projectId);
+        if (project == null) {
+            throw new ProjectNotFoundException(projectId);
+        }
+
+        String imgFileName = project.getImgFileName();
+
+        if (imgFileName != null) {
+            Optional<Boolean> deletionResult = s3Port.deleteFileFromS3(imgFileName);
+        }
+
         writeProjectPort.RemoveProject(projectId);
         return new DeleteProjectResponseDto(projectId);
     }

@@ -98,6 +98,9 @@ dependencies {
 	implementation 'org.aspectj:aspectjrt:1.9.7'
 	implementation 'org.aspectj:aspectjweaver:1.9.7'
 
+	//s3
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
 }
 
 test {
