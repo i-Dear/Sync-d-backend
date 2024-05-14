@@ -19,8 +19,8 @@ public class GmailAdapter implements SendMailPort {
     private static int number;  // 랜덤 인증 코드
     @Override
     @Async
-    public String sendInviteMail(String email, String hostName, String userName, String projectName) {
-        MimeMessage message = createMail(email, hostName, userName, projectName);
+    public String sendInviteMail(String email, String hostName, String userName, String projectName, String projectId) {
+        MimeMessage message = createMail(email, hostName, userName, projectName,projectId);
         // 실제 메일 전송
         javaMailSender.send(message);
 
@@ -28,16 +28,16 @@ public class GmailAdapter implements SendMailPort {
     }
 
     @Override
-    public String sendIviteMailBatch(String hostName, String projectName, List<User> users) {
+    public String sendIviteMailBatch(String hostName, String projectName, List<User> users,String projectId) {
         users.forEach(user -> {
-            MimeMessage message = createMail(user.getEmail(), hostName, user.getName(), projectName);
+            MimeMessage message = createMail(user.getEmail(), hostName, user.getName(), projectName,projectId);
             javaMailSender.send(message);
         });
         return projectName;
     }
 
     // 메일 양식 작성
-    public MimeMessage createMail(String email, String hostName, String userName, String projectName){
+    public MimeMessage createMail(String email, String hostName, String userName, String projectName, String projectId){
         MimeMessage message = javaMailSender.createMimeMessage();
 
         try {
@@ -76,7 +76,7 @@ public class GmailAdapter implements SendMailPort {
                     "            display: inline-block;\n" +
                     "            padding: 10px 20px;\n" +
                     "            background-color: #007bff;\n" +
-                    "            color: #fff;\n" +
+                    "            color: #000;\n" +
                     "            text-decoration: none;\n" +
                     "            border-radius: 5px;\n" +
                     "        }\n" +
@@ -86,9 +86,7 @@ public class GmailAdapter implements SendMailPort {
                     "    <div class=\"container\">\n" +
                     "        <h1>싱크대 프로젝트에 초대받았습니다!</h1>\n" +
                     "        <p>"+hostName+"님이 "+userName+"님을 "+projectName+" 프로젝트에 초대되었습니다. 아래 버튼을 클릭하시면 초대에 응하실 수 있습니다</p>\n" +
-                    "        <a href=\"https://syncd.i-dear.org\" class=\"btn\">초대 수락</a>\n" +
-                    "        <p>위의 버튼이 작동하지 않는 경우 브라우저에 다음 링크를 복사하여 붙여넣을 수도 있습니다:</p>\n" +
-                    "        <p>https://syncd.i-dear.org</p>\n" +
+                    "        <a href=\"https://syncd.i-dear.org/invite/"+projectId+"\" class=\"btn\">초대 수락</a>\n" +
                     "    </div>\n" +
                     "</body>\n" +
                     "</html>\n";
