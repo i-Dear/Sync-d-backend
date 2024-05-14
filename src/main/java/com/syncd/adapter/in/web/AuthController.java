@@ -3,7 +3,6 @@ package com.syncd.adapter.in.web;
 import com.syncd.AuthControllerProperties;
 import com.syncd.application.service.LoginService;
 import com.syncd.dto.TokenDto;
-import com.syncd.exceptions.ProjectAlreadyExistsException;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +24,5 @@ public class AuthController {
         TokenDto token = loginService.socialLogin(code, registrationId);
         String redirectUrl = url + token.accessToken();
         return new RedirectView(redirectUrl);
-    }
-    @GetMapping("/test/sentry")
-    public ResponseEntity<String> testSentryIntegration() {
-        throw new ProjectAlreadyExistsException("Test Exception to verify Sentry logging.");
     }
 }

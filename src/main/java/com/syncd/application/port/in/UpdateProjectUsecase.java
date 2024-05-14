@@ -1,6 +1,6 @@
 package com.syncd.application.port.in;
 
-import com.syncd.exceptions.validation.ValidationMessages;
+import com.syncd.exceptions.ValidationMessages;
 import jakarta.validation.constraints.NotBlank;
 
 public interface UpdateProjectUsecase {

@@ -4,18 +4,15 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 import com.syncd.application.port.in.CreateProjectUsecase;
 import com.syncd.application.port.in.CreateProjectUsecase.*;
-import com.syncd.exceptions.ProjectAlreadyExistsException;
-import com.syncd.exceptions.UserNotFoundException;
+import com.syncd.exceptions.CustomException;
+import com.syncd.exceptions.ErrorInfo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,10 +56,10 @@ public class CreateProjectUsecaseTest {
         List<String> users = Arrays.asList("invalidUser@example.com");
 
         when(createProjectUsecase.createProject(userId, userName, name, description, img, users))
-                .thenThrow(new UserNotFoundException("User not found for email: invalidUser@example.com"));
+                .thenThrow(new CustomException(ErrorInfo.USER_NOT_FOUND, "user id : " + userId));
 
         // Execution and Verification
-        assertThrows(UserNotFoundException.class, () -> {
+        assertThrows(CustomException.class, () -> {
             createProjectUsecase.createProject(userId, userName, name, description, img, users);
         });
     }
@@ -72,10 +69,10 @@ public class CreateProjectUsecaseTest {
         List<String> users = Arrays.asList("user1@example.com");
 
         when(createProjectUsecase.createProject(userId, userName, name, description, img, users))
-                .thenThrow(new ProjectAlreadyExistsException("Project already exists with name: Existing Project"));
+                .thenThrow(new CustomException(ErrorInfo.PROJECT_ALREADY_EXISTS, ""));
 
         // Execution and Verification
-        assertThrows(ProjectAlreadyExistsException.class, () -> {
+        assertThrows(CustomException.class, () -> {
             createProjectUsecase.createProject(userId, userName, name, description, img, users);
         });
     }

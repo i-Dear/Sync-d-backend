@@ -100,7 +100,8 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     public DeleteProjectResponseDto deleteProject(String userId, String projectId) {
         Project project = readProjectPort.findProjectByProjectId(projectId);
         if (project == null) {
-            throw new ProjectNotFoundException(projectId);
+            throw new CustomException(ErrorInfo.PROJECT_NOT_FOUND, "Project ID: " + projectId);
+            // ... 코드 생략 ...
         }
 
         String imgFileName = project.getImgFileName();
@@ -166,14 +167,14 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     public MakeUserStoryResponseDto makeUserstory(String userId, String projectId, List<String> senarios){
         Project project = readProjectPort.findProjectByProjectId(projectId);
         if(project.getLeftChanceForUserstory() < 1){
-            throw new NotLeftChanceException(projectId);
+            throw new CustomException(ErrorInfo.NOT_LEFT_CHANCE, "project id" +  projectId);
         }
         System.out.println(userId);
         boolean containsUserIdA = project.getUsers().stream()
                 .anyMatch(user -> user.getUserId().equals(userId));
 
         if(!containsUserIdA){
-            throw new NotIncludeProjectException(projectId);
+            throw new CustomException(ErrorInfo.NOT_INCLUDE_PROJECT, "project id" +  projectId);
         }
         project.subLeftChanceForUserstory();
         writeProjectPort.UpdateProject(project);
@@ -187,7 +188,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
     private void checkHost(Project project, String userId){
         if(!project.getHost().equals(userId)){
-            throw new ProjectAlreadyExistsException();
+            throw new CustomException(ErrorInfo.PROJECT_ALREADY_EXISTS, "project id" +  project.getId());
         }
     }
     private UserInProject createUserInProjectWithRoleMember(String userEmail, String hostName, String projectName) {

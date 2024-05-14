@@ -7,7 +7,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.syncd.application.port.in.InviteUserInProjectUsecase;
 import com.syncd.application.port.in.InviteUserInProjectUsecase.*;
 
-import com.syncd.exceptions.ProjectNotFoundException;
+import com.syncd.exceptions.CustomException;
+import com.syncd.exceptions.ErrorInfo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,9 +39,9 @@ public class InviteUserInProjectUsecaseTest {
         String projectId = "nonExistingProject";
 
         when(inviteUserInProjectUsecase.inviteUserInProject(userId, projectId, users))
-                .thenThrow(new ProjectNotFoundException("Project not found"));
+                .thenThrow(new CustomException(ErrorInfo.PROJECT_NOT_FOUND, "project id : " + projectId));
 
-        assertThrows(ProjectNotFoundException.class, () -> inviteUserInProjectUsecase.inviteUserInProject(userId, projectId, users),
+        assertThrows(CustomException.class, () -> inviteUserInProjectUsecase.inviteUserInProject(userId, projectId, users),
                 "Should throw ProjectNotFoundException if the project does not exist");
     }
 }
