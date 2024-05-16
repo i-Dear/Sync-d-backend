@@ -1,6 +1,6 @@
 package com.syncd.adapter.in.web;
 
-import com.syncd.adapter.in.oauth.JwtTokenProvider;
+import com.syncd.application.service.JwtService;
 import com.syncd.application.port.in.*;
 import com.syncd.application.port.in.CreateProjectUsecase.*;
 import com.syncd.application.port.in.JoinProjectUsecase.*;
@@ -17,9 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,55 +38,55 @@ public class ProjectController {
     private final SyncProjectUsecase syncProjectUsecase;
     private final MakeUserstoryUsecase makeUserstoryUsecase;
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtService jwtService;
 
 
     @PostMapping(value = "/create")
     public CreateProjectResponseDto createProject(HttpServletRequest request, @Valid @ModelAttribute CreateProjectRequestDto requestDto) {
-        String token = jwtTokenProvider.resolveToken(request);
-        return createProjectUsecase.createProject(jwtTokenProvider.getUserIdFromToken(token), jwtTokenProvider.getUsernameFromToken(token), requestDto.name(), requestDto.description(), requestDto.img(), requestDto.userEmails());
+        String token = jwtService.resolveToken(request);
+        return createProjectUsecase.createProject(jwtService.getUserIdFromToken(token), jwtService.getUsernameFromToken(token), requestDto.name(), requestDto.description(), requestDto.img(), requestDto.userEmails());
     }
 
     @PostMapping("/join")
     public JoinProjectResponseDto joinProject(HttpServletRequest request, @Valid @RequestBody JoinProjectRequestDto requestDto) {
-        String token = jwtTokenProvider.resolveToken(request);
-        return joinProjectUsecase.joinProject(jwtTokenProvider.getUserIdFromToken(token), requestDto.projectId());
+        String token = jwtService.resolveToken(request);
+        return joinProjectUsecase.joinProject(jwtService.getUserIdFromToken(token), requestDto.projectId());
     }
 
     @PostMapping("/invite")
     public InviteUserInProjectResponseDto inviteUser(HttpServletRequest request, @Valid @RequestBody InviteUserInProjectRequestDto requestDto){
-        String token = jwtTokenProvider.resolveToken(request);
-        return inviteUserInProjectUsecase.inviteUserInProject(jwtTokenProvider.getUserIdFromToken(token), requestDto.projectId(), requestDto.users());
+        String token = jwtService.resolveToken(request);
+        return inviteUserInProjectUsecase.inviteUserInProject(jwtService.getUserIdFromToken(token), requestDto.projectId(), requestDto.users());
     }
 
     @PostMapping("/withdraw")
     public WithdrawUserInProjectResponseDto withdrawUser(HttpServletRequest request,@Valid @RequestBody WithdrawUserInProjectRequestDto requestDto){
-        String token = jwtTokenProvider.resolveToken(request);
-        return withdrawUserInProjectUsecase.withdrawUserInProject(jwtTokenProvider.getUserIdFromToken(token), requestDto.projectId(), requestDto.users());
+        String token = jwtService.resolveToken(request);
+        return withdrawUserInProjectUsecase.withdrawUserInProject(jwtService.getUserIdFromToken(token), requestDto.projectId(), requestDto.users());
     }
 
     @PostMapping("/delete")
     public DeleteProjectResponseDto deleteProject(HttpServletRequest request,@Valid @RequestBody DeleteProjectRequestDto requestDto){
-        String token = jwtTokenProvider.resolveToken(request);
-        return deleteProjectUsecase.deleteProject(jwtTokenProvider.getUserIdFromToken(token), requestDto.projectId());
+        String token = jwtService.resolveToken(request);
+        return deleteProjectUsecase.deleteProject(jwtService.getUserIdFromToken(token), requestDto.projectId());
     }
 
     @PostMapping("/update")
     public UpdateProjectResponseDto updateProject(HttpServletRequest request, @Valid @RequestBody UpdateProjectRequestDto requestDto){
-        String token = jwtTokenProvider.resolveToken(request);
-        return updateProjectUsecase.updateProject(jwtTokenProvider.getUserIdFromToken(token), requestDto.projectId(), requestDto.projectName(), requestDto.description(), requestDto.image());
+        String token = jwtService.resolveToken(request);
+        return updateProjectUsecase.updateProject(jwtService.getUserIdFromToken(token), requestDto.projectId(), requestDto.projectName(), requestDto.description(), requestDto.image());
     }
 
     @PostMapping("/sync")
     public SyncProjectResponseDto syncProject(HttpServletRequest request, @Valid @RequestBody SyncProjectRequestDto requestDto){
-        String token = jwtTokenProvider.resolveToken(request);
-        return syncProjectUsecase.syncProject(jwtTokenProvider.getUserIdFromToken(token), requestDto.projectId(), requestDto.projectStage());
+        String token = jwtService.resolveToken(request);
+        return syncProjectUsecase.syncProject(jwtService.getUserIdFromToken(token), requestDto.projectId(), requestDto.projectStage());
     }
 
     @PostMapping("/userstory")
     public ResponseEntity<MakeUserStoryResponseDto> makeUserStory(HttpServletRequest request, @RequestBody MakeUserStoryReauestDto makeUserStoryReauestDto) {
-        String token = jwtTokenProvider.resolveToken(request);
-        MakeUserStoryResponseDto result = makeUserstoryUsecase.makeUserstory(jwtTokenProvider.getUserIdFromToken(token), makeUserStoryReauestDto.getProjectId(), makeUserStoryReauestDto.getScenario());
+        String token = jwtService.resolveToken(request);
+        MakeUserStoryResponseDto result = makeUserstoryUsecase.makeUserstory(jwtService.getUserIdFromToken(token), makeUserStoryReauestDto.getProjectId(), makeUserStoryReauestDto.getScenario());
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

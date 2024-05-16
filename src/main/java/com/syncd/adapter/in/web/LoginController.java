@@ -1,6 +1,7 @@
 package com.syncd.adapter.in.web;
 
 import com.syncd.GoogleOAuth2Properties;
+import com.syncd.application.port.in.SocialLoginUsecase;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
 import com.syncd.application.service.LoginService;
 import com.syncd.dto.TokenDto;
@@ -14,8 +15,6 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequiredArgsConstructor
 @RequestMapping("/v1/auth")
 public class LoginController {
-    private final ReadUserPort readUserPort;
-    private final LoginService loginService;
     private final GoogleOAuth2Properties googleOAuth2Properties;
 
     @GetMapping("/login/google")
