@@ -1,7 +1,8 @@
 package com.syncd.application.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.syncd.adapter.in.oauth.JwtUtils;
+import com.syncd.application.port.in.GenerateTokenUsecase;
+import com.syncd.application.port.in.SocialLoginUsecase;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
 import com.syncd.application.port.out.persistence.user.WriteUserPort;
 import com.syncd.domain.user.User;
@@ -18,7 +19,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class LoginService {
+public class LoginService implements SocialLoginUsecase {
     private final RestTemplate restTemplate;
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String clientId ;
@@ -32,7 +33,10 @@ public class LoginService {
     private String resourceUri;
     private final WriteUserPort writeUserPort;
 
+    private final GenerateTokenUsecase generateTokenUsecase;
+
     private final ReadUserPort readUserPort;
+    @Override
     public TokenDto socialLogin(String code, String registrationId) {
         String googleAccessToken = getAccessToken(code, registrationId);
         JsonNode userResourceNode = getUserResource(googleAccessToken, registrationId);
@@ -55,7 +59,7 @@ public class LoginService {
             user.setId(readUserPort.findByEmail(userEmail).getId());
         }
 
-        String accessToken = JwtUtils.generateToken(user);
+        String accessToken = generateTokenUsecase.generateToken(user);
         System.out.println("JWT accessToken : " + accessToken);
         return new TokenDto(accessToken,"");
     }

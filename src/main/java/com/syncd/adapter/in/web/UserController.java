@@ -4,14 +4,14 @@ import com.syncd.application.port.in.GetUserInfoUsecase;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import com.syncd.adapter.in.oauth.JwtTokenProvider;
+import com.syncd.application.service.JwtService;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/user")
 public class UserController {
     private final GetUserInfoUsecase getUserInfoUsecase;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtService jwtService;
 
 //    @PostMapping("/register")
 //    public RegisterUserResponseDto registerUser(@RequestBody RegisterUserRequestDto requestDto){
@@ -20,8 +20,8 @@ public class UserController {
     @GetMapping("/info")
     public GetUserInfoUsecase.GetUserInfoResponseDto getUserInfo(HttpServletRequest request){
 
-        String token = jwtTokenProvider.resolveToken(request);
-        return getUserInfoUsecase.getUserInfo(jwtTokenProvider.getUserIdFromToken(token));
+        String token = jwtService.resolveToken(request);
+        return getUserInfoUsecase.getUserInfo(jwtService.getUserIdFromToken(token));
     }
     
 }

@@ -1,6 +1,6 @@
 package com.syncd.adapter.in.web;
 
-import com.syncd.adapter.in.oauth.JwtTokenProvider;
+import com.syncd.application.service.JwtService;
 import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase;
 import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase.*;
 import com.syncd.application.port.in.GetRoomAuthTokenUsecase;
@@ -17,23 +17,23 @@ import org.springframework.web.bind.annotation.*;
 public class RoomController {
     private final GetAllRoomsByUserIdUsecase getAllRoomsByUserIdUsecase;
     private final GetRoomAuthTokenUsecase getRoomAuthTokenUsecase;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtService jwtService;
     @GetMapping("/auth")
     public GetRoomAuthTokenResponseDto getRoomAuthToken(HttpServletRequest request){
-        String token = jwtTokenProvider.resolveToken(request);
-        return getRoomAuthTokenUsecase.getRoomAuthToken(jwtTokenProvider.getUserIdFromToken(token));
+        String token = jwtService.resolveToken(request);
+        return getRoomAuthTokenUsecase.getRoomAuthToken(jwtService.getUserIdFromToken(token));
     }
 
     @GetMapping("")
     public GetAllRoomsByUserIdResponseDto getAllInfoAboutRoomsByUserId(HttpServletRequest request){
-        String token = jwtTokenProvider.resolveToken(request);
-        return getAllRoomsByUserIdUsecase.getAllRoomsByUserId(jwtTokenProvider.getUserIdFromToken(token));
+        String token = jwtService.resolveToken(request);
+        return getAllRoomsByUserIdUsecase.getAllRoomsByUserId(jwtService.getUserIdFromToken(token));
     }
 
     @PostMapping("/test-auth")
     public GetRoomAuthTokenResponseDto getRoomAuthToken(@RequestBody @Valid GetRoomAuthTokenUsecase.TestDto getRoomAuthToken, HttpServletRequest request){
-        String token = jwtTokenProvider.resolveToken(request);
-        return getRoomAuthTokenUsecase.Test(jwtTokenProvider.getUserIdFromToken(token),getRoomAuthToken.roomId());
+        String token = jwtService.resolveToken(request);
+        return getRoomAuthTokenUsecase.Test(jwtService.getUserIdFromToken(token),getRoomAuthToken.roomId());
 
     }
 }

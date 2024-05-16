@@ -1,5 +1,6 @@
-package com.syncd.application.port.out.persistence.project;
+package application.port.out.persistence.project;
 
+import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.domain.project.Project;
 import com.syncd.domain.user.User;
 import org.junit.jupiter.api.BeforeEach;
