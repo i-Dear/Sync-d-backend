@@ -35,6 +35,7 @@ public class AuthController {
         return new RedirectView(redirectUrl);
     }
 
+
     @GetMapping("/code/{registrationId}/dev")
     public RedirectView googleLoginDev(@RequestParam String code,
                                     @PathVariable String registrationId) {
