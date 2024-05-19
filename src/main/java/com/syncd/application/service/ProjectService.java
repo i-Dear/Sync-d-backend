@@ -15,19 +15,16 @@ import com.syncd.dto.MakeUserStoryResponseDto;
 import com.syncd.dto.UserRoleDto;
 import com.syncd.enums.Role;
 import com.syncd.exceptions.*;
+import com.syncd.mapper.ProjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 
 @Service
@@ -42,6 +39,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     private final SendMailPort sendMailPort;
     private final ChatGPTPort chatGPTPort;
     private final S3Port s3Port;
+    private final ProjectMapper projectMappers;
 
     @Override
     public CreateProjectResponseDto createProject(String hostId, String hostName, String projectName, String description, MultipartFile img, List<String> userEmails){
@@ -76,7 +74,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     @Override
     public GetAllRoomsByUserIdResponseDto getAllRoomsByUserId(String userId) {
         List<Project> projects = readProjectPort.findAllProjectByUserId(userId);
-        GetAllRoomsByUserIdResponseDto responseDto =  mapProjectsToResponse(userId, projects);
+        GetAllRoomsByUserIdResponseDto responseDto = mapProjectsToResponse(userId, projects);
         return responseDto;
     }
 
@@ -84,6 +82,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     @Override
     public GetRoomAuthTokenResponseDto getRoomAuthToken(String userId) {
         List<Project> projects = readProjectPort.findAllProjectByUserId(userId);
+//        List<String> projectIds = projectMappers.mapProjectToProjectId(projects);
         List<String> projectIds = projects.stream()
                 .map(Project::getId)
                 .collect(Collectors.toList());
@@ -101,7 +100,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         Project project = readProjectPort.findProjectByProjectId(projectId);
         if (project == null) {
             throw new CustomException(ErrorInfo.PROJECT_NOT_FOUND, "Project ID: " + projectId);
-            // ... 코드 생략 ...
         }
 
         String imgFileName = project.getImgFileName();
@@ -121,10 +119,10 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         checkHost(project, userId);
 
         User host = readUserPort.findByUserId(userId);
+        // List<UserInProject> users = projectMappers.mapEmailsToUsersInProject(userEmails, host.getName(), project.getName(), projectId, readUserPort, sendMailPort);
         List<UserInProject> users = userEmails.stream()
                 .map(email -> createUserInProjectWithRoleMember(email, host.getName(), project.getName(), projectId))
                 .collect(Collectors.toList());
-
 
         return new InviteUserInProjectResponseDto(projectId);
     }
@@ -237,5 +235,4 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     private UserRoleDto convertUserToUserRoleDto(String projectId, UserInProject user) {
         return new UserRoleDto(projectId, user.getUserId(), user.getRole());
     }
-
 }

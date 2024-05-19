@@ -1,6 +1,4 @@
-package com.syncd.dto;
-
-import lombok.Data;
+package com.syncd.dto;;
 
 public record UserForTokenDto(
         String userId

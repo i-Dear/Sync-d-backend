@@ -5,9 +5,9 @@ import com.syncd.adapter.out.persistence.repository.project.ProjectEntity;
 import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
 import com.syncd.domain.project.Project;
-import com.syncd.domain.project.ProjectMapper;
 import com.syncd.exceptions.CustomException;
 import com.syncd.exceptions.ErrorInfo;
+import com.syncd.mapper.ProjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -23,8 +23,9 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
     @Override
     public List<Project> findAllProjectByUserId(String userId){
         List<ProjectEntity> projectEntityList = projectDao.findByUsersUserId(userId);
+        // List<Project> projects = ProjectMapper.INSTANCE.fromProjectEntities(projectEntityList);
         List<Project> projects = projectEntityList.stream()
-                .map(ProjectMapper.INSTANCE::fromProjectEntity)
+                .map(ProjectMapper.INSTANCE::mapProjectEntityToProject)
                 .collect(Collectors.toList());
         return projects;
     }
@@ -32,7 +33,7 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
     @Override
     public Project findProjectByProjectId(String projectId){
         return projectDao.findById(projectId)
-                .map(ProjectMapper.INSTANCE::fromProjectEntity)
+                .map(ProjectMapper.INSTANCE::mapProjectEntityToProject)
                 .orElseThrow(() -> new CustomException(ErrorInfo.PROJECT_NOT_FOUND, "Project ID: " + projectId));
     }
     @Override
@@ -40,7 +41,7 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
         if (project.getId() != null && projectDao.existsById(project.getId())) {
             throw new CustomException(ErrorInfo.PROJECT_ALREADY_EXISTS, "Project ID: " + project.getId());
         }
-        ProjectEntity projectEntity = ProjectMapper.INSTANCE.toProjectEntity(project);
+        ProjectEntity projectEntity = ProjectMapper.INSTANCE.mapProjectToProjectEntity(project);
         ProjectEntity savedProjectEntity = projectDao.save(projectEntity);
         return savedProjectEntity.getId();
     }
@@ -58,7 +59,7 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
         if (project.getId() == null || !projectDao.existsById(project.getId())) {
             throw new CustomException(ErrorInfo.PROJECT_NOT_FOUND, "Project ID: " + project.getId());
         }
-        ProjectEntity projectEntity = ProjectMapper.INSTANCE.toProjectEntity(project);
+        ProjectEntity projectEntity = ProjectMapper.INSTANCE.mapProjectToProjectEntity(project);
         ProjectEntity savedEntity = projectDao.save(projectEntity);
         return savedEntity.getId();
     }
