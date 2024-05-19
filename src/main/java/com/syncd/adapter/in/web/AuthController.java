@@ -40,19 +40,25 @@ public class AuthController {
             System.out.println(headerName + ": " + headerValue);
         }
         String cookies = request.getHeader("cookie");
+        String referer = request.getHeader("referer");
         String refererSubstring="";
-        int refererIndex = cookies.indexOf("referer=");
-        if (refererIndex != -1) {
-            // 'referer=' 이후의 부분 추출
-            refererSubstring = cookies.substring(refererIndex + "referer=".length());
+        if(cookies!=null){
+            int refererIndex = cookies.indexOf("referer=");
+            if (refererIndex != -1) {
+                // 'referer=' 이후의 부분 추출
+                refererSubstring = cookies.substring(refererIndex + "referer=".length());
 
-            // ';' 이전의 부분 추출 (쿠키가 끝날 때까지)
-            int semicolonIndex = refererSubstring.indexOf(';');
-            if (semicolonIndex != -1) {
-                refererSubstring = refererSubstring.substring(0, semicolonIndex);
+                // ';' 이전의 부분 추출 (쿠키가 끝날 때까지)
+                int semicolonIndex = refererSubstring.indexOf(';');
+                if (semicolonIndex != -1) {
+                    refererSubstring = refererSubstring.substring(0, semicolonIndex);
+                }
+
+                System.out.println("Referer: " + refererSubstring);
             }
-
-            System.out.println("Referer: " + refererSubstring);
+        } else if (referer!=null) {
+            System.out.println("Referer from referer");
+            refererSubstring=referer;
         } else {
             System.out.println("Referer not found.");
             refererSubstring = "https://syncd.i-dear.org/";
