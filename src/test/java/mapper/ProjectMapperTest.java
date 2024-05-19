@@ -86,7 +86,6 @@ public class ProjectMapperTest {
         assertProjectForGetAllInfoDtoFields(responseDto.projects().get(1), "id2", "Project 2", "Description 2", Role.MEMBER, 70, "2022-02-01", "user1@example.com");
     }
 
-    // Helper methods for creating entities and asserting fields
     private ProjectEntity createProjectEntity(String id, String name) {
         ProjectEntity entity = new ProjectEntity();
         entity.setId(id);
