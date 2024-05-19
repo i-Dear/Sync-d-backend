@@ -26,45 +26,24 @@ public class AuthController {
 
     @GetMapping("/code/{registrationId}")
     public RedirectView googleLogin(@RequestParam String code,
-                                    @PathVariable String registrationId,
-                                    HttpServletRequest request,
-                                    HttpServletResponse response) {
+                                    @PathVariable String registrationId) {
+        String redirectUri = authControllerProperties.getRedirectUriForGoogle();
         String url = authControllerProperties.getRedirectUrl();
-        TokenDto token = socialLoginUsecase.socialLogin(code, registrationId);
+        TokenDto token = socialLoginUsecase.socialLogin(code, registrationId,redirectUri);
+        
+        String redirectUrl = url + token.accessToken();
+        return new RedirectView(redirectUrl);
+    }
 
-        Enumeration<String> reqHeaderNames = request.getHeaderNames();
 
-        while (reqHeaderNames.hasMoreElements()) {
-            String headerName = reqHeaderNames.nextElement();
-            String headerValue = request.getHeader(headerName);
-            System.out.println(headerName + ": " + headerValue);
-        }
-        String cookies = request.getHeader("cookie");
-        String referer = request.getHeader("referer");
-        String refererSubstring="";
-        if(cookies!=null){
-            int refererIndex = cookies.indexOf("referer=");
-            if (refererIndex != -1) {
-                // 'referer=' 이후의 부분 추출
-                refererSubstring = cookies.substring(refererIndex + "referer=".length());
-
-                // ';' 이전의 부분 추출 (쿠키가 끝날 때까지)
-                int semicolonIndex = refererSubstring.indexOf(';');
-                if (semicolonIndex != -1) {
-                    refererSubstring = refererSubstring.substring(0, semicolonIndex);
-                }
-
-                System.out.println("Referer: " + refererSubstring);
-            }
-        } else if (referer!=null) {
-            System.out.println("Referer from referer");
-            refererSubstring=referer;
-        } else {
-            System.out.println("Referer not found.");
-            refererSubstring = "https://syncd.i-dear.org/";
-        }
-
-        String redirectUrl = refererSubstring + url + token.accessToken();
+    @GetMapping("/code/{registrationId}/dev")
+    public RedirectView googleLoginDev(@RequestParam String code,
+                                    @PathVariable String registrationId) {
+        String url = authControllerProperties.getRedirectUrlDev();
+        String redirectUri = authControllerProperties.getRedirectUriForGoogleDev();
+        TokenDto token = socialLoginUsecase.socialLogin(code, registrationId,redirectUri);
+        String redirectUrl = url + token.accessToken();
+        System.out.println("redirect: "+redirectUrl);
         return new RedirectView(redirectUrl);
     }
 }

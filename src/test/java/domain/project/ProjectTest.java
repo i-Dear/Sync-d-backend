@@ -46,7 +46,7 @@ public class ProjectTest {
         userList.add(user2);
 
         project = new Project();
-        project = project.createProjectDomain("Project Name", "syncd", "img", hostId, userList);
+        project = project.createProjectDomain("Project Name", "syncd", "img", hostId);
         project.setId("1");
     }
 
