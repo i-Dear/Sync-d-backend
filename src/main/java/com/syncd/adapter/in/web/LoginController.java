@@ -21,6 +21,7 @@ public class LoginController {
     public RedirectView redirectToGoogleOAuth(HttpServletRequest request) {
         String redirectUrl = googleOAuth2Properties.getRedirectUri();
         String targetUrl = request.getHeader("Referer")+"login/oauth2/code/google";
+
         if (targetUrl == null || targetUrl.isBlank()) {
             // 기본 URL 설정
             targetUrl = redirectUrl;
