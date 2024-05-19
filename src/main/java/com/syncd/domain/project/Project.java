@@ -69,10 +69,10 @@ public class Project {
 //        this.progress = 0;
 //        this.lastModifiedDate = LocalDateTime.now().toString();
 //    }
-    public Project createProjectDomain(String projectName, String description, String img, String hostId, List<User> users){
+    public Project createProjectDomain(String projectName, String description, String img, String hostId){
         Project project = new Project();
         project.setImg(img);
-        project.setUsers( userInProjectsFromUsers(hostId,users));
+        project.setUsers( userInProjectsFromUsers(hostId));
         project.setName(projectName);
         project.setDescription(description);
         project.setProgress(0);
@@ -80,10 +80,8 @@ public class Project {
         project.setLeftChanceForUserstory(3);
         return project;
     }
-     private List<UserInProject> userInProjectsFromUsers(String hostId, List<User> members){
-         if (members == null) {
-             return Collections.emptyList(); // 호스트는 존재하지만 멤버는 없을 수 있음
-         }
+     private List<UserInProject> userInProjectsFromUsers(String hostId){
+        List<User> members = new ArrayList<>();
         return Stream.concat(
                 Stream.of(new UserInProject(hostId, Role.HOST)), // 호스트 사용자
                 members.stream().map(el -> new UserInProject(el.getId(), Role.MEMBER))

@@ -24,7 +24,7 @@ public class ReadProjectPortTest {
         String hostId = "hostUserId";
         List<User> emptyUserList = new ArrayList<>();
         project = new Project();
-        project = project.createProjectDomain("Project Name", "Description", "img", hostId, emptyUserList);
+        project = project.createProjectDomain("Project Name", "Description", "img", hostId);
         project.setId("1");
         project.setLastModifiedDate(LocalDateTime.now().toString());
         project.setProgress(0);

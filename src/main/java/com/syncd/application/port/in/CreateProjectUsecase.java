@@ -20,18 +20,12 @@ public interface CreateProjectUsecase {
     record CreateProjectRequestDto(
             @NotBlank(message = ValidationMessages.NAME_NOT_BLANK)
             String name,
-            @NotBlank(message = ValidationMessages.DESCRIPTION_NOT_BLANK)
             String description,
             MultipartFile img,
-            @NotNull(message = ValidationMessages.USERS_NOT_NULL)
-            @Size(min = 1, message = ValidationMessages.USERS_SIZE)
             List<String> userEmails
-    ) {
-    }
-
+    ) {}
     record CreateProjectResponseDto(
             String projectId
-    ) {
-    }
+    ) {}
 
 }

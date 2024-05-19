@@ -39,7 +39,7 @@ public class ProjectPersistenceAdapterTest {
         String hostId = "hostId";
         List<User> userList = new ArrayList<>();
         project = new Project();
-        project = project.createProjectDomain("Project Name", "Description", "img", hostId, userList);
+        project = project.createProjectDomain("Project Name", "Description", "img", hostId);
         project.setId("1");
     }
 
