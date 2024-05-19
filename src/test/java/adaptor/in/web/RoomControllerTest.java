@@ -24,6 +24,10 @@ public class RoomControllerTest {
         validator = factory.getValidator();
     }
 
+    // ======================================
+    // GetRoomAuthTokenUsecase
+    // ======================================
+
     @Test
     @DisplayName("Get Room Auth Token - Invalid Request - Blank RoomId")
     void testGetRoomAuthToken_InvalidRequest_BlankRoomId() {
@@ -43,6 +47,9 @@ public class RoomControllerTest {
         assertThat(violations).isEmpty();
     }
 
+    // ======================================
+    // GetAllRoomsByUserIdUsecase
+    // ======================================
 
     @Test
     @DisplayName("Get All Rooms By User Id - Invalid Request - Blank UserId")

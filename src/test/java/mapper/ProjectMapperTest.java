@@ -41,6 +41,24 @@ public class ProjectMapperTest {
     }
 
     @Test
+    public void testMapProjectEntityToProject() {
+        Project project = projectMapper.mapProjectEntityToProject(entity1);
+
+        assertNotNull(project);
+        assertEquals("id1", project.getId());
+        assertEquals("Project 1", project.getName());
+    }
+
+    @Test
+    public void testMapProjectToProjectEntity() {
+        ProjectEntity entity = projectMapper.mapProjectToProjectEntity(project1);
+
+        assertNotNull(entity);
+        assertEquals("id1", entity.getId());
+        assertEquals("Project 1", entity.getName());
+    }
+
+    @Test
     public void testMapProjectEntitiesToProjects() {
         ProjectEntity entity2 = new ProjectEntity();
         entity2.setId("id2");
@@ -76,25 +94,7 @@ public class ProjectMapperTest {
     }
 
     @Test
-    public void testFromProjectEntity() {
-        Project project = projectMapper.mapProjectEntityToProject(entity1);
-
-        assertNotNull(project);
-        assertEquals("id1", project.getId());
-        assertEquals("Project 1", project.getName());
-    }
-
-    @Test
-    public void testToProjectEntity() {
-        ProjectEntity entity = projectMapper.mapProjectToProjectEntity(project1);
-
-        assertNotNull(entity);
-        assertEquals("id1", entity.getId());
-        assertEquals("Project 1", entity.getName());
-    }
-
-    @Test
-    public void testConvertProjectToDto() {
+    public void testConvertProjectToProjectForGetAllInfoDto() {
         ProjectForGetAllInfoAboutRoomsByUserIdResponseDto dto = projectMapper.convertProjectToProjectForGetAllInfoDto("user1@example.com", project1);
 
         assertNotNull(dto);
@@ -110,7 +110,7 @@ public class ProjectMapperTest {
     }
 
     @Test
-    public void testMapProjectsToResponse() {
+    public void testMapProjectsToGetAllRoomsByUserIdResponseDto() {
         Project project2 = new Project();
         project2.setId("id2");
         project2.setName("Project 2");

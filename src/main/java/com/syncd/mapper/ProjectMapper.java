@@ -26,15 +26,23 @@ public interface ProjectMapper {
 
     ProjectForGetAllInfoAboutRoomsByUserIdResponseDto mapProjectToProjectForGetAllInfoDto(Project project);
 
-    default String mapProjectToProjectId(Project project) {
-        return project.getId();
-    }
+    // ======================================
+    // ProjectsToProjectIds
+    // ======================================
 
     default List<String> mapProjectsToProjectIds(List<Project> projects) {
         return projects.stream()
                 .map(this::mapProjectToProjectId)
                 .collect(Collectors.toList());
     }
+
+    default String mapProjectToProjectId(Project project) {
+        return project.getId();
+    }
+
+    // ======================================
+    // ProjectsToProjectForGetAllInfoDtos
+    // ======================================
 
     default List<ProjectForGetAllInfoAboutRoomsByUserIdResponseDto> mapProjectsToProjectForGetAllInfoDtos(String userId, List<Project> projects) {
         return projects.stream()
@@ -72,10 +80,18 @@ public interface ProjectMapper {
                 .collect(Collectors.toList());
     }
 
+    // ======================================
+    // ProjectsToGetAllRoomsByUserIdResponseDto
+    // ======================================
+
     default GetAllRoomsByUserIdResponseDto mapProjectsToGetAllRoomsByUserIdResponseDto(String userId, List<Project> projects) {
         List<ProjectForGetAllInfoAboutRoomsByUserIdResponseDto> projectDtos = mapProjectsToProjectForGetAllInfoDtos(userId, projects);
         return new GetAllRoomsByUserIdResponseDto(userId, projectDtos);
     }
+
+    // ======================================
+    // EmailsToUsersInProject
+    // ======================================
 
     default List<UserInProject> mapEmailsToUsersInProject(List<String> userEmails, String hostName, String projectName, String projectId, ReadUserPort readUserPort, SendMailPort sendMailPort) {
         return userEmails.stream()
@@ -88,4 +104,8 @@ public interface ProjectMapper {
         sendMailPort.sendInviteMail(userEmail, hostName, user.getName(), projectName, projectId);
         return new UserInProject(user.getId(), Role.MEMBER);
     }
+
+
+
+
 }

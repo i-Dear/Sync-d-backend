@@ -74,6 +74,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     @Override
     public GetAllRoomsByUserIdResponseDto getAllRoomsByUserId(String userId) {
         List<Project> projects = readProjectPort.findAllProjectByUserId(userId);
+        // GetAllRoomsByUserIdResponseDto responseDto = projectMappers.mapProjectsToGetAllRoomsByUserIdResponseDto(userId, projects);
         GetAllRoomsByUserIdResponseDto responseDto = mapProjectsToResponse(userId, projects);
         return responseDto;
     }

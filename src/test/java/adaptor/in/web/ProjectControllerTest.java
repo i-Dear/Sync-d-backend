@@ -31,6 +31,10 @@ public class ProjectControllerTest {
         validator = factory.getValidator();
     }
 
+    // ======================================
+    // CreateProject
+    // ======================================
+
     @Test
     @DisplayName("Create Project - Invalid Request - Blank Project Name")
     void testCreateProject_InvalidRequest_BlankName() {
@@ -50,6 +54,10 @@ public class ProjectControllerTest {
         assertThat(violations).isEmpty();
     }
 
+    // ======================================
+    // JoinProject
+    // ======================================
+
     @Test
     @DisplayName("Join Project - Invalid Request - Blank ProjectId")
     void testJoinProject_InvalidRequest_BlankProjectId() {
@@ -68,6 +76,10 @@ public class ProjectControllerTest {
         Set<ConstraintViolation<JoinProjectRequestDto>> violations = validator.validate(requestDto);
         assertThat(violations).isEmpty();
     }
+
+    // ======================================
+    // InviteUser
+    // ======================================
 
     @Test
     @DisplayName("Invite User - Invalid Request - Blank ProjectId and Empty Users")
@@ -126,6 +138,10 @@ public class ProjectControllerTest {
         assertThat(violations).isEmpty();
     }
 
+    // ======================================
+    // WithdrawUser
+    // ======================================
+
     @Test
     @DisplayName("Withdraw User - Invalid Request - Blank ProjectId and Empty Users")
     void testWithdrawUser_InvalidRequest_BlankProjectIdAndEmptyUsers() {
@@ -182,6 +198,10 @@ public class ProjectControllerTest {
         assertThat(violations).isEmpty();
     }
 
+    // ======================================
+    // DeleteProject
+    // ======================================
+
     @Test
     @DisplayName("Delete Project - Invalid Request - Blank ProjectId")
     void testDeleteProject_InvalidRequest_BlankProjectId() {
@@ -201,6 +221,10 @@ public class ProjectControllerTest {
         assertThat(violations).isEmpty();
     }
 
+    // ======================================
+    // UpdateProject
+    // ======================================
+
     @Test
     @DisplayName("Update Project - Invalid Request - Blank ProjectId")
     void testUpdateProject_InvalidRequest_BlankProjectId() {
@@ -219,6 +243,10 @@ public class ProjectControllerTest {
         Set<ConstraintViolation<UpdateProjectRequestDto>> violations = validator.validate(requestDto);
         assertThat(violations).isEmpty();
     }
+
+    // ======================================
+    // SyncProject
+    // ======================================
 
     @Test
     @DisplayName("Sync Project - Invalid Request - Blank ProjectId")
@@ -248,6 +276,10 @@ public class ProjectControllerTest {
         Set<ConstraintViolation<SyncProjectRequestDto>> violations = validator.validate(requestDto);
         assertThat(violations).isEmpty();
     }
+
+    // ======================================
+    // MakeUserStory
+    // ======================================
 
     @Test
     @DisplayName("Make User Story - Invalid Request - Blank ProjectId")

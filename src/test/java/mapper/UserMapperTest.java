@@ -21,7 +21,7 @@ public class UserMapperTest {
     private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     @Test
-    public void testFromRegisterUserRequestDto() {
+    public void testMapRegisterUserRequestDtoToUser() {
         RegisterUserRequestDto requestDto = new RegisterUserRequestDto("testUser", "test@example.com", "password");
 
         User user = userMapper.mapRegisterUserRequestDtoToUser(requestDto);
@@ -32,7 +32,7 @@ public class UserMapperTest {
     }
 
     @Test
-    public void testToUserForTokenDto() {
+    public void testMapUserToUserForTokenDto() {
         User user = new User();
         user.setId("1");
         user.setName("testUser");
@@ -46,7 +46,7 @@ public class UserMapperTest {
     }
 
     @Test
-    public void testFromEntity() {
+    public void testMapUserEntityToUser() {
         UserEntity userEntity = new UserEntity();
         userEntity.setId("1");
         userEntity.setName("testUser");
@@ -63,7 +63,7 @@ public class UserMapperTest {
     }
 
     @Test
-    public void testFromDto() {
+    public void testMapUserDtoToUser() {
         UserDto userDto = new UserDto("1", "test@example.com", "testUser", UserAccountStatus.AVAILABLE, "profileImg.jpg", Arrays.asList("proj1", "proj2"));
 
         User user = userMapper.mapUserDtoToUser(userDto);
@@ -73,11 +73,10 @@ public class UserMapperTest {
         assertEquals("testUser", user.getName());
         assertEquals("test@example.com", user.getEmail());
         assertEquals("profileImg.jpg", user.getProfileImg());
-
     }
 
     @Test
-    public void testToDto() {
+    public void testMapUserToUserDto() {
         User user = new User();
         user.setId("1");
         user.setName("testUser");
@@ -94,7 +93,7 @@ public class UserMapperTest {
     }
 
     @Test
-    public void testFromDtoWithNullProjectIds() {
+    public void testMapUserDtoToUserWithNullProjectIds() {
         UserDto userDto = new UserDto("1", "test@example.com", "testUser", UserAccountStatus.AVAILABLE, "profileImg.jpg", null);
 
         User user = userMapper.mapUserDtoToUser(userDto);
@@ -107,7 +106,7 @@ public class UserMapperTest {
     }
 
     @Test
-    public void testToUserRoleForTeamDto() {
+    public void testMapUserToUserRoleDto() {
         User user = new User();
         user.setId("1");
         user.setName("testUser");
