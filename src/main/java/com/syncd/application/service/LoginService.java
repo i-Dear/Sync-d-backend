@@ -66,7 +66,6 @@ public class LoginService implements SocialLoginUsecase {
 
     private String getAccessToken(String authorizationCode, String registrationId) {
 
-
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", authorizationCode);
         params.add("client_id", clientId);
