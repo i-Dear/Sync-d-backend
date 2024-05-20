@@ -44,7 +44,7 @@ public class AuthControllerTest {
         String refreshToken = "refreshToken";
 
         when(authControllerProperties.getRedirectUrl()).thenReturn(redirectUrl);
-        when(socialLoginUsecase.socialLogin(anyString(), anyString())).thenReturn(new TokenDto(accessToken, refreshToken));
+        when(socialLoginUsecase.socialLogin(anyString(), anyString(),anyString())).thenReturn(new TokenDto(accessToken, refreshToken));
 
         HttpServletResponse response = mock(HttpServletResponse.class);
         RedirectView result = authController.googleLogin(code, registrationId, response);
@@ -52,8 +52,9 @@ public class AuthControllerTest {
         assertThat(result.getUrl()).isEqualTo(redirectUrl + accessToken);
 
         ArgumentCaptor<String> codeCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> redirectionUriCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> registrationIdCaptor = ArgumentCaptor.forClass(String.class);
-        verify(socialLoginUsecase, times(1)).socialLogin(codeCaptor.capture(), registrationIdCaptor.capture());
+        verify(socialLoginUsecase, times(1)).socialLogin(codeCaptor.capture(), registrationIdCaptor.capture(),redirectionUriCaptor.capture());
 
         assertThat(codeCaptor.getValue()).isEqualTo(code);
         assertThat(registrationIdCaptor.getValue()).isEqualTo(registrationId);
