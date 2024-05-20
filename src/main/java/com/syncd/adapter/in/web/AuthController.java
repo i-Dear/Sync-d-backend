@@ -30,7 +30,7 @@ public class AuthController {
         String redirectUri = authControllerProperties.getRedirectUriForGoogle();
         String url = authControllerProperties.getRedirectUrl();
         TokenDto token = socialLoginUsecase.socialLogin(code, registrationId,redirectUri);
-        
+
         String redirectUrl = url + token.accessToken();
         return new RedirectView(redirectUrl);
     }

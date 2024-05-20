@@ -34,6 +34,5 @@ public class RoomController {
     public GetRoomAuthTokenResponseDto getRoomAuthToken(@RequestBody @Valid GetRoomAuthTokenUsecase.TestDto getRoomAuthToken, HttpServletRequest request){
         String token = jwtService.resolveToken(request);
         return getRoomAuthTokenUsecase.Test(jwtService.getUserIdFromToken(token),getRoomAuthToken.roomId());
-
     }
 }
