@@ -1,9 +1,7 @@
 package com.syncd.application.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.syncd.GoogleOAuth2Properties;
 import com.syncd.application.port.in.GenerateTokenUsecase;
-import com.syncd.application.port.in.GetOauthRedirectUrlUsecase;
 import com.syncd.application.port.in.SocialLoginUsecase;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
 import com.syncd.application.port.out.persistence.user.WriteUserPort;

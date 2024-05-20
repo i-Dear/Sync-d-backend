@@ -28,6 +28,7 @@ public class DeleteProjectUsecaseTest {
         DeleteProjectResponseDto actualResponse = deleteProjectUsecase.deleteProject(userId, projectId);
         assertEquals(expectedResponse.projectId(), actualResponse.projectId(), "ProjectID와 삭제된 ProjectID가 불일치합니다.");
     }
+
     @Test
     @DisplayName("Throw exception when project does not exist")
     void testDeleteNonExistingProject() {

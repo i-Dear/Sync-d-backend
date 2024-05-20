@@ -23,6 +23,7 @@ public class InviteUserInProjectUsecaseTest {
     private InviteUserInProjectUsecase inviteUserInProjectUsecase;
     String userId = "user123";
     List<String> users = List.of("user234", "user345");
+
     @Test
     void testInviteUserInProject(){
         String projectId = "project456";
@@ -33,6 +34,7 @@ public class InviteUserInProjectUsecaseTest {
         assertEquals(expectedResponse.projectId(), actualResponse.projectId());
         verify(inviteUserInProjectUsecase).inviteUserInProject(userId, projectId, users);
     }
+
     @Test
     @DisplayName("Project 초대 시 존재하지 않는 Project에 대한 예외 처리")
     void testInviteUserInNonExistingProject() {

@@ -21,6 +21,7 @@ public class UpdateProjectUsecaseTest {
     String projectName = "공감대";
     String description = "이해하지마 공감해";
     String image = "updated_image.jpg";
+
     @Test
     @DisplayName("ProjectID를 기반으로 Project 정보 업데이트 테스트")
     void testUpdateProject(){
@@ -35,6 +36,7 @@ public class UpdateProjectUsecaseTest {
         assertEquals(expectedResponse.projectId(), actualResponse.projectId());
         verify(updateProjectUsecase).updateProject(userId, projectId, projectName, description, image);
     }
+
     @Test
     @DisplayName("Project 업데이트 시 존재하지 않는 프로젝트에 대한 예외 처리")
     void testUpdateNonExistingProject() {
