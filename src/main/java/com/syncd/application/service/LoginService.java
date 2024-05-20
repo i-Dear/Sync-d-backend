@@ -19,35 +19,33 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class LoginService implements SocialLoginUsecase {
+public class LoginService implements SocialLoginUsecase, GetOauthRedirectUrlUsecase {
     private final RestTemplate restTemplate;
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String clientId ;
     @Value("${spring.security.oauth2.client.registration.google.client-secret}")
     private String clientSecret;
-    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
-    private String redirectUri;
+
     @Value("${spring.security.oauth2.client.provider.google.token-uri}")
     private String tokenUri;
     @Value("${spring.security.oauth2.client.provider.google.user-info-uri}")
     private String resourceUri;
     private final WriteUserPort writeUserPort;
 
+    private final GoogleOAuth2Properties googleOAuth2Properties;
+
     private final GenerateTokenUsecase generateTokenUsecase;
 
     private final ReadUserPort readUserPort;
     @Override
-    public TokenDto socialLogin(String code, String registrationId) {
-        String googleAccessToken = getAccessToken(code, registrationId);
+    public TokenDto socialLogin(String code, String registrationId, String redirectionUri) {
+        String googleAccessToken = getAccessToken(code, registrationId,redirectionUri);
+        System.out.println("accesstoken"+googleAccessToken);
         JsonNode userResourceNode = getUserResource(googleAccessToken, registrationId);
-        System.out.println("userResourceNode = " + userResourceNode);
 
         String userEmail = userResourceNode.get("email").asText();
         String userName = userResourceNode.get("name").asText();
         String userProfileImg = userResourceNode.get("picture").asText();
-        System.out.println("id = " + userName);
-        System.out.println("email = " + userEmail);
-        System.out.println("img = " + userProfileImg);
 
         User user = new User();
         user.setName(userName);
@@ -64,9 +62,8 @@ public class LoginService implements SocialLoginUsecase {
         return new TokenDto(accessToken,"");
     }
 
-    private String getAccessToken(String authorizationCode, String registrationId) {
-
-
+    private String getAccessToken(String authorizationCode, String registrationId, String redirectUri) {
+        System.out.println(redirectUri);
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", authorizationCode);
         params.add("client_id", clientId);
@@ -90,5 +87,26 @@ public class LoginService implements SocialLoginUsecase {
         headers.set("Authorization", "Bearer " + accessToken);
         HttpEntity entity = new HttpEntity(headers);
         return restTemplate.exchange(resourceUri, HttpMethod.GET, entity, JsonNode.class).getBody();
+    }
+
+    @Override
+    public String getOauthRedirectUrlUsecase(String referer) {
+
+        String redirectUrl = googleOAuth2Properties.getRedirectUri();
+
+        String url = "https://accounts.google.com/o/oauth2/auth" +
+                "?client_id=448582571570-km2g33b06432q3ahl8pathc0tln7g0i4.apps.googleusercontent.com" +
+                "&redirect_uri=" + redirectUrl +
+                "&response_type=code" +
+                "&scope=https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile";
+
+        if(referer.contains("localhost")){
+            url = "https://accounts.google.com/o/oauth2/auth" +
+                    "?client_id=448582571570-km2g33b06432q3ahl8pathc0tln7g0i4.apps.googleusercontent.com" +
+                    "&redirect_uri=" + redirectUrl + "/dev"+
+                    "&response_type=code" +
+                    "&scope=https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile";
+        }
+        return url;
     }
 }

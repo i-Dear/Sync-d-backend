@@ -21,12 +21,9 @@ public interface CreateProjectUsecase {
             String description,
             MultipartFile img,
             List<String> userEmails
-    ) {
-    }
-
+    ) {}
     record CreateProjectResponseDto(
             String projectId
-    ) {
-    }
+    ) {}
 
 }

@@ -43,7 +43,11 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
     @Override
     public CreateProjectResponseDto createProject(String hostId, String hostName, String projectName, String description, MultipartFile img, List<String> userEmails){
-        List<User> users = readUserPort.usersFromEmails(userEmails);
+        List<User> users = new ArrayList<>();
+        if(userEmails!=null){
+            users = readUserPort.usersFromEmails(userEmails);
+        }
+
 
         String imgURL = "";
         if (img != null && !img.isEmpty()) {
@@ -52,7 +56,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         }
 
         Project project = new Project();
-        project = project.createProjectDomain(projectName, description, imgURL, hostId, null);
+        project = project.createProjectDomain(projectName, description, imgURL, hostId);
         sendMailPort.sendIviteMailBatch(hostName, projectName, users,project.getId());
         return new CreateProjectResponseDto(writeProjectPort.CreateProject(project));
     }
