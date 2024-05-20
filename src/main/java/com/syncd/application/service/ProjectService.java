@@ -21,6 +21,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -93,11 +95,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
                 .collect(Collectors.toList());
         User userInfo = readUserPort.findByUserId(userId);
         return new GetRoomAuthTokenResponseDto(liveblocksPort.GetRoomAuthToken(userId, userInfo.getName(), userInfo.getProfileImg(), projectIds).token());
-    }
-
-    @Override
-    public GetRoomAuthTokenResponseDto Test(String userId, String roomId) {
-        return new GetRoomAuthTokenResponseDto(liveblocksPort.Test(userId, roomId).token());
     }
 
     @Override

@@ -14,7 +14,6 @@ public class AuthControllerProperties {
 
     private String redirectUriForGoogleDev;
 
-
     public String getRedirectUrl() {
         return redirectUrl;
     }
