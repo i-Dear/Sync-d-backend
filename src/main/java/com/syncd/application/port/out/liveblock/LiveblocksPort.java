@@ -6,6 +6,5 @@ import java.util.List;
 
 public interface LiveblocksPort {
     LiveblocksTokenDto GetRoomAuthToken(String userId, String name,String img,List<String> projectIds);
-    LiveblocksTokenDto Test(String userId, String roomId);
 }
 
