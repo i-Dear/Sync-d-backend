@@ -1,4 +1,4 @@
-package com.syncd.adapter.in.web;
+package com.syncd.configs;
 
 import com.syncd.application.port.in.JwtAuthenticationFilterUsecase;
 import com.syncd.application.port.in.ResolveTokenUsecase;

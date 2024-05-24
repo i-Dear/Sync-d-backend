@@ -1,4 +1,4 @@
-package com.syncd.adapter.in.web;
+package com.syncd.configs;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

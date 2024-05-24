@@ -1,4 +1,4 @@
-package com.syncd.adapter.out.s3;
+package com.syncd.configs;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
