@@ -2,8 +2,6 @@ package com.syncd.application.port.in;
 
 import com.syncd.exceptions.ValidationMessages;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

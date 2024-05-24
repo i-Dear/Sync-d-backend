@@ -50,8 +50,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         if(userEmails!=null){
             users = readUserPort.usersFromEmails(userEmails);
         }
-
-
         String imgURL = "";
         if (img != null && !img.isEmpty()) {
             Optional<String> optionalImgURL = s3Port.uploadMultipartFileToS3(img, hostName, projectName);
@@ -60,8 +58,19 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
         Project project = new Project();
         project = project.createProjectDomain(projectName, description, imgURL, hostId);
+
+        CreateProjectResponseDto createProjectResponseDto = new CreateProjectResponseDto(writeProjectPort.CreateProject(project));
+
+        User host = readUserPort.findByUserId(hostId);
+        List<UserInProject> members = new ArrayList<>();
+        if (userEmails != null && !userEmails.isEmpty()) {
+            members = userEmails.stream()
+                    .map(email -> createUserInProjectWithRoleMember(email, host.getName(), projectName, createProjectResponseDto.projectId()))
+                    .collect(Collectors.toList());
+        }
+
         sendMailPort.sendIviteMailBatch(hostName, projectName, users,project.getId());
-        return new CreateProjectResponseDto(writeProjectPort.CreateProject(project));
+        return createProjectResponseDto;
     }
 
     @Override

@@ -13,7 +13,6 @@ public interface DeleteProjectUsecase {
     // DTO
     // ======================================
     record DeleteProjectResponseDto(
-
             String projectId
     ){
 

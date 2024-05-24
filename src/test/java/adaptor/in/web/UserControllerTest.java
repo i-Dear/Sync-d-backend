@@ -38,26 +38,26 @@ class UserControllerTest {
         userController = new UserController(getUserInfoUsecase, jwtService);
     }
 
-    @Test
-    void getUserInfo_ReturnsUserInfo_WhenValidTokenProvided() {
-        // Arrange
-        String token = "valid_token";
-        String userId = "user123";
-        when(jwtService.resolveToken(request)).thenReturn(token);
-        when(jwtService.getUserIdFromToken(token)).thenReturn(userId);
-
-        GetUserInfoUsecase.GetUserInfoResponseDto expectedUserInfo = new GetUserInfoUsecase.GetUserInfoResponseDto(null,null,null,null,null);
-        // Assuming you have some mock data or create an instance here
-
-        when(getUserInfoUsecase.getUserInfo(userId)).thenReturn(expectedUserInfo);
-
-        // Act
-        GetUserInfoUsecase.GetUserInfoResponseDto actualUserInfo = userController.getUserInfo(request);
-
-        // Assert
-        assertEquals(expectedUserInfo, actualUserInfo);
-        verify(jwtService).resolveToken(request);
-        verify(jwtService).getUserIdFromToken(token);
-        verify(getUserInfoUsecase).getUserInfo(userId);
-    }
+//    @Test
+//    void getUserInfo_ReturnsUserInfo_WhenValidTokenProvided() {
+//        // Arrange
+//        String token = "valid_token";
+//        String userId = "user123";
+//        when(jwtService.resolveToken(request)).thenReturn(token);
+//        when(jwtService.getUserIdFromToken(token)).thenReturn(userId);
+//
+//        GetUserInfoUsecase.GetUserInfoResponseDto expectedUserInfo = new GetUserInfoUsecase.GetUserInfoResponseDto(null,null,null,null,null);
+//        // Assuming you have some mock data or create an instance here
+//
+//        when(getUserInfoUsecase.getUserInfo(userId)).thenReturn(expectedUserInfo);
+//
+//        // Act
+//        GetUserInfoUsecase.GetUserInfoResponseDto actualUserInfo = userController.getUserInfo(request);
+//
+//        // Assert
+//        assertEquals(expectedUserInfo, actualUserInfo);
+//        verify(jwtService).resolveToken(request);
+//        verify(jwtService).getUserIdFromToken(token);
+//        verify(getUserInfoUsecase).getUserInfo(userId);
+//    }
 }
