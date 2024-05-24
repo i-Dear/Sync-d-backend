@@ -1,0 +1,86 @@
+package com.syncd.adapter.in.web;
+
+import com.syncd.application.port.in.admin.CreateProjectAdminUsecase.*;
+import com.syncd.application.port.in.admin.DeleteProjectAdminUsecase.*;
+import com.syncd.application.port.in.admin.UpdateProjectAdminUsecase.*;
+import com.syncd.application.port.in.admin.*;
+import com.syncd.application.port.in.admin.CreateUserAdminUsecase.*;
+import com.syncd.application.port.in.admin.DeleteUserAdminUsecase.*;
+import com.syncd.application.port.in.admin.GetAllProjectAdminUsecase.*;
+import com.syncd.application.port.in.admin.GetAllUserAdminUsecase.*;
+import com.syncd.application.port.in.admin.GetChatgptPriceAdminUsecase.*;
+import com.syncd.application.port.in.admin.UpdateUserAdminUsecase.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/admin")
+public class AdminController {
+    private final GetAllUserAdminUsecase getAllUserAdminUsecase;
+    private final CreateUserAdminUsecase createUserAdminUsecase;
+    private final CreateProjectAdminUsecase createProjectAdminUsecase;
+    private final DeleteProjectAdminUsecase deleteProjectAdminUsecase;
+    private final GetChatgptPriceAdminUsecase getChatgptPriceAdminUsecase;
+    private final GetAllProjectAdminUsecase getAllProjectAdminUsecase;
+    private final UpdateProjectAdminUsecase updateProjectAdminUsecase;
+    private final UpdateUserAdminUsecase updateUserAdminUsecase;
+    private final DeleteUserAdminUsecase deleteUserAdminUsecase;
+
+    // ======================================
+    // USER
+    // ======================================
+
+    @GetMapping("/user")
+    public GetAllUserResponseDto getAllUser(){
+        return getAllUserAdminUsecase.getAllUser();
+    }
+
+    @PostMapping("/user/add")
+    public CreateUserResponseDto addUser(@RequestBody CreateUserRequestDto requestDto){
+        return createUserAdminUsecase.addUser(requestDto.email(),
+                requestDto.name(), requestDto.status(),
+                requestDto.profileImg(), requestDto.projectIds());
+    }
+
+    @PostMapping("/user/delete")
+    public DeleteUserResponseDto deleteUser(@RequestBody DeleteUserRequestDto requestDto){
+        return deleteUserAdminUsecase.deleteUser(requestDto.userId());
+    }
+
+    @PostMapping("/user/update")
+    public UpdateUserResponseDto updateUser(@RequestBody UpdateUserRequestDto requestDto){
+        return updateUserAdminUsecase.updateUser(requestDto.userId(), requestDto.email(),requestDto.name(), requestDto.status(), requestDto.profileImg(), requestDto.projectIds());
+    }
+    // ======================================
+    // PROJECT
+    // ======================================
+
+    @GetMapping("/project")
+    public GetAllProjectResponseDto getAllProject(){
+        return getAllProjectAdminUsecase.getAllProject();
+    }
+
+    @PostMapping("/project/create")
+    public CreateProjectAdminResponseDto createProject(@RequestBody CreateProjectAdminRequestDto requestDto){
+        return createProjectAdminUsecase.createProject(requestDto.name(), requestDto.description(), requestDto.img(), requestDto.users(), requestDto.progress(),requestDto.leftChanceForUserstory());
+    }
+
+    @PostMapping("/project/delete")
+    public DeleteProjectAdminResponseDto deleteProject(@RequestBody DeleteProjectAdminRequestDto requestDto){
+        return deleteProjectAdminUsecase.deleteProject(requestDto.projectId());
+    }
+
+    @PostMapping("/project/update")
+    public UpdateProjectAdminResponseDto updateProject(@RequestBody UpdateProjectAdminRequestDto requestDto){
+        return updateProjectAdminUsecase.updateProject(requestDto.projectId(), requestDto.name(), requestDto.description(),requestDto.img(),requestDto.users(),requestDto.progress(),requestDto.leftChanceForUserstory()) ;
+    }
+
+    // ======================================
+    // CHATGPT
+    // ======================================
+    @GetMapping("/chatgpt")
+    public GetChatgptPriceResponseDto GetChatgptPrice(){
+        return getChatgptPriceAdminUsecase.getChatgptPrice();
+    }
+}

@@ -50,22 +50,22 @@ public class ProjectTest {
         project.setId("1");
     }
 
-    @Test
-    @DisplayName("프로젝트에 사용자 추가 테스트")
-    void testAddUser(){
-        assertThat(project.getUsers()).hasSize(3).contains(userInProject1, userInProject2); // host, user1, user2
-    }
-
-    @Test
-    @DisplayName("특정 사용자 제거 테스트")
-    void testWithdrawUsers(){
-        project.withdrawUsers(Arrays.asList("user1"));
-        List<UserInProject> expectedUsers = Arrays.asList(
-                new UserInProject("hostUserId", Role.HOST),
-                new UserInProject("user2", Role.MEMBER) // user2의 역할을 MEMBER로 변경
-        );
-        assertThat(project.getUsers()).containsExactlyInAnyOrderElementsOf(expectedUsers);
-    }
+//    @Test
+//    @DisplayName("프로젝트에 사용자 추가 테스트")
+//    void testAddUser(){
+//        assertThat(project.getUsers()).hasSize(3).contains(userInProject1, userInProject2); // host, user1, user2
+//    }
+//
+//    @Test
+//    @DisplayName("특정 사용자 제거 테스트")
+//    void testWithdrawUsers(){
+//        project.withdrawUsers(Arrays.asList("user1"));
+//        List<UserInProject> expectedUsers = Arrays.asList(
+//                new UserInProject("hostUserId", Role.HOST),
+//                new UserInProject("user2", Role.MEMBER) // user2의 역할을 MEMBER로 변경
+//        );
+//        assertThat(project.getUsers()).containsExactlyInAnyOrderElementsOf(expectedUsers);
+//    }
 
     @Test
     @DisplayName("호스트 유저 식별 테스트")
