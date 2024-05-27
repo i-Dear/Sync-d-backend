@@ -23,6 +23,7 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
     @Override
     public List<Project> findAllProjectByUserId(String userId){
         List<ProjectEntity> projectEntityList = projectDao.findByUsersUserId(userId);
+        System.out.println(projectEntityList);
         // List<Project> projects = ProjectMapper.INSTANCE.fromProjectEntities(projectEntityList);
         List<Project> projects = projectEntityList.stream()
                 .map(ProjectMapper.INSTANCE::mapProjectEntityToProject)
