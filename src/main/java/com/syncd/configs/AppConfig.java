@@ -1,4 +1,4 @@
-package com.syncd.adapter.out.liveblock;
+package com.syncd.configs;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

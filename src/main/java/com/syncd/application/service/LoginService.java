@@ -80,7 +80,13 @@ public class LoginService implements SocialLoginUsecase, GetOauthRedirectUrlUsec
         System.out.print(tokenUri);
 
         ResponseEntity<JsonNode> responseNode = restTemplate.exchange(tokenUri, HttpMethod.POST, entity, JsonNode.class);
+//        if (responseNode.getStatusCode() != HttpStatus.OK) {
+//            throw new RuntimeException("Failed to get access token");
+//        }
         JsonNode accessTokenNode = responseNode.getBody();
+//        if (accessTokenNode == null || !accessTokenNode.has("access_token")) {
+//            throw new RuntimeException("Access token is missing in the response");
+//        }
         return accessTokenNode.get("access_token").asText();
     }
     private JsonNode getUserResource(String accessToken, String registrationId) {

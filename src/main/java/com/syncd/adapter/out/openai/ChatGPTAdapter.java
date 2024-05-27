@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.syncd.application.port.out.openai.ChatGPTPort;
+import com.syncd.configs.ChatGPTConfig;
 import com.syncd.dto.ChatRequestDto;
 import com.syncd.dto.MakeUserStoryResponseDto;
 import com.syncd.dto.OpenAIToken;
