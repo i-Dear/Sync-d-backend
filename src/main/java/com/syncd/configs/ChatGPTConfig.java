@@ -1,4 +1,4 @@
-package com.syncd.adapter.out.openai;
+package com.syncd.configs;
 
 
 import org.springframework.beans.factory.annotation.Value;

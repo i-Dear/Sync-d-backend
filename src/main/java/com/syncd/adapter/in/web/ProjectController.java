@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/v1/project")
 public class ProjectController {
     private final GetAllRoomsByUserIdUsecase getAllRoomsByUserIdUsecase;
+
     private final CreateProjectUsecase createProjectUsecase;
 
     private final JoinProjectUsecase joinProjectUsecase;
@@ -36,10 +37,10 @@ public class ProjectController {
     private final UpdateProjectUsecase updateProjectUsecase;
 
     private final SyncProjectUsecase syncProjectUsecase;
+
     private final MakeUserstoryUsecase makeUserstoryUsecase;
 
     private final JwtService jwtService;
-
 
     @PostMapping(value = "/create")
     public CreateProjectResponseDto createProject(HttpServletRequest request, @Valid @ModelAttribute CreateProjectRequestDto requestDto) {
@@ -84,7 +85,7 @@ public class ProjectController {
     }
 
     @PostMapping("/userstory")
-    public ResponseEntity<MakeUserStoryResponseDto> makeUserStory(HttpServletRequest request, @RequestBody MakeUserStoryReauestDto makeUserStoryReauestDto) {
+    public ResponseEntity<MakeUserStoryResponseDto> makeUserStory(HttpServletRequest request, @Valid @RequestBody MakeUserStoryReauestDto makeUserStoryReauestDto) {
         String token = jwtService.resolveToken(request);
         MakeUserStoryResponseDto result = makeUserstoryUsecase.makeUserstory(jwtService.getUserIdFromToken(token), makeUserStoryReauestDto.getProjectId(), makeUserStoryReauestDto.getScenario());
         return new ResponseEntity<>(result, HttpStatus.OK);

@@ -5,7 +5,7 @@ import com.syncd.adapter.out.persistence.repository.user.UserEntity;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
 import com.syncd.application.port.out.persistence.user.WriteUserPort;
 import com.syncd.domain.user.User;
-import com.syncd.domain.user.UserMapper;
+import com.syncd.mapper.UserMapper;
 import com.syncd.dto.UserId;
 import com.syncd.enums.UserAccountStatus;
 import com.syncd.exceptions.CustomException;
@@ -60,21 +60,21 @@ public class UserPersistenceAdapter implements WriteUserPort, ReadUserPort {
     @Override
     public User findByEmail(String email) {
         return userDao.findByEmail(email)
-                .map(UserMapper.INSTANCE::fromEntity)
+                .map(UserMapper.INSTANCE::mapUserEntityToUser)
                 .orElseThrow(() ->  new CustomException(ErrorInfo.USER_NOT_FOUND, "User Email: " + email));
     }
 
     @Override
     public User findByUsername(String username) {
         return userDao.findByName(username)
-                .map(UserMapper.INSTANCE::fromEntity)
+                .map(UserMapper.INSTANCE::mapUserEntityToUser)
                 .orElseThrow(() -> new CustomException(ErrorInfo.USER_NOT_FOUND, "User Name: " + username));
     }
 
     @Override
     public User findByUserId(String userId) {
         return userDao.findById(userId)
-                .map(UserMapper.INSTANCE::fromEntity)
+                .map(UserMapper.INSTANCE::mapUserEntityToUser)
                 .orElseThrow(() -> new CustomException(ErrorInfo.USER_NOT_FOUND, "User ID: " + userId));
     }
 

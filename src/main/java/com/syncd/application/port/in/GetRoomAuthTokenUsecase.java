@@ -12,8 +12,6 @@ public interface GetRoomAuthTokenUsecase {
             String userId
     );
 
-    GetRoomAuthTokenResponseDto Test(String uesrId, String roomId);
-
     // ======================================
     // DTO
     // ======================================

@@ -29,11 +29,4 @@ public class RoomController {
         String token = jwtService.resolveToken(request);
         return getAllRoomsByUserIdUsecase.getAllRoomsByUserId(jwtService.getUserIdFromToken(token));
     }
-
-    @PostMapping("/test-auth")
-    public GetRoomAuthTokenResponseDto getRoomAuthToken(@RequestBody @Valid GetRoomAuthTokenUsecase.TestDto getRoomAuthToken, HttpServletRequest request){
-        String token = jwtService.resolveToken(request);
-        return getRoomAuthTokenUsecase.Test(jwtService.getUserIdFromToken(token),getRoomAuthToken.roomId());
-
-    }
 }

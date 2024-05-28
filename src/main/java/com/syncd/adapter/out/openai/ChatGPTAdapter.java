@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.syncd.application.port.out.openai.ChatGPTPort;
+import com.syncd.configs.ChatGPTConfig;
 import com.syncd.dto.ChatRequestDto;
 import com.syncd.dto.MakeUserStoryResponseDto;
 import com.syncd.dto.OpenAIToken;
@@ -47,13 +48,6 @@ public class ChatGPTAdapter implements ChatGPTPort {
         try {
             MakeUserStoryResponseDto responseDto = promptUserStory(finalToken, om, scenario);
             System.out.println(finalToken);
-            for (MakeUserStoryResponseDto.EpicDto epic : responseDto.getEpics()) {
-                // 각 Epic의 UserStories를 순회합니다.
-                for (MakeUserStoryResponseDto.UserStoryDto userStory : epic.getUserStories()) {
-                    // 각 UserStory의 id에 epic.id * 100을 더합니다.
-                    userStory.setId(userStory.getId() + Integer.parseInt(epic.getId()) * 100);
-                }
-            }
             return responseDto;
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,7 +60,8 @@ public class ChatGPTAdapter implements ChatGPTPort {
             String requestTextForEpic = createRequestForEpic(scenario);
         System.out.println(requestTextForEpic);
             Map<String, Object> Epic = prompt(finalToken, om, requestTextForEpic);
-            String requestTextForUserstory = promptForUserStory.replace("{epics}", "\""+getMessage(Epic)+"\"");
+
+        String requestTextForUserstory = promptForUserStory.replace("{epics}", getMessage(Epic));
             Map<String, Object> userStory = prompt(finalToken, om, requestTextForUserstory);
             System.out.println(getMessage(userStory));
             String res = extractJson(getMessage(userStory));
