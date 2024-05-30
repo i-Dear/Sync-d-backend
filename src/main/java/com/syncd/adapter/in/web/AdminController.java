@@ -3,6 +3,8 @@ package com.syncd.adapter.in.web;
 import com.syncd.application.port.in.admin.CreateProjectAdminUsecase.*;
 import com.syncd.application.port.in.admin.DeleteProjectAdminUsecase.*;
 import com.syncd.application.port.in.admin.UpdateProjectAdminUsecase.*;
+import com.syncd.application.port.in.admin.SearchUserAdminUsecase.*;
+import com.syncd.application.port.in.admin.SearchProjectAdminUsecase.*;
 import com.syncd.application.port.in.admin.*;
 import com.syncd.application.port.in.admin.CreateUserAdminUsecase.*;
 import com.syncd.application.port.in.admin.DeleteUserAdminUsecase.*;
@@ -26,7 +28,8 @@ public class AdminController {
     private final UpdateProjectAdminUsecase updateProjectAdminUsecase;
     private final UpdateUserAdminUsecase updateUserAdminUsecase;
     private final DeleteUserAdminUsecase deleteUserAdminUsecase;
-
+    private final SearchUserAdminUsecase searchUserAdminUsecase;
+    private final SearchProjectAdminUsecase searchProjectAdminUsecase;
     // ======================================
     // USER
     // ======================================
@@ -52,6 +55,14 @@ public class AdminController {
     public UpdateUserResponseDto updateUser(@RequestBody UpdateUserRequestDto requestDto){
         return updateUserAdminUsecase.updateUser(requestDto.userId(), requestDto.email(),requestDto.name(), requestDto.status(), requestDto.profileImg(), requestDto.projectIds());
     }
+
+    @GetMapping("/user/search")
+    public SearchUserAdminResponseDto searchUsers(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String searchType,
+            @RequestParam(required = false) String searchText) {
+        return searchUserAdminUsecase.searchUsers(status, searchType, searchText);
+    }
     // ======================================
     // PROJECT
     // ======================================
@@ -74,6 +85,20 @@ public class AdminController {
     @PostMapping("/project/update")
     public UpdateProjectAdminResponseDto updateProject(@RequestBody UpdateProjectAdminRequestDto requestDto){
         return updateProjectAdminUsecase.updateProject(requestDto.projectId(), requestDto.name(), requestDto.description(),requestDto.img(),requestDto.users(),requestDto.progress(),requestDto.leftChanceForUserstory()) ;
+    }
+
+    @GetMapping("/project/search")
+    public SearchProjectAdminResponseDto searchProjects(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String userId,
+            @RequestParam(required = false) Integer leftChanceForUserstory,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) Integer progress,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        return searchProjectAdminUsecase.searchProjects(name, userId, leftChanceForUserstory, startDate, endDate, progress, page, pageSize);
     }
 
     // ======================================
