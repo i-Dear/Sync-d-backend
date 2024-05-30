@@ -93,4 +93,3 @@ public class UserControllerTest {
         verify(getUserInfoUsecase, never()).getUserInfo(anyString());
     }
 }
-

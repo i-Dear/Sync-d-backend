@@ -8,18 +8,22 @@ import com.syncd.application.port.in.admin.*;
 import com.syncd.enums.UserAccountStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @Primary
 @RequiredArgsConstructor
 public class AdminService implements CreateProjectAdminUsecase, CreateUserAdminUsecase, DeleteProjectAdminUsecase,
-        DeleteUserAdminUsecase, GetAllProjectAdminUsecase, GetAllUserAdminUsecase, UpdateProjectAdminUsecase, UpdateUserAdminUsecase, GetChatgptPriceAdminUsecase {
+        DeleteUserAdminUsecase, GetAllProjectAdminUsecase, GetAllUserAdminUsecase, UpdateProjectAdminUsecase, UpdateUserAdminUsecase, GetChatgptPriceAdminUsecase, SearchUserAdminUsecase, SearchProjectAdminUsecase {
     private final ProjectDao projectDao;
     private final UserDao userDao;
     @Override
@@ -152,6 +156,96 @@ public class AdminService implements CreateProjectAdminUsecase, CreateUserAdminU
             throw new RuntimeException("User not found.");
         }
     }
+
+    @Override
+    public SearchUserAdminResponseDto searchUsers(String status, String searchType, String searchText) {
+        List<UserEntity> users = userDao.findAll();
+
+        List<SearchUserAdminUsecase.UserWithProjectsDto> userWithProjects = users.stream()
+                .filter(user -> (status == null || user.getStatus().toString().equalsIgnoreCase(status)) &&
+                        (searchType == null || searchText == null ||
+                                (searchType.equals("userName") && user.getName().contains(searchText)) ||
+                                (searchType.equals("email") && user.getEmail().contains(searchText)) ||
+                                (searchType.equals("projectId") && user.getProjectIds().contains(searchText))))
+                .map(user -> {
+                    List<ProjectEntity> userProjects = user.getProjectIds().stream()
+                            .map(projectId -> projectDao.findById(projectId).orElse(null))
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList());
+
+                    return new SearchUserAdminUsecase.UserWithProjectsDto(user, userProjects);
+                })
+                .collect(Collectors.toList());
+
+        return new SearchUserAdminResponseDto(userWithProjects);
+    }
+
+
+    @Override
+    public SearchProjectAdminResponseDto searchProjects(
+            String name,
+            String userId,
+            Integer leftChanceForUserstory,
+            String startDate,
+            String endDate,
+            Integer progress,
+            int page,
+            int pageSize
+    ) {
+        DateTimeFormatter requestFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        DateTimeFormatter dataFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS");
+        List<ProjectEntity> projects = projectDao.findAll();
+
+        // Filtering logic
+        if (name != null && !name.isEmpty()) {
+            projects = projects.stream()
+                    .filter(project -> name.equalsIgnoreCase(project.getName()))
+                    .collect(Collectors.toList());
+        }
+        if (userId != null && !userId.isEmpty()) {
+            projects = projects.stream()
+                    .filter(project -> project.getUsers().stream().anyMatch(user -> userId.equals(user.getUserId())))
+                    .collect(Collectors.toList());
+        }
+        if (leftChanceForUserstory != null) {
+            projects = projects.stream()
+                    .filter(project -> leftChanceForUserstory.intValue() == project.getLeftChanceForUserstory())
+                    .collect(Collectors.toList());
+        }
+        if (startDate != null && !startDate.isEmpty() && endDate != null && !endDate.isEmpty()) {
+            LocalDateTime start = LocalDateTime.parse(startDate, requestFormatter);
+            LocalDateTime end = LocalDateTime.parse(endDate, requestFormatter);
+            projects = projects.stream()
+                    .filter(project -> {
+                        LocalDateTime lastModifiedDate = LocalDateTime.parse(project.getLastModifiedDate(), dataFormatter);
+                        return (lastModifiedDate.isAfter(start) || lastModifiedDate.isEqual(start)) &&
+                                (lastModifiedDate.isBefore(end) || lastModifiedDate.isEqual(end));
+                    })
+                    .collect(Collectors.toList());
+        }
+        if (progress != null) {
+            projects = projects.stream()
+                    .filter(project -> progress.intValue() == project.getProgress())
+                    .collect(Collectors.toList());
+        }
+
+        // Fetch user details for each project and create a user map
+        Map<String, UserEntity> userMap = new HashMap<>();
+        for (ProjectEntity project : projects) {
+            for (ProjectEntity.UserInProjectEntity userInProject : project.getUsers()) {
+                userDao.findById(userInProject.getUserId()).ifPresent(userEntity -> userMap.put(userEntity.getId(), userEntity));
+            }
+        }
+
+        // Pagination logic
+        long totalCount = projects.size();
+        int startIndex = (page - 1) * pageSize;
+        int endIndex = Math.min(startIndex + pageSize, projects.size());
+        List<ProjectEntity> paginatedProjects = projects.subList(startIndex, endIndex);
+
+        return new SearchProjectAdminResponseDto(paginatedProjects, totalCount, userMap);
+    }
+
     @Override
     public GetChatgptPriceResponseDto getChatgptPrice(){
         return new GetChatgptPriceResponseDto("3.2","4.5","10.4","11.2","40.3");
