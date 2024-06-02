@@ -10,6 +10,8 @@ import com.syncd.application.port.in.UpdateProjectUsecase.*;
 import com.syncd.application.port.in.DeleteProjectUsecase.*;
 import com.syncd.application.port.in.SyncProjectUsecase.*;
 import com.syncd.application.service.JwtService;
+import com.syncd.domain.project.CoreDetails;
+import com.syncd.domain.project.Epic;
 import com.syncd.dto.MakeUserStoryReauestDto;
 import com.syncd.dto.MakeUserStoryResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
@@ -220,12 +223,21 @@ public class ProjectControllerTest {
     @DisplayName("Sync Project - Valid Request")
     void testSyncProject_ValidRequest() {
         HttpServletRequest request = mock(HttpServletRequest.class);
-        SyncProjectRequestDto requestDto = new SyncProjectRequestDto("validProjectId", 10);
+        SyncProjectRequestDto requestDto = new SyncProjectRequestDto(
+                "validProjectId", 10, "problem",
+                mock(MultipartFile.class), mock(MultipartFile.class),
+                mock(MultipartFile.class), mock(MultipartFile.class),
+                new CoreDetails(), mock(MultipartFile.class),
+                List.of("scenario1", "scenario2"), List.of(new Epic())
+        );
 
         setupMockJwtService(request, "token", "userId", null);
 
         SyncProjectResponseDto responseDto = new SyncProjectResponseDto("validProjectId");
-        when(syncProjectUsecase.syncProject(anyString(), anyString(), anyInt())).thenReturn(responseDto);
+        when(syncProjectUsecase.syncProject(anyString(), anyString(), anyInt(), anyString(),
+                any(MultipartFile.class), any(MultipartFile.class), any(MultipartFile.class),
+                any(MultipartFile.class), any(CoreDetails.class), any(MultipartFile.class),
+                anyList(), anyList())).thenReturn(responseDto);
 
         SyncProjectResponseDto response = projectController.syncProject(request, requestDto);
 
@@ -233,8 +245,12 @@ public class ProjectControllerTest {
         assertThat(response.projectId()).isEqualTo("validProjectId");
 
         verifyJwtServiceInteraction(request, "token");
-        verifySyncProjectUsecase("userId", "validProjectId", 10);
+        verifySyncProjectUsecase("userId", "validProjectId", 10, "problem",
+                requestDto.personaImage(), requestDto.whyImage(), requestDto.whatImage(),
+                requestDto.howImage(), requestDto.coreDetails(), requestDto.businessModelImage(),
+                requestDto.scenarios(), requestDto.epics());
     }
+
 
     // ======================================
     // MakeUserStory
@@ -351,16 +367,42 @@ public class ProjectControllerTest {
         assertThat(imageCaptor.getValue()).isEqualTo(expectedImage);
     }
 
-    private void verifySyncProjectUsecase(String expectedUserId, String expectedProjectId, Integer expectedProjectStage) {
+    private void verifySyncProjectUsecase(String expectedUserId, String expectedProjectId, int expectedProjectStage,
+                                          String expectedProblem, MultipartFile expectedPersonaImage,
+                                          MultipartFile expectedWhyImage, MultipartFile expectedWhatImage,
+                                          MultipartFile expectedHowImage, CoreDetails expectedCoreDetails,
+                                          MultipartFile expectedBusinessModelImage, List<String> expectedScenarios,
+                                          List<Epic> expectedEpics) {
         ArgumentCaptor<String> userIdCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> projectIdCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Integer> projectStageCaptor = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<String> problemCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<MultipartFile> personaImageCaptor = ArgumentCaptor.forClass(MultipartFile.class);
+        ArgumentCaptor<MultipartFile> whyImageCaptor = ArgumentCaptor.forClass(MultipartFile.class);
+        ArgumentCaptor<MultipartFile> whatImageCaptor = ArgumentCaptor.forClass(MultipartFile.class);
+        ArgumentCaptor<MultipartFile> howImageCaptor = ArgumentCaptor.forClass(MultipartFile.class);
+        ArgumentCaptor<CoreDetails> coreDetailsCaptor = ArgumentCaptor.forClass(CoreDetails.class);
+        ArgumentCaptor<MultipartFile> businessModelImageCaptor = ArgumentCaptor.forClass(MultipartFile.class);
+        ArgumentCaptor<List<String>> scenariosCaptor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List<Epic>> epicsCaptor = ArgumentCaptor.forClass(List.class);
 
-        verify(syncProjectUsecase).syncProject(userIdCaptor.capture(), projectIdCaptor.capture(), projectStageCaptor.capture());
+        verify(syncProjectUsecase).syncProject(userIdCaptor.capture(), projectIdCaptor.capture(), projectStageCaptor.capture(),
+                problemCaptor.capture(), personaImageCaptor.capture(), whyImageCaptor.capture(), whatImageCaptor.capture(),
+                howImageCaptor.capture(), coreDetailsCaptor.capture(), businessModelImageCaptor.capture(),
+                scenariosCaptor.capture(), epicsCaptor.capture());
 
         assertThat(userIdCaptor.getValue()).isEqualTo(expectedUserId);
         assertThat(projectIdCaptor.getValue()).isEqualTo(expectedProjectId);
         assertThat(projectStageCaptor.getValue()).isEqualTo(expectedProjectStage);
+        assertThat(problemCaptor.getValue()).isEqualTo(expectedProblem);
+        assertThat(personaImageCaptor.getValue()).isEqualTo(expectedPersonaImage);
+        assertThat(whyImageCaptor.getValue()).isEqualTo(expectedWhyImage);
+        assertThat(whatImageCaptor.getValue()).isEqualTo(expectedWhatImage);
+        assertThat(howImageCaptor.getValue()).isEqualTo(expectedHowImage);
+        assertThat(coreDetailsCaptor.getValue()).isEqualTo(expectedCoreDetails);
+        assertThat(businessModelImageCaptor.getValue()).isEqualTo(expectedBusinessModelImage);
+        assertThat(scenariosCaptor.getValue()).isEqualTo(expectedScenarios);
+        assertThat(epicsCaptor.getValue()).isEqualTo(expectedEpics);
     }
 
     private void verifyMakeUserstoryUsecase(String expectedUserId, String expectedProjectId, List<String> expectedScenario) {

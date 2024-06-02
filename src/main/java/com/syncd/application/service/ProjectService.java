@@ -8,6 +8,8 @@ import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
 import com.syncd.application.port.out.s3.S3Port;
+import com.syncd.domain.project.CoreDetails;
+import com.syncd.domain.project.Epic;
 import com.syncd.domain.project.Project;
 import com.syncd.domain.project.UserInProject;
 import com.syncd.domain.user.User;
@@ -49,11 +51,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         if(userEmails!=null){
             users = readUserPort.usersFromEmails(userEmails);
         }
-        String imgURL = "";
-        if (img != null && !img.isEmpty()) {
-            Optional<String> optionalImgURL = s3Port.uploadMultipartFileToS3(img, hostName, projectName);
-            imgURL = optionalImgURL.orElseThrow(() -> new IllegalStateException("Failed to upload image to S3"));
-        }
+        String imgURL = uploadFileToS3(img);
 
         Project project = new Project();
         project = project.createProjectDomain(projectName, description, imgURL, hostId);
@@ -162,11 +160,54 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     }
 
     @Override
-    public SyncProjectResponseDto syncProject(String userId, String projectId, int projectStage) {
+    public SyncProjectResponseDto syncProject(String userId, String projectId, int projectStage,
+                                              String problem,
+                                              MultipartFile personaImage,
+                                              MultipartFile whyImage,
+                                              MultipartFile whatImage,
+                                              MultipartFile howImage,
+                                              CoreDetails coreDetails,
+                                              MultipartFile businessModelImage,
+                                              List<String>scenarios,
+                                              List<Epic> epics) {
         Project project = readProjectPort.findProjectByProjectId(projectId);
+        switch (projectStage) {
+            case 1:
+            case 2:
+                break;
+            case 3:
+                project.setProblem(problem);
+                break;
+            case 4:
+                project.setPersonaImage(uploadFileToS3(personaImage));
+                break;
+            case 5:
+                project.setWhyImage(uploadFileToS3(whyImage));
+                break;
+            case 6:
+                project.setWhatImage(uploadFileToS3(whatImage));
+                break;
+            case 7:
+                project.setHowImage(uploadFileToS3(howImage));
+                break;
+            case 8:
+                project.setCoreDetails(coreDetails);
+                break;
+            case 9:
+                project.setBusinessModelImage(uploadFileToS3(businessModelImage));
+                break;
+            case 10:
+                project.setScenarios(scenarios);
+                break;
+            case 11:
+                project.setEpics(epics);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid project stage: " + projectStage);
+        }
         writeProjectPort.AddProgress(projectId, projectStage);
         writeProjectPort.updateLastModifiedDate(projectId);
-
+        writeProjectPort.UpdateProject(project);
         return new SyncProjectResponseDto(projectId);
     }
     @Override
@@ -245,5 +286,13 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
     private UserRoleDto convertUserToUserRoleDto(String projectId, UserInProject user) {
         return new UserRoleDto(projectId, user.getUserId(), user.getRole());
+    }
+
+    private String uploadFileToS3(MultipartFile file) {
+        if (file != null && !file.isEmpty()) {
+            Optional<String> optionalFileUrl = s3Port.uploadMultipartFileToS3(file);
+            return optionalFileUrl.orElseThrow(() -> new IllegalStateException("Failed to upload file to S3"));
+        }
+        return "";
     }
 }

@@ -23,6 +23,17 @@ public class Project {
     private String lastModifiedDate;
     private int leftChanceForUserstory;
 
+    // 싱크된 내용
+    private String problem;
+    private String personaImage;
+    private String whyImage;
+    private String whatImage;
+    private String howImage;
+    private CoreDetails coreDetails;
+    private String businessModelImage;
+    private List<String> scenarios;
+    private List<Epic> epics;
+
     public void addUsers(List<UserInProject> newUsers) {
         if (this.users == null) {
             this.users = new ArrayList<>();

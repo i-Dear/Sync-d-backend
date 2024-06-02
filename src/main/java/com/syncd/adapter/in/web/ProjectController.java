@@ -79,9 +79,9 @@ public class ProjectController {
     }
 
     @PostMapping("/sync")
-    public SyncProjectResponseDto syncProject(HttpServletRequest request, @Valid @RequestBody SyncProjectRequestDto requestDto){
+    public SyncProjectResponseDto syncProject(HttpServletRequest request, @Valid @ModelAttribute SyncProjectRequestDto requestDto){
         String token = jwtService.resolveToken(request);
-        return syncProjectUsecase.syncProject(jwtService.getUserIdFromToken(token), requestDto.projectId(), requestDto.projectStage());
+        return syncProjectUsecase.syncProject(jwtService.getUserIdFromToken(token), requestDto.projectId(), requestDto.projectStage(), requestDto.problem(), requestDto.personaImage(), requestDto.whyImage(),requestDto.whatImage(),requestDto.howImage(),requestDto.coreDetails(),requestDto.businessModelImage(),requestDto.scenarios(),requestDto.epics());
     }
 
     @PostMapping("/userstory")
