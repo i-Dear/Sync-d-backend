@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -46,11 +47,8 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
     @Override
     public CreateProjectResponseDto createProject(String hostId, String hostName, String projectName, String description, MultipartFile img, List<String> userEmails){
-        List<User> users = new ArrayList<>();
-        if(userEmails!=null){
-            users = readUserPort.usersFromEmails(userEmails);
-        }
         String imgURL = "";
+        System.out.println(hostName);
         if (img != null && !img.isEmpty()) {
             Optional<String> optionalImgURL = s3Port.uploadMultipartFileToS3(img, hostName, projectName);
             imgURL = optionalImgURL.orElseThrow(() -> new IllegalStateException("Failed to upload image to S3"));
@@ -58,19 +56,25 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
         Project project = new Project();
         project = project.createProjectDomain(projectName, description, imgURL, hostId);
-
+        project.addUsers(userInProjectFromEmail(userEmails));
         CreateProjectResponseDto createProjectResponseDto = new CreateProjectResponseDto(writeProjectPort.CreateProject(project));
 
         User host = readUserPort.findByUserId(hostId);
-        List<UserInProject> members = new ArrayList<>();
-        if (userEmails != null && !userEmails.isEmpty()) {
-            members = userEmails.stream()
-                    .map(email -> createUserInProjectWithRoleMember(email, host.getName(), projectName, createProjectResponseDto.projectId()))
-                    .collect(Collectors.toList());
-        }
+//        List<UserInProject> members = new ArrayList<>();
+//        if (userEmails != null && !userEmails.isEmpty()) {
+//            members = userEmails.stream()
+//                    .map(email -> createUserInProjectWithRoleMember(email, host.getName(), projectName, createProjectResponseDto.projectId()))
+//                    .collect(Collectors.toList());
+//        }
 
-        sendMailPort.sendIviteMailBatch(hostName, projectName, users,project.getId());
+        sendMailPort.sendIviteMailBatch(hostName, projectName, userEmails, project.getId());
         return createProjectResponseDto;
+    }
+
+    private List<UserInProject> userInProjectFromEmail(List<String> userEmails) {
+        return userEmails.stream()
+                .map(email -> new UserInProject(email, Role.MEMBER))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -221,9 +225,9 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         return new GetAllRoomsByUserIdResponseDto(userId, projectDtos);
     }
 
-    private ProjectForGetAllInfoAboutRoomsByUserIdResponseDto convertProjectToDto(String userId, Project project) {
+    private ProjectForGetAllInfoAboutRoomsByUserIdResponseDto convertProjectToDto(String userEmail, Project project) {
         Role userRole = project.getUsers().stream()
-                .filter(user -> userId.equals(user.getUserId()))
+                .filter(user -> userEmail.equals(user.getUserId()))
                 .map(UserInProject::getRole)
                 .findFirst()
                 .orElse(null);
@@ -234,9 +238,11 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
         List<String> userEmails = usersInProject.stream()
                 .map(UserInProject::getUserId)
-                .map(readUserPort::findByUserId)
-                .filter(user -> user != null)
-                .map(User::getEmail)
+                .map(userId -> {
+                    User user = readUserPort.findByUserId(userId);
+                    return user != null ? user.getEmail() : null;
+                })
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
         return new ProjectForGetAllInfoAboutRoomsByUserIdResponseDto(

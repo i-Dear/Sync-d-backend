@@ -23,6 +23,7 @@ public class Project {
     private String lastModifiedDate;
     private int leftChanceForUserstory;
 
+
     public void addUsers(List<UserInProject> newUsers) {
         if (this.users == null) {
             this.users = new ArrayList<>();
