@@ -7,6 +7,8 @@ import com.syncd.application.port.in.JoinProjectUsecase.*;
 import com.syncd.application.port.in.SyncProjectUsecase.*;
 import com.syncd.application.port.in.UpdateProjectUsecase.*;
 import com.syncd.application.port.in.WithdrawUserInProjectUsecase.*;
+import com.syncd.domain.project.CoreDetails;
+import com.syncd.domain.project.Epic;
 import com.syncd.dto.MakeUserStoryReauestDto;
 import com.syncd.exceptions.ValidationMessages;
 import jakarta.validation.ConstraintViolation;
@@ -16,6 +18,8 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -251,7 +255,7 @@ public class ProjectControllerValidationTest {
     @Test
     @DisplayName("Sync Project - Invalid Request - Blank ProjectId")
     void testSyncProject_InvalidRequest_BlankProjectId() {
-        SyncProjectRequestDto requestDto = new SyncProjectRequestDto("", 10);
+        SyncProjectRequestDto requestDto = createSyncProjectRequestDtoWithDefaults("", 10);
 
         Set<ConstraintViolation<SyncProjectRequestDto>> violations = validator.validate(requestDto);
         assertThat(violations).hasSize(1);
@@ -261,7 +265,7 @@ public class ProjectControllerValidationTest {
     @Test
     @DisplayName("Sync Project - Invalid Request - Null Project Stage")
     void testSyncProject_InvalidRequest_NullProjectStage() {
-        SyncProjectRequestDto requestDto = new SyncProjectRequestDto("validProjectId", null);
+        SyncProjectRequestDto requestDto = createSyncProjectRequestDtoWithDefaults("validProjectId", null);
 
         Set<ConstraintViolation<SyncProjectRequestDto>> violations = validator.validate(requestDto);
         assertThat(violations).hasSize(1);
@@ -271,7 +275,7 @@ public class ProjectControllerValidationTest {
     @Test
     @DisplayName("Sync Project - Valid Request")
     void testSyncProject_ValidRequest() {
-        SyncProjectRequestDto requestDto = new SyncProjectRequestDto("validProjectId", 10);
+        SyncProjectRequestDto requestDto = createSyncProjectRequestDtoWithDefaults("validProjectId", 10);
 
         Set<ConstraintViolation<SyncProjectRequestDto>> violations = validator.validate(requestDto);
         assertThat(violations).isEmpty();
@@ -333,4 +337,36 @@ public class ProjectControllerValidationTest {
         Set<ConstraintViolation<MakeUserStoryReauestDto>> violations = validator.validate(requestDto);
         assertThat(violations).isEmpty();
     }
+
+    // ======================================
+    // Helper Methods
+    // ======================================
+
+    private SyncProjectRequestDto createSyncProjectRequestDtoWithDefaults(String projectId, Integer projectStage) {
+        return createSyncProjectRequestDto(
+                projectId, projectStage, "problem",
+                createMockMultipartFile(), createMockMultipartFile(),
+                createMockMultipartFile(), createMockMultipartFile(),
+                new CoreDetails(), createMockMultipartFile(),
+                List.of("scenario1", "scenario2"), List.of(new Epic())
+        );
+    }
+
+    private SyncProjectRequestDto createSyncProjectRequestDto(
+            String projectId, Integer projectStage, String problem,
+            MultipartFile personaImage, MultipartFile whyImage, MultipartFile whatImage, MultipartFile howImage,
+            CoreDetails coreDetails, MultipartFile businessModelImage,
+            List<String> scenarios, List<Epic> epics) {
+        return new SyncProjectRequestDto(
+                projectId, projectStage, problem,
+                personaImage, whyImage, whatImage, howImage,
+                coreDetails, businessModelImage,
+                scenarios, epics
+        );
+    }
+
+    private MockMultipartFile createMockMultipartFile() {
+        return new MockMultipartFile("file", "filename.txt", "text/plain", "content".getBytes());
+    }
+
 }

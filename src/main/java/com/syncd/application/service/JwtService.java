@@ -78,7 +78,8 @@ public class JwtService implements GenerateTokenUsecase, JwtAuthenticationFilter
 //    }
     @Override
     public String getUsernameFromToken(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        return claims.get("name", String.class);
     }
     @Override
     public boolean validateToken(String token) {

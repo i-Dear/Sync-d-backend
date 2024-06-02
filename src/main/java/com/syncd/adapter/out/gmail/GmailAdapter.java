@@ -20,7 +20,7 @@ public class GmailAdapter implements SendMailPort {
     @Override
     @Async
     public String sendInviteMail(String email, String hostName, String userName, String projectName, String projectId) {
-        MimeMessage message = createMail(email, hostName, userName, projectName,projectId);
+        MimeMessage message = createMail(email, hostName, projectName,projectId);
         // 실제 메일 전송
         javaMailSender.send(message);
 
@@ -28,16 +28,16 @@ public class GmailAdapter implements SendMailPort {
     }
 
     @Override
-    public String sendIviteMailBatch(String hostName, String projectName, List<User> users,String projectId) {
-        users.forEach(user -> {
-            MimeMessage message = createMail(user.getEmail(), hostName, user.getName(), projectName,projectId);
+    public String sendIviteMailBatch(String hostName, String projectName, List<String> userEmails,String projectId) {
+        userEmails.forEach(user -> {
+            MimeMessage message = createMail(user, hostName, projectName,projectId);
             javaMailSender.send(message);
         });
         return projectName;
     }
 
     // 메일 양식 작성
-    public MimeMessage createMail(String email, String hostName, String userName, String projectName, String projectId){
+    public MimeMessage createMail(String email, String hostName, String projectName, String projectId){
         MimeMessage message = javaMailSender.createMimeMessage();
 
         try {
@@ -85,8 +85,8 @@ public class GmailAdapter implements SendMailPort {
                     "<body>\n" +
                     "    <div class=\"container\">\n" +
                     "        <h1>싱크대 프로젝트에 초대받았습니다!</h1>\n" +
-                    "        <p>"+hostName+"님이 "+userName+"님을 "+projectName+" 프로젝트에 초대되었습니다. 아래 버튼을 클릭하시면 초대에 응하실 수 있습니다</p>\n" +
-                    "        <a href=\"https://syncd.i-dear.org/invite/"+projectId+"\" class=\"btn\">초대 수락</a>\n" +
+                    "        <p>"+hostName+"님이 "+projectName+" 프로젝트에 초대하였습니다. 아래 버튼을 클릭하여 협업하세요!</p>\n" +
+                    "        <a href=\"https://syncd.i-dear.org/\" class=\"btn\">sync-d 접속</a>\n" +
                     "    </div>\n" +
                     "</body>\n" +
                     "</html>\n";
