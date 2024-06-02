@@ -18,7 +18,6 @@ import java.util.Map;
 @Service
 public interface ChatGPTPort {
 
-
     MakeUserStoryResponseDto makeUserstory(List<String> senarios);
 
 
