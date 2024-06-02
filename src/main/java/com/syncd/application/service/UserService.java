@@ -60,14 +60,16 @@ public class UserService implements GetUserInfoUsecase, UpdateUserInfoUsecase {
             throw new RuntimeException("User not found with ID: " + userId);
         }
 
-        user.setName(name);
+        if (name != null && !name.isEmpty()) {
+            user.setName(name);
+        }
 
         String imgURL = "";
         if (img != null && !img.isEmpty()) {
             Optional<String> optionalImgURL = s3Port.uploadMultipartFileToS3(img);
             imgURL = optionalImgURL.orElseThrow(() -> new IllegalStateException("Failed to upload image to S3"));
+            user.setProfileImg(imgURL);
         }
-        user.setProfileImg(imgURL);
 
         writeUserPort.updateUser(user);
 

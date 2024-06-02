@@ -1,10 +1,7 @@
 package com.syncd.adapter.in.web;
 
-import com.syncd.application.port.in.CreateProjectUsecase;
 import com.syncd.application.port.in.GetUserInfoUsecase;
-import com.syncd.application.port.in.UpdateProjectUsecase;
 import com.syncd.application.port.in.UpdateUserInfoUsecase;
-import com.syncd.application.port.in.UpdateUserInfoUsecase.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
