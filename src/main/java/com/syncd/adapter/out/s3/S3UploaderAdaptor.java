@@ -24,7 +24,7 @@ public class S3UploaderAdaptor implements S3Port {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public Optional<String> uploadMultipartFileToS3(MultipartFile multipartFile, String name, String id) {
+    public Optional<String> uploadMultipartFileToS3(MultipartFile multipartFile) {
         try {
             String originalFilename = multipartFile.getOriginalFilename();
             String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
