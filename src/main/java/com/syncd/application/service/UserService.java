@@ -3,9 +3,11 @@ package com.syncd.application.service;
 import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase;
 import com.syncd.application.port.in.GetUserInfoUsecase;
 //import com.syncd.application.port.in.RegitsterUserUsecase;
+import com.syncd.application.port.in.UpdateUserInfoUsecase;
 import com.syncd.application.port.out.autentication.AuthenticationPort;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
 import com.syncd.application.port.out.persistence.user.WriteUserPort;
+import com.syncd.application.port.out.s3.S3Port;
 import com.syncd.domain.user.User;
 //import com.syncd.dto.TokenDto;
 //import com.syncd.dto.UserForTokenDto;
@@ -14,17 +16,19 @@ import org.springframework.context.annotation.Primary;
 //import org.springframework.security.core.userdetails.UserDetails;
 //import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Optional;
 
 
 @Service
 @Primary
 @RequiredArgsConstructor
-public class UserService implements GetUserInfoUsecase {
+public class UserService implements GetUserInfoUsecase, UpdateUserInfoUsecase {
     private final ReadUserPort readUserPort;
     private final WriteUserPort writeUserPort;
-
     private final AuthenticationPort authenticationPort;
-
+    private final S3Port s3Port;
     private final GetAllRoomsByUserIdUsecase getAllRoomsByUserIdUsecase;
 
 //    @Override
@@ -46,6 +50,28 @@ public class UserService implements GetUserInfoUsecase {
 
         return new GetUserInfoResponseDto(userId, user.getName(), user.getProfileImg(), user.getEmail(), projects.projects());
 
+    }
+
+    @Override
+    public UpdateUserInfoResponseDto updateUserInfo(String userId, String name, MultipartFile img) {
+        User user = readUserPort.findByUserId(userId);
+
+        if (user == null) {
+            throw new RuntimeException("User not found with ID: " + userId);
+        }
+
+        user.setName(name);
+
+        String imgURL = "";
+        if (img != null && !img.isEmpty()) {
+            Optional<String> optionalImgURL = s3Port.uploadMultipartFileToS3(img);
+            imgURL = optionalImgURL.orElseThrow(() -> new IllegalStateException("Failed to upload image to S3"));
+        }
+        user.setProfileImg(imgURL);
+
+        writeUserPort.updateUser(user);
+
+        return new UpdateUserInfoResponseDto(userId, user.getName(), user.getProfileImg());
     }
 
 //    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

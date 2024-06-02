@@ -51,7 +51,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         }
         String imgURL = "";
         if (img != null && !img.isEmpty()) {
-            Optional<String> optionalImgURL = s3Port.uploadMultipartFileToS3(img, hostName, projectName);
+            Optional<String> optionalImgURL = s3Port.uploadMultipartFileToS3(img);
             imgURL = optionalImgURL.orElseThrow(() -> new IllegalStateException("Failed to upload image to S3"));
         }
 
