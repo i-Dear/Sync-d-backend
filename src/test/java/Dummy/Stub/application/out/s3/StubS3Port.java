@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public class StubS3Port implements S3Port {
 
+
     @Override
     public Optional<String> uploadMultipartFileToS3(MultipartFile multipartFile) {
         return Optional.of(Consistent.S3Link.getValue());

@@ -101,7 +101,7 @@ public class Project {
 
     public String getImgFileName() {
         try {
-            URL url = new URL(img);
+            URL url = new URL("https://" + img);
             String path = url.getPath();
             return path.substring(path.lastIndexOf('/') + 1);
         } catch (Exception e) {

@@ -5,7 +5,7 @@ import com.syncd.domain.user.User;
 import com.syncd.dto.UserId;
 
 public interface WriteUserPort {
-    UserId createUser(String userName, String email,String img);
+    UserId createUser(String userName, String email, String img);
 
     UserId updateUser(User user);
 }

@@ -55,6 +55,7 @@ sonarqube {
 		property "sonar.projectKey", "syncd"
 		property "sonar.projectName", "syncd"
 
+		property "sonar.gradle.skipCompile", "true"
 		property "sonar.modules", subprojects.collect { it.name }.join(',')
 		subprojects.forEach { subproject ->
 			property "sonar.${subproject.name}.coverage.jacoco.xmlReportPaths", "${subproject.layout.buildDirectory.get()}/$customJacocoReportDir/xml/jacoco.xml"
