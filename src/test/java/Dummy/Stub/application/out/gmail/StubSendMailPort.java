@@ -13,7 +13,8 @@ public class StubSendMailPort implements SendMailPort {
     }
 
     @Override
-    public String sendIviteMailBatch(String hostName, String projectName, List<User> users, String ProjectId) {
+    public String sendIviteMailBatch(String hostName, String projectName, List<String> userEmails, String ProjectId) {
+
         return Consistent.ProjectName.getValue();
     }
 }
