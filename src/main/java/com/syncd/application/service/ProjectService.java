@@ -41,6 +41,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     private final SendMailPort sendMailPort;
     private final ChatGPTPort chatGPTPort;
     private final S3Port s3Port;
+
     private final ProjectMapper projectMappers;
 
     @Override
@@ -184,6 +185,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
                 .anyMatch(user -> user.getUserId().equals(userId));
 
         if(!containsUserIdA){
+            System.out.println(project);
             throw new CustomException(ErrorInfo.NOT_INCLUDE_PROJECT, "project id" +  projectId);
         }
         project.subLeftChanceForUserstory();
