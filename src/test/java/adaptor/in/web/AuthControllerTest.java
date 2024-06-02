@@ -3,15 +3,13 @@ package adaptor.in.web;
 import com.syncd.AuthControllerProperties;
 import com.syncd.adapter.in.web.AuthController;
 import com.syncd.application.port.in.SocialLoginUsecase;
+import com.syncd.application.port.out.persistence.user.ReadUserPort;
 import com.syncd.dto.TokenDto;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,12 +24,15 @@ public class AuthControllerTest {
     @Mock
     private AuthControllerProperties authControllerProperties;
 
-    @InjectMocks
     private AuthController authController;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        socialLoginUsecase = Mockito.mock(SocialLoginUsecase.class);
+        authControllerProperties = Mockito.mock(AuthControllerProperties.class);
+
+        authController = new AuthController(socialLoginUsecase,authControllerProperties);
     }
 
     @Test
@@ -44,7 +45,7 @@ public class AuthControllerTest {
         String refreshToken = "refreshToken";
 
         when(authControllerProperties.getRedirectUrl()).thenReturn(redirectUrl);
-        when(socialLoginUsecase.socialLogin(anyString(), anyString(),anyString())).thenReturn(new TokenDto(accessToken, refreshToken));
+        when(socialLoginUsecase.socialLogin(anyString(), anyString(),any())).thenReturn(new TokenDto(accessToken, refreshToken));
 
         HttpServletResponse response = mock(HttpServletResponse.class);
         RedirectView result = authController.googleLogin(code, registrationId, response);

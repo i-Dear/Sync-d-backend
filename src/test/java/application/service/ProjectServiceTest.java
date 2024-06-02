@@ -84,13 +84,6 @@ public class ProjectServiceTest {
         MultipartFile img = mock(MultipartFile.class);
         List<String> userEmails = Arrays.asList("user1@example.com", "user2@example.com");
 
-        User host = new User();
-        host.setId(hostId);
-        host.setName(hostName);
-
-        Project project = new MockProject();
-        project.setId(Consistent.ProjectId.getValue());
-
         // When
         CreateProjectUsecase.CreateProjectResponseDto response = projectService.createProject(hostId, hostName, projectName, description, img, userEmails);
 
@@ -105,10 +98,6 @@ public class ProjectServiceTest {
         String userId = Consistent.UserId.getValue();
         String projectId = Consistent.ProjectId.getValue();
 
-        Project project = new MockProject();
-        project.setId(projectId);
-        project.setUsers(Collections.singletonList(new UserInProject(userId, Role.MEMBER)));
-
         // When
         JoinProjectUsecase.JoinProjectResponseDto response = projectService.joinProject(userId, projectId);
 
@@ -121,9 +110,6 @@ public class ProjectServiceTest {
     void getAllRoomsByUserId() {
         // Given
         String userId = Consistent.UserId.getValue();
-
-        Project project = new MockProject();
-        project.setId(Consistent.ProjectId.getValue());
 
         // When
         GetAllRoomsByUserIdUsecase.GetAllRoomsByUserIdResponseDto response = projectService.getAllRoomsByUserId(userId);
@@ -143,9 +129,6 @@ public class ProjectServiceTest {
         user.setId(userId);
         user.setName(Consistent.UserName.getValue());
 
-        Project project = new MockProject();
-        project.setId(Consistent.ProjectId.getValue());
-
         // When
         GetRoomAuthTokenUsecase.GetRoomAuthTokenResponseDto response = projectService.getRoomAuthToken(userId);
 
@@ -159,10 +142,6 @@ public class ProjectServiceTest {
         // Given
         String userId = Consistent.UserId.getValue();
         String projectId = Consistent.ProjectId.getValue();
-
-        Project project = new MockProject();
-        project.setId(projectId);
-        project.setImg("https://example.com/dummyimage.jpg");
 
         // When
         DeleteProjectUsecase.DeleteProjectResponseDto response = projectService.deleteProject(userId, projectId);
@@ -179,11 +158,6 @@ public class ProjectServiceTest {
         String projectId = Consistent.ProjectId.getValue();
         List<String> userEmails = Arrays.asList("user1@example.com", "user2@example.com");
 
-        Project project = new MockProject();
-        project.setId(projectId);
-
-        User host = new User();
-        host.setId(userId);
 
         // When
         InviteUserInProjectUsecase.InviteUserInProjectResponseDto response = projectService.inviteUserInProject(userId, projectId, userEmails);
@@ -202,9 +176,6 @@ public class ProjectServiceTest {
         String description = "updatedDescription";
         String image = "updatedImage";
 
-        Project project = new MockProject();
-        project.setId(projectId);
-
         // When
         UpdateProjectUsecase.UpdateProjectResponseDto response = projectService.updateProject(userId, projectId, projectName, description, image);
 
@@ -220,13 +191,6 @@ public class ProjectServiceTest {
         String projectId = Consistent.ProjectId.getValue();
         List<String> userIds = Arrays.asList("user1", "user2");
 
-        Project project = new MockProject();
-        project.setId(projectId);
-        project.setUsers(Arrays.asList(
-                new UserInProject("user1", Role.MEMBER),
-                new UserInProject("user2", Role.MEMBER),
-                new UserInProject("user3", Role.HOST)
-        ));
         // When
         WithdrawUserInProjectUsecase.WithdrawUserInProjectResponseDto response = projectService.withdrawUserInProject(userId, projectId, userIds);
 
@@ -241,9 +205,6 @@ public class ProjectServiceTest {
         String userId = Consistent.UserId.getValue();
         String projectId = Consistent.ProjectId.getValue();
         int projectStage = 1;
-
-        Project project = new MockProject();
-        project.setId(projectId);
 
         // When
         SyncProjectUsecase.SyncProjectResponseDto response = projectService.syncProject(userId, projectId, projectStage);
