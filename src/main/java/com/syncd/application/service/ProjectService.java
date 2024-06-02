@@ -56,7 +56,10 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
         Project project = new Project();
         project = project.createProjectDomain(projectName, description, imgURL, hostId);
-        project.addUsers(userInProjectFromEmail(userEmails));
+        if (userEmails != null && !userEmails.isEmpty()){
+            project.addUsers(userInProjectFromEmail(userEmails));
+            sendMailPort.sendIviteMailBatch(hostName, projectName, userEmails, project.getId());
+        }
         CreateProjectResponseDto createProjectResponseDto = new CreateProjectResponseDto(writeProjectPort.CreateProject(project));
 
         User host = readUserPort.findByUserId(hostId);
@@ -67,7 +70,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 //                    .collect(Collectors.toList());
 //        }
 
-        sendMailPort.sendIviteMailBatch(hostName, projectName, userEmails, project.getId());
         return createProjectResponseDto;
     }
 
