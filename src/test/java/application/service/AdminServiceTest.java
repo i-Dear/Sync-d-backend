@@ -209,7 +209,7 @@ class AdminServiceTest {
         when(projectDao.findById(anyString())).thenReturn(Optional.of(new ProjectEntity()));
 
         // Perform search
-        SearchUserAdminUsecase.SearchUserAdminResponseDto response = adminService.searchUsers("ACTIVE", "email", "test@example.com");
+        SearchUserAdminUsecase.SearchUserAdminResponseDto response = adminService.searchUsers("AVAILABLE", "email", "test@example.com");
 
         // Verify the result
         assertThat(response).isNotNull();
