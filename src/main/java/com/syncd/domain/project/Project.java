@@ -23,6 +23,7 @@ public class Project {
     private String lastModifiedDate;
     private int leftChanceForUserstory;
 
+
     public void addUsers(List<UserInProject> newUsers) {
         if (this.users == null) {
             this.users = new ArrayList<>();
@@ -39,11 +40,14 @@ public class Project {
     }
 
     public String getHost() {
-        return this.users.stream()
-                .filter(user -> user.getRole() == Role.HOST)
-                .map(UserInProject::getUserId)
-                .findFirst()
-                .orElse(null);  // Returns null if no host is found
+        if(this.users != null){
+            return this.users.stream()
+                    .filter(user -> user.getRole() == Role.HOST)
+                    .map(UserInProject::getUserId)
+                    .findFirst()
+                    .orElse(null);  // Returns null if no host is found
+        }
+        return null;
     }
 
     public void updateProjectInfo(String projectName, String description, String img){

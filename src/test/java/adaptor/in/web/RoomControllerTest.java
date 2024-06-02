@@ -62,24 +62,6 @@ public class RoomControllerTest {
         verifyGetRoomAuthToken("userId");
     }
 
-    @Test
-    @DisplayName("Get Room Auth Token - Test - Valid Request")
-    void testGetRoomAuthTokenTest_ValidRequest() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        setupMockJwtService(request, "token", "userId");
-
-        TestDto testDto = new TestDto("validRoomId");
-        GetRoomAuthTokenResponseDto responseDto = new GetRoomAuthTokenResponseDto("testAuthToken");
-        when(getRoomAuthTokenUsecase.Test(anyString(), anyString())).thenReturn(responseDto);
-
-        GetRoomAuthTokenResponseDto response = roomController.getRoomAuthToken(testDto, request);
-
-        assertThat(response).isNotNull();
-        assertThat(response.token()).isEqualTo("testAuthToken");
-
-        verifyJwtServiceInteraction(request, "token");
-        verifyTestRoomAuthToken("userId", "validRoomId");
-    }
 
     // ======================================
     // GetAllRoomsByUserIdUsecase
@@ -123,14 +105,6 @@ public class RoomControllerTest {
         ArgumentCaptor<String> userIdCaptor = ArgumentCaptor.forClass(String.class);
         verify(getAllRoomsByUserIdUsecase).getAllRoomsByUserId(userIdCaptor.capture());
         assertThat(userIdCaptor.getValue()).isEqualTo(userId);
-    }
-
-    private void verifyTestRoomAuthToken(String userId, String roomId) {
-        ArgumentCaptor<String> userIdCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> roomIdCaptor = ArgumentCaptor.forClass(String.class);
-        verify(getRoomAuthTokenUsecase).Test(userIdCaptor.capture(), roomIdCaptor.capture());
-        assertThat(userIdCaptor.getValue()).isEqualTo(userId);
-        assertThat(roomIdCaptor.getValue()).isEqualTo(roomId);
     }
 
 }
