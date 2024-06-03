@@ -50,16 +50,19 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         String imgURL = "";
         System.out.println(hostName);
         if (img != null && !img.isEmpty()) {
-            Optional<String> optionalImgURL = s3Port.uploadMultipartFileToS3(img, hostName, projectName);
+            Optional<String> optionalImgURL = s3Port.uploadMultipartFileToS3(img);
             imgURL = optionalImgURL.orElseThrow(() -> new IllegalStateException("Failed to upload image to S3"));
         }
 
         Project project = new Project();
         project = project.createProjectDomain(projectName, description, imgURL, hostId);
-        project.addUsers(userInProjectFromEmail(userEmails));
+        if (userEmails != null && !userEmails.isEmpty()){
+            project.addUsers(userInProjectFromEmail(userEmails));
+            sendMailPort.sendIviteMailBatch(hostName, projectName, userEmails, project.getId());
+        }
         CreateProjectResponseDto createProjectResponseDto = new CreateProjectResponseDto(writeProjectPort.CreateProject(project));
 
-        User host = readUserPort.findByUserId(hostId);
+//        User host = readUserPort.findByUserId(hostId);
 //        List<UserInProject> members = new ArrayList<>();
 //        if (userEmails != null && !userEmails.isEmpty()) {
 //            members = userEmails.stream()
@@ -67,7 +70,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 //                    .collect(Collectors.toList());
 //        }
 
-        sendMailPort.sendIviteMailBatch(hostName, projectName, userEmails, project.getId());
+
         return createProjectResponseDto;
     }
 
@@ -133,15 +136,19 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
 
     @Override
-    public InviteUserInProjectResponseDto inviteUserInProject(String userId, String projectId, List<String> userEmails) {
+    public InviteUserInProjectResponseDto inviteUserInProject(String userId,String hostName, String projectId, List<String> userEmails) {
         Project project = readProjectPort.findProjectByProjectId(projectId);
         checkHost(project, userId);
+        if (userEmails != null && !userEmails.isEmpty()){
+            project.addUsers(userInProjectFromEmail(userEmails));
+            sendMailPort.sendIviteMailBatch(hostName, project.getName(), userEmails, project.getId());
+        }
 
-        User host = readUserPort.findByUserId(userId);
-        // List<UserInProject> users = projectMappers.mapEmailsToUsersInProject(userEmails, host.getName(), project.getName(), projectId, readUserPort, sendMailPort);
-        List<UserInProject> users = userEmails.stream()
-                .map(email -> createUserInProjectWithRoleMember(email, host.getName(), project.getName(), projectId))
-                .collect(Collectors.toList());
+//        User host = readUserPort.findByUserId(userId);
+//        // List<UserInProject> users = projectMappers.mapEmailsToUsersInProject(userEmails, host.getName(), project.getName(), projectId, readUserPort, sendMailPort);
+//        List<UserInProject> users = userEmails.stream()
+//                .map(email -> createUserInProjectWithRoleMember(email, host.getName(), project.getName(), projectId))
+//                .collect(Collectors.toList());
 
         return new InviteUserInProjectResponseDto(projectId);
     }

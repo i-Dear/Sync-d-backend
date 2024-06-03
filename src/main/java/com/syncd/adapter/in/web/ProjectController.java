@@ -57,7 +57,7 @@ public class ProjectController {
     @PostMapping("/invite")
     public InviteUserInProjectResponseDto inviteUser(HttpServletRequest request, @Valid @RequestBody InviteUserInProjectRequestDto requestDto){
         String token = jwtService.resolveToken(request);
-        return inviteUserInProjectUsecase.inviteUserInProject(jwtService.getUserIdFromToken(token), requestDto.projectId(), requestDto.users());
+        return inviteUserInProjectUsecase.inviteUserInProject(jwtService.getUserIdFromToken(token),jwtService.getUsernameFromToken(token), requestDto.projectId(), requestDto.users());
     }
 
     @PostMapping("/withdraw")

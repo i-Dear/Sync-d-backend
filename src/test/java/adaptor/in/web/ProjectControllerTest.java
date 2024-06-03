@@ -129,7 +129,7 @@ public class ProjectControllerTest {
         setupMockJwtService(request, "token", "userId", null);
 
         InviteUserInProjectResponseDto responseDto = new InviteUserInProjectResponseDto("validProjectId");
-        when(inviteUserInProjectUsecase.inviteUserInProject(anyString(), anyString(), any())).thenReturn(responseDto);
+        when(inviteUserInProjectUsecase.inviteUserInProject(anyString(),any(), anyString(), any())).thenReturn(responseDto);
 
         InviteUserInProjectResponseDto response = projectController.inviteUser(request, requestDto);
 
@@ -305,8 +305,9 @@ public class ProjectControllerTest {
         ArgumentCaptor<String> userIdCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> projectIdCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<List<String>> usersCaptor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<String> userNameCaptor = ArgumentCaptor.forClass(String.class);
 
-        verify(inviteUserInProjectUsecase).inviteUserInProject(userIdCaptor.capture(), projectIdCaptor.capture(), usersCaptor.capture());
+        verify(inviteUserInProjectUsecase).inviteUserInProject(userIdCaptor.capture(),userNameCaptor.capture(), projectIdCaptor.capture(), usersCaptor.capture());
 
         assertThat(userIdCaptor.getValue()).isEqualTo(expectedUserId);
         assertThat(projectIdCaptor.getValue()).isEqualTo(expectedProjectId);
