@@ -21,6 +21,8 @@ public interface GetUserInfoUsecase {
     record GetUserInfoResponseDto(
 
             String userId,
+
+            String userIdForSendbird,
             String name,
             String img,
             String email,

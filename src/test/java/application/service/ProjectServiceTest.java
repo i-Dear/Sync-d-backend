@@ -155,12 +155,13 @@ public class ProjectServiceTest {
     void inviteUserInProject() {
         // Given
         String userId = Consistent.UserId.getValue();
+        String uesrName = Consistent.UserName.getValue();
         String projectId = Consistent.ProjectId.getValue();
         List<String> userEmails = Arrays.asList("user1@example.com", "user2@example.com");
 
 
         // When
-        InviteUserInProjectUsecase.InviteUserInProjectResponseDto response = projectService.inviteUserInProject(userId, projectId, userEmails);
+        InviteUserInProjectUsecase.InviteUserInProjectResponseDto response = projectService.inviteUserInProject(userId,uesrName, projectId, userEmails);
 
         // Then
         assertNotNull(response);

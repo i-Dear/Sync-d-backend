@@ -62,13 +62,14 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         }
         CreateProjectResponseDto createProjectResponseDto = new CreateProjectResponseDto(writeProjectPort.CreateProject(project));
 
-        User host = readUserPort.findByUserId(hostId);
+//        User host = readUserPort.findByUserId(hostId);
 //        List<UserInProject> members = new ArrayList<>();
 //        if (userEmails != null && !userEmails.isEmpty()) {
 //            members = userEmails.stream()
 //                    .map(email -> createUserInProjectWithRoleMember(email, host.getName(), projectName, createProjectResponseDto.projectId()))
 //                    .collect(Collectors.toList());
 //        }
+
 
         return createProjectResponseDto;
     }
@@ -135,15 +136,19 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
 
     @Override
-    public InviteUserInProjectResponseDto inviteUserInProject(String userId, String projectId, List<String> userEmails) {
+    public InviteUserInProjectResponseDto inviteUserInProject(String userId,String hostName, String projectId, List<String> userEmails) {
         Project project = readProjectPort.findProjectByProjectId(projectId);
         checkHost(project, userId);
+        if (userEmails != null && !userEmails.isEmpty()){
+            project.addUsers(userInProjectFromEmail(userEmails));
+            sendMailPort.sendIviteMailBatch(hostName, project.getName(), userEmails, project.getId());
+        }
 
-        User host = readUserPort.findByUserId(userId);
-        // List<UserInProject> users = projectMappers.mapEmailsToUsersInProject(userEmails, host.getName(), project.getName(), projectId, readUserPort, sendMailPort);
-        List<UserInProject> users = userEmails.stream()
-                .map(email -> createUserInProjectWithRoleMember(email, host.getName(), project.getName(), projectId))
-                .collect(Collectors.toList());
+//        User host = readUserPort.findByUserId(userId);
+//        // List<UserInProject> users = projectMappers.mapEmailsToUsersInProject(userEmails, host.getName(), project.getName(), projectId, readUserPort, sendMailPort);
+//        List<UserInProject> users = userEmails.stream()
+//                .map(email -> createUserInProjectWithRoleMember(email, host.getName(), project.getName(), projectId))
+//                .collect(Collectors.toList());
 
         return new InviteUserInProjectResponseDto(projectId);
     }
