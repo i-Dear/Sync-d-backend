@@ -1,6 +1,11 @@
 package com.syncd.application.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.io.font.PdfEncodings;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.layout.element.ListItem;
 import com.syncd.application.port.in.*;
 import com.syncd.application.port.out.gmail.SendMailPort;
 import com.syncd.application.port.out.liveblock.LiveblocksPort;
@@ -9,10 +14,7 @@ import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
 import com.syncd.application.port.out.s3.S3Port;
-import com.syncd.domain.project.CoreDetails;
-import com.syncd.domain.project.Epic;
-import com.syncd.domain.project.Project;
-import com.syncd.domain.project.UserInProject;
+import com.syncd.domain.project.*;
 import com.syncd.domain.user.User;
 import com.syncd.dto.MakeUserStoryResponseDto;
 import com.syncd.dto.UserRoleDto;
@@ -21,10 +23,15 @@ import com.syncd.exceptions.*;
 import com.syncd.mapper.ProjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -32,11 +39,36 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.property.UnitValue;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.imageio.ImageIO;
+import java.io.*;
+import java.net.URL;
+import java.util.List;
+import java.util.Optional;
+
+import javax.imageio.ImageIO;
+
 
 @Service
 @Primary
 @RequiredArgsConstructor
-public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase, UpdateProjectUsecase, WithdrawUserInProjectUsecase, InviteUserInProjectUsecase, DeleteProjectUsecase, SyncProjectUsecase, MakeUserstoryUsecase,JoinProjectUsecase {
+public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserIdUsecase, GetRoomAuthTokenUsecase, UpdateProjectUsecase, WithdrawUserInProjectUsecase, InviteUserInProjectUsecase, DeleteProjectUsecase, SyncProjectUsecase, MakeUserstoryUsecase,JoinProjectUsecase, GetResultPdfUsecase {
 
     private final ReadProjectPort readProjectPort;
     private final WriteProjectPort writeProjectPort;
@@ -47,6 +79,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     private final S3Port s3Port;
 
     private final ProjectMapper projectMappers;
+    public static final String FONT_PATH = "/font/GmarketSansTTFMedium.ttf";
 
     @Override
     public CreateProjectResponseDto createProject(String hostId, String hostName, String projectName, String description, MultipartFile img, List<String> userEmails){
@@ -145,12 +178,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
             project.addUsers(userInProjectFromEmail(userEmails));
             sendMailPort.sendIviteMailBatch(hostName, project.getName(), userEmails, project.getId());
         }
-
-//        User host = readUserPort.findByUserId(userId);
-//        // List<UserInProject> users = projectMappers.mapEmailsToUsersInProject(userEmails, host.getName(), project.getName(), projectId, readUserPort, sendMailPort);
-//        List<UserInProject> users = userEmails.stream()
-//                .map(email -> createUserInProjectWithRoleMember(email, host.getName(), project.getName(), projectId))
-//                .collect(Collectors.toList());
 
         return new InviteUserInProjectResponseDto(projectId);
     }
@@ -329,5 +356,71 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
             return optionalFileUrl.orElseThrow(() -> new IllegalStateException("Failed to upload file to S3"));
         }
         return "";
+    }
+
+    @Override
+    public GetResultPdfUsecaseResponseDto getResultPdfUsecaseProject(String userId, String projectId) {
+        Project project = readProjectPort.findProjectByProjectId(projectId);
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+
+            PdfWriter writer = new PdfWriter(byteArrayOutputStream);
+            PdfDocument pdfDoc = new PdfDocument(writer);
+            Document document = new Document(pdfDoc, PageSize.A4, false);
+            com.itextpdf.kernel.font.PdfFont koreanFont = PdfFontFactory.createFont(FONT_PATH, PdfEncodings.IDENTITY_H);
+            document.setFont(koreanFont);
+            String problem = project.getProblem();
+            String personaImage = project.getPersonaImage();
+            String whyWhatHowImage = project.getWhyWhatHowImage();
+            CoreDetails coreDetails = project.getCoreDetails();
+            String businessModelImage = project.getBusinessModelImage();
+            List<String> scenarios = project.getScenarios();
+            List<Epic> epics = project.getEpics();
+            String menuTreeImage = project.getMenuTreeImage();
+
+            // Add text and images to PDF
+            document.add(new Paragraph("Problem: " + problem));
+            addImageToDocument(document, personaImage);
+            document.add(new Paragraph("Why, What, How:"));
+            addImageToDocument(document, whyWhatHowImage);
+            document.add(new Paragraph("Core Details: " + coreDetails));
+            document.add(new Paragraph("Business Model:"));
+            addImageToDocument(document, businessModelImage);
+            document.add(new Paragraph("Scenarios:"));
+            for (String scenario : scenarios) {
+                document.add(new Paragraph(scenario));
+            }
+            document.add(new Paragraph("Epics:"));
+            for (Epic epic : epics) {
+                System.out.println(epic.getName());
+                document.add(new Paragraph("Epic: " + epic.getName()));
+                com.itextpdf.layout.element.List userStoriesList = new com.itextpdf.layout.element.List();
+                for (UserStory userStory : epic.getUserStories()) {
+                    userStoriesList.add(new ListItem(userStory.getName()));
+                }
+                document.add(userStoriesList);
+            }
+            document.add(new Paragraph("Menu Tree:"));
+            addImageToDocument(document, menuTreeImage);
+
+            document.close();
+
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            String fileName = projectId + "-result.pdf";
+            MultipartFile multipartFile = new MockMultipartFile("file", fileName, MediaType.APPLICATION_PDF_VALUE, byteArrayInputStream);
+            String fileUrl = uploadFileToS3(multipartFile);
+
+            return new GetResultPdfUsecaseResponseDto(fileUrl);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new CustomException(ErrorInfo.JSON_PARSE_ERROR, "Failed to parse JSON for coreDetails or epics: " + e.getMessage());
+        }
+    }
+    private void addImageToDocument(Document document, String imageUrl) throws MalformedURLException {
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            ImageData imageData = ImageDataFactory.create(new URL(imageUrl));
+            Image image = new Image(imageData);
+            image.setWidth(UnitValue.createPercentValue(100));
+            document.add(image);
+        }
     }
 }

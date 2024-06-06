@@ -99,7 +99,8 @@ public class LoginService implements SocialLoginUsecase, GetOauthRedirectUrlUsec
 
     @Override
     public String getOauthRedirectUrlUsecase(String referer) {
-
+        System.out.println("referere");
+        System.out.println(referer);
         String redirectUrl = googleOAuth2Properties.getRedirectUri();
 
         String url = "https://accounts.google.com/o/oauth2/auth" +
@@ -115,6 +116,7 @@ public class LoginService implements SocialLoginUsecase, GetOauthRedirectUrlUsec
                     "&response_type=code" +
                     "&scope=https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile";
         }
+
         return url;
     }
 }
