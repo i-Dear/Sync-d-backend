@@ -49,6 +49,7 @@ public class UserControllerTest {
 
         GetUserInfoResponseDto userInfoResponseDto = new GetUserInfoResponseDto(
                 "user-id",
+                "user-id",
                 "Test User",
                 "profileImg.jpg",
                 "test@example.com",
