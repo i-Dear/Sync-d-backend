@@ -59,10 +59,10 @@ public class UserServiceTest {
 
         GetAllRoomsByUserIdUsecase.ProjectForGetAllInfoAboutRoomsByUserIdResponseDto project1 =
                 new GetAllRoomsByUserIdUsecase.ProjectForGetAllInfoAboutRoomsByUserIdResponseDto(
-                        "project1", "1", "description1", Role.HOST, List.of("user1@example.com"), 0, "2024-05-19");
+                        "project1", "1", "description1", Role.HOST, List.of("user1@example.com"), 0, "2024-05-19","img");
         GetAllRoomsByUserIdUsecase.ProjectForGetAllInfoAboutRoomsByUserIdResponseDto project2 =
                 new GetAllRoomsByUserIdUsecase.ProjectForGetAllInfoAboutRoomsByUserIdResponseDto(
-                        "project2", "2", "description2", Role.MEMBER, List.of("user2@example.com"), 50, "2024-05-20");
+                        "project2", "2", "description2", Role.MEMBER, List.of("user2@example.com"), 50, "2024-05-20","img");
         GetAllRoomsByUserIdUsecase.GetAllRoomsByUserIdResponseDto projects =
                 new GetAllRoomsByUserIdUsecase.GetAllRoomsByUserIdResponseDto(userId, List.of(project1, project2));
 

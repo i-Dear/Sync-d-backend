@@ -62,7 +62,8 @@ public interface ProjectMapper {
                 role,
                 userEmails,
                 project.getProgress(),
-                project.getLastModifiedDate()
+                project.getLastModifiedDate(),
+                project.getImg()
         );
     }
 
