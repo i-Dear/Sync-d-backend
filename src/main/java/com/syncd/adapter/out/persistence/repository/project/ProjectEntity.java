@@ -23,13 +23,12 @@ public class ProjectEntity {
     // 추가 필드
     private String problem;
     private String personaImage;
-    private String whyImage;
-    private String whatImage;
-    private String howImage;
+    private String whyWhatHowImage;
     private CoreDetails coreDetails;
     private String businessModelImage;
     private List<String> scenarios;
     private List<Epic> epics;
+    private String menuTreeImage;
 
     @Data
     public static class UserInProjectEntity {
