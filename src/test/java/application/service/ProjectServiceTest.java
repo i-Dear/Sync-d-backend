@@ -213,9 +213,8 @@ public class ProjectServiceTest {
         SyncProjectUsecase.SyncProjectResponseDto response = projectService.syncProject(
                 userId, projectId, projectStage,
                 "problem",
-                mockFile, mockFile, mockFile, mockFile,
-                new CoreDetails(), mockFile,
-                List.of("scenario1", "scenario2"), List.of(new Epic())
+                mockFile, mockFile, "{}", mockFile,
+                "[]", mockFile
         );
         // Then
         assertNotNull(response);

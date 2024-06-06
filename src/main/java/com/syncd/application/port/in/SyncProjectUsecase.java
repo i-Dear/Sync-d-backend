@@ -16,13 +16,12 @@ public interface SyncProjectUsecase {
     SyncProjectResponseDto syncProject(String userId, String projectId, int projectStage,
                                        String problem,
                                        MultipartFile personaImage,
-                                       MultipartFile whyImage,
-                                       MultipartFile whatImage,
-                                       MultipartFile howImage,
-                                       CoreDetails coreDetails,
+                                       MultipartFile whyWhatHowImage,
+                                       String coreDetails,
                                        MultipartFile businessModelImage,
-                                       List<String>scenarios,
-                                       List<Epic> epics);
+                                       String epics,
+                                       MultipartFile menuTreeImage
+                                       );
     // ======================================
     // DTO
     // ======================================
@@ -34,14 +33,13 @@ public interface SyncProjectUsecase {
             Integer projectStage,
             // Sync 내용, projectStage 마다 필요한 요소들이 존재
             String problem,
+            String coreDetails,
+            String epics,
+
             MultipartFile personaImage,
-            MultipartFile whyImage,
-            MultipartFile whatImage,
-            MultipartFile howImage,
-            CoreDetails coreDetails,
+            MultipartFile whyWhatHowImage,
             MultipartFile businessModelImage,
-            List<String>scenarios,
-            List<Epic> epics
+            MultipartFile menuTreeImage
     ){}
 
     record SyncProjectResponseDto(

@@ -346,22 +346,23 @@ public class ProjectControllerValidationTest {
         return createSyncProjectRequestDto(
                 projectId, projectStage, "problem",
                 createMockMultipartFile(), createMockMultipartFile(),
-                createMockMultipartFile(), createMockMultipartFile(),
-                new CoreDetails(), createMockMultipartFile(),
-                List.of("scenario1", "scenario2"), List.of(new Epic())
+                "{}", // JSON string for coreDetails
+                createMockMultipartFile(),
+                "[]", // JSON string for epics
+                createMockMultipartFile()
         );
     }
 
+
     private SyncProjectRequestDto createSyncProjectRequestDto(
             String projectId, Integer projectStage, String problem,
-            MultipartFile personaImage, MultipartFile whyImage, MultipartFile whatImage, MultipartFile howImage,
-            CoreDetails coreDetails, MultipartFile businessModelImage,
-            List<String> scenarios, List<Epic> epics) {
+            MultipartFile personaImage, MultipartFile whyWhatHowImage, String coreDetails,
+            MultipartFile businessModelImage, String epics, MultipartFile menuTreeImage) {
         return new SyncProjectRequestDto(
                 projectId, projectStage, problem,
-                personaImage, whyImage, whatImage, howImage,
-                coreDetails, businessModelImage,
-                scenarios, epics
+                coreDetails, epics,
+                personaImage, whyWhatHowImage,
+                businessModelImage, menuTreeImage
         );
     }
 

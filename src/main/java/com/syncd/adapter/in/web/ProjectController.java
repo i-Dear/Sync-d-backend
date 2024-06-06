@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -79,9 +80,19 @@ public class ProjectController {
     }
 
     @PostMapping("/sync")
-    public SyncProjectResponseDto syncProject(HttpServletRequest request, @Valid @ModelAttribute SyncProjectRequestDto requestDto){
+    public SyncProjectResponseDto syncProject(HttpServletRequest request,
+                                              @Valid @ModelAttribute SyncProjectRequestDto requestDto){
         String token = jwtService.resolveToken(request);
-        return syncProjectUsecase.syncProject(jwtService.getUserIdFromToken(token), requestDto.projectId(), requestDto.projectStage(), requestDto.problem(), requestDto.personaImage(), requestDto.whyImage(),requestDto.whatImage(),requestDto.howImage(),requestDto.coreDetails(),requestDto.businessModelImage(),requestDto.scenarios(),requestDto.epics());
+        return syncProjectUsecase.syncProject(jwtService.getUserIdFromToken(token),
+                requestDto.projectId(),
+                requestDto.projectStage(),
+                requestDto.problem(),
+                requestDto.personaImage(),
+                requestDto.whyWhatHowImage(),
+                requestDto.coreDetails(),
+                requestDto.businessModelImage(),
+                requestDto.epics(),
+                requestDto.menuTreeImage());
     }
 
     @PostMapping("/userstory")

@@ -1,5 +1,6 @@
 package com.syncd.application.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.syncd.application.port.in.*;
 import com.syncd.application.port.out.gmail.SendMailPort;
 import com.syncd.application.port.out.liveblock.LiveblocksPort;
@@ -29,7 +30,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.core.type.TypeReference;
 
 
 @Service
@@ -181,13 +182,22 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     public SyncProjectResponseDto syncProject(String userId, String projectId, int projectStage,
                                               String problem,
                                               MultipartFile personaImage,
-                                              MultipartFile whyImage,
-                                              MultipartFile whatImage,
-                                              MultipartFile howImage,
-                                              CoreDetails coreDetails,
+                                              MultipartFile whyWhatHowImage,
+                                              String coreDetailsJson,
                                               MultipartFile businessModelImage,
-                                              List<String>scenarios,
-                                              List<Epic> epics) {
+                                              String epicsJson,
+                                              MultipartFile menuTreeImage) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        CoreDetails coreDetails;
+        List<Epic> epics;
+
+        try {
+            coreDetails = objectMapper.readValue(coreDetailsJson, CoreDetails.class);
+            epics = objectMapper.readValue(epicsJson, new TypeReference<List<Epic>>() {});
+        } catch (Exception e) {
+            throw new CustomException(ErrorInfo.JSON_PARSE_ERROR, "Failed to parse JSON for coreDetails or epics: " + e.getMessage());
+        }
+
         Project project = readProjectPort.findProjectByProjectId(projectId);
         switch (projectStage) {
             case 1:
@@ -200,13 +210,10 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
                 project.setPersonaImage(uploadFileToS3(personaImage));
                 break;
             case 5:
-                project.setWhyImage(uploadFileToS3(whyImage));
-                break;
             case 6:
-                project.setWhatImage(uploadFileToS3(whatImage));
                 break;
             case 7:
-                project.setHowImage(uploadFileToS3(howImage));
+                project.setWhyWhatHowImage(uploadFileToS3(whyWhatHowImage));
                 break;
             case 8:
                 project.setCoreDetails(coreDetails);
@@ -215,10 +222,12 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
                 project.setBusinessModelImage(uploadFileToS3(businessModelImage));
                 break;
             case 10:
-                project.setScenarios(scenarios);
                 break;
             case 11:
                 project.setEpics(epics);
+                break;
+            case 12:
+                project.setMenuTreeImage(uploadFileToS3(menuTreeImage));
                 break;
             default:
                 throw new IllegalArgumentException("Invalid project stage: " + projectStage);
@@ -228,6 +237,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         writeProjectPort.UpdateProject(project);
         return new SyncProjectResponseDto(projectId);
     }
+
     @Override
     @Transactional
     public MakeUserStoryResponseDto makeUserstory(String userId, String projectId, List<String> senarios){
@@ -243,6 +253,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
             System.out.println(project);
             throw new CustomException(ErrorInfo.NOT_INCLUDE_PROJECT, "project id" +  projectId);
         }
+        project.setScenarios(senarios);
         project.subLeftChanceForUserstory();
         writeProjectPort.UpdateProject(project);
         System.out.println(senarios);
@@ -303,7 +314,8 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
                 userRole,
                 userEmails,
                 project.getProgress(),
-                project.getLastModifiedDate()
+                project.getLastModifiedDate(),
+                project.getImg()
         );
     }
 
