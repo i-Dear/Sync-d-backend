@@ -18,6 +18,8 @@ import com.syncd.application.port.out.liveblock.LiveblocksPort;
 import com.syncd.application.port.out.openai.ChatGPTPort;
 import com.syncd.application.port.out.s3.S3Port;
 import com.syncd.application.service.ProjectService;
+import com.syncd.domain.project.CoreDetails;
+import com.syncd.domain.project.Epic;
 import com.syncd.domain.project.Project;
 import com.syncd.domain.project.UserInProject;
 import com.syncd.domain.user.User;
@@ -206,10 +208,14 @@ public class ProjectServiceTest {
         String userId = Consistent.UserId.getValue();
         String projectId = Consistent.ProjectId.getValue();
         int projectStage = 1;
-
+        MultipartFile mockFile = mock(MultipartFile.class);
         // When
-        SyncProjectUsecase.SyncProjectResponseDto response = projectService.syncProject(userId, projectId, projectStage);
-
+        SyncProjectUsecase.SyncProjectResponseDto response = projectService.syncProject(
+                userId, projectId, projectStage,
+                "problem",
+                mockFile, mockFile, "{}", mockFile,
+                "[]", mockFile
+        );
         // Then
         assertNotNull(response);
         assertEquals(projectId, response.projectId());

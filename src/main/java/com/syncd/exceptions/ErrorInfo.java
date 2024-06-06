@@ -10,7 +10,8 @@ public enum ErrorInfo {
     PROJECT_ALREADY_EXISTS(HttpStatus.CONFLICT, "Project already exists", 409001),
     NOT_LEFT_CHANCE(HttpStatus.FORBIDDEN, "Not Left Chance", 403001),
     NOT_INCLUDE_PROJECT(HttpStatus.FORBIDDEN, "Not include that project", 403002),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not found", 404002);
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not found", 404002),
+    JSON_PARSE_ERROR(HttpStatus.BAD_REQUEST, "JSON parse error", 400003);
 
     private final HttpStatus status;
     private final String message;

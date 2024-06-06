@@ -1,5 +1,6 @@
 package com.syncd.application.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.syncd.application.port.in.*;
 import com.syncd.application.port.out.gmail.SendMailPort;
 import com.syncd.application.port.out.liveblock.LiveblocksPort;
@@ -8,6 +9,8 @@ import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
 import com.syncd.application.port.out.s3.S3Port;
+import com.syncd.domain.project.CoreDetails;
+import com.syncd.domain.project.Epic;
 import com.syncd.domain.project.Project;
 import com.syncd.domain.project.UserInProject;
 import com.syncd.domain.user.User;
@@ -27,7 +30,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.core.type.TypeReference;
 
 
 @Service
@@ -47,12 +50,11 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
     @Override
     public CreateProjectResponseDto createProject(String hostId, String hostName, String projectName, String description, MultipartFile img, List<String> userEmails){
-        String imgURL = "";
-        System.out.println(hostName);
-        if (img != null && !img.isEmpty()) {
-            Optional<String> optionalImgURL = s3Port.uploadMultipartFileToS3(img);
-            imgURL = optionalImgURL.orElseThrow(() -> new IllegalStateException("Failed to upload image to S3"));
+        List<User> users = new ArrayList<>();
+        if(userEmails!=null){
+            users = readUserPort.usersFromEmails(userEmails);
         }
+        String imgURL = uploadFileToS3(img);
 
         Project project = new Project();
         project = project.createProjectDomain(projectName, description, imgURL, hostId);
@@ -177,13 +179,65 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     }
 
     @Override
-    public SyncProjectResponseDto syncProject(String userId, String projectId, int projectStage) {
+    public SyncProjectResponseDto syncProject(String userId, String projectId, int projectStage,
+                                              String problem,
+                                              MultipartFile personaImage,
+                                              MultipartFile whyWhatHowImage,
+                                              String coreDetailsJson,
+                                              MultipartFile businessModelImage,
+                                              String epicsJson,
+                                              MultipartFile menuTreeImage) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        CoreDetails coreDetails;
+        List<Epic> epics;
+
+        try {
+            coreDetails = objectMapper.readValue(coreDetailsJson, CoreDetails.class);
+            epics = objectMapper.readValue(epicsJson, new TypeReference<List<Epic>>() {});
+        } catch (Exception e) {
+            throw new CustomException(ErrorInfo.JSON_PARSE_ERROR, "Failed to parse JSON for coreDetails or epics: " + e.getMessage());
+        }
+
         Project project = readProjectPort.findProjectByProjectId(projectId);
+        switch (projectStage) {
+            case 1:
+            case 2:
+                break;
+            case 3:
+                project.setProblem(problem);
+                break;
+            case 4:
+                project.setPersonaImage(uploadFileToS3(personaImage));
+                break;
+            case 5:
+            case 6:
+                break;
+            case 7:
+                project.setWhyWhatHowImage(uploadFileToS3(whyWhatHowImage));
+                break;
+            case 8:
+                project.setCoreDetails(coreDetails);
+                break;
+            case 9:
+                project.setBusinessModelImage(uploadFileToS3(businessModelImage));
+                break;
+            case 10:
+                break;
+            case 11:
+                project.setEpics(epics);
+                break;
+            case 12:
+                project.setMenuTreeImage(uploadFileToS3(menuTreeImage));
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid project stage: " + projectStage);
+        }
         writeProjectPort.AddProgress(projectId, projectStage);
         writeProjectPort.updateLastModifiedDate(projectId);
-
+        writeProjectPort.UpdateProject(project);
         return new SyncProjectResponseDto(projectId);
     }
+
     @Override
     @Transactional
     public MakeUserStoryResponseDto makeUserstory(String userId, String projectId, List<String> senarios){
@@ -199,6 +253,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
             System.out.println(project);
             throw new CustomException(ErrorInfo.NOT_INCLUDE_PROJECT, "project id" +  projectId);
         }
+        project.setScenarios(senarios);
         project.subLeftChanceForUserstory();
         writeProjectPort.UpdateProject(project);
         System.out.println(senarios);
@@ -259,11 +314,20 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
                 userRole,
                 userEmails,
                 project.getProgress(),
-                project.getLastModifiedDate()
+                project.getLastModifiedDate(),
+                project.getImg()
         );
     }
 
     private UserRoleDto convertUserToUserRoleDto(String projectId, UserInProject user) {
         return new UserRoleDto(projectId, user.getUserId(), user.getRole());
+    }
+
+    private String uploadFileToS3(MultipartFile file) {
+        if (file != null && !file.isEmpty()) {
+            Optional<String> optionalFileUrl = s3Port.uploadMultipartFileToS3(file);
+            return optionalFileUrl.orElseThrow(() -> new IllegalStateException("Failed to upload file to S3"));
+        }
+        return "";
     }
 }

@@ -23,6 +23,15 @@ public class Project {
     private String lastModifiedDate;
     private int leftChanceForUserstory;
 
+    // 싱크된 내용
+    private String problem;
+    private String personaImage;
+    private String whyWhatHowImage;
+    private CoreDetails coreDetails;
+    private String businessModelImage;
+    private List<String> scenarios;
+    private List<Epic> epics;
+    private String menuTreeImage;
 
     public void addUsers(List<UserInProject> newUsers) {
         if (this.users == null) {
@@ -40,14 +49,11 @@ public class Project {
     }
 
     public String getHost() {
-        if(this.users != null){
-            return this.users.stream()
-                    .filter(user -> user.getRole() == Role.HOST)
-                    .map(UserInProject::getUserId)
-                    .findFirst()
-                    .orElse(null);  // Returns null if no host is found
-        }
-        return null;
+        return this.users.stream()
+                .filter(user -> user.getRole() == Role.HOST)
+                .map(UserInProject::getUserId)
+                .findFirst()
+                .orElse(null);  // Returns null if no host is found
     }
 
     public void updateProjectInfo(String projectName, String description, String img){
