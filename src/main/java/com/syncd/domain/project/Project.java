@@ -29,7 +29,7 @@ public class Project {
 
     // 싱크된 내용
     private String problem;
-    private String personaImage;
+    private List<PersonaInfo> personaInfos;
     private String whyWhatHowImage;
     private CoreDetails coreDetails;
     private String businessModelImage;
