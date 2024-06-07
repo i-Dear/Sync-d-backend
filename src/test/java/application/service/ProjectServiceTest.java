@@ -213,7 +213,7 @@ public class ProjectServiceTest {
         SyncProjectUsecase.SyncProjectResponseDto response = projectService.syncProject(
                 userId, projectId, projectStage,
                 "problem",
-                mockFile, mockFile, "{}", mockFile,
+                "[]", mockFile, "{}", mockFile,
                 "[]", mockFile
         );
         // Then

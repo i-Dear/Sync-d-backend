@@ -345,7 +345,7 @@ public class ProjectControllerValidationTest {
     private SyncProjectRequestDto createSyncProjectRequestDtoWithDefaults(String projectId, Integer projectStage) {
         return createSyncProjectRequestDto(
                 projectId, projectStage, "problem",
-                createMockMultipartFile(), createMockMultipartFile(),
+                "[]", createMockMultipartFile(),
                 "{}", // JSON string for coreDetails
                 createMockMultipartFile(),
                 "[]", // JSON string for epics
@@ -356,12 +356,12 @@ public class ProjectControllerValidationTest {
 
     private SyncProjectRequestDto createSyncProjectRequestDto(
             String projectId, Integer projectStage, String problem,
-            MultipartFile personaImage, MultipartFile whyWhatHowImage, String coreDetails,
+            String personaInfos, MultipartFile whyWhatHowImage, String coreDetails,
             MultipartFile businessModelImage, String epics, MultipartFile menuTreeImage) {
         return new SyncProjectRequestDto(
                 projectId, projectStage, problem,
                 coreDetails, epics,
-                personaImage, whyWhatHowImage,
+                personaInfos, whyWhatHowImage,
                 businessModelImage, menuTreeImage
         );
     }

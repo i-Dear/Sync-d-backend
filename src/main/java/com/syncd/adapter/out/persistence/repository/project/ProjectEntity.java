@@ -1,5 +1,6 @@
 package com.syncd.adapter.out.persistence.repository.project;
 
+import com.syncd.domain.project.PersonaInfo;
 import com.syncd.enums.Role;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -22,7 +23,7 @@ public class ProjectEntity {
 
     // 추가 필드
     private String problem;
-    private String personaImage;
+    private List<PersonaInfo> personaInfos;
     private String whyWhatHowImage;
     private CoreDetails coreDetails;
     private String businessModelImage;
