@@ -1,15 +1,11 @@
 package com.syncd.adapter.in.web;
 
-import com.syncd.GoogleOAuth2Properties;
 import com.syncd.application.port.in.GetOauthRedirectUrlUsecase;
-import com.syncd.application.port.in.SocialLoginUsecase;
-import com.syncd.application.port.out.persistence.user.ReadUserPort;
-import com.syncd.application.service.LoginService;
-import com.syncd.dto.TokenDto;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.Enumeration;
@@ -23,13 +19,14 @@ public class LoginController {
     @GetMapping("/login/google")
     public RedirectView redirectToGoogleOAuth(HttpServletRequest request) {
         String referer = getReferer(request);
+        System.out.println("Extracted Referer: " + referer);
         String url = getOauthRedirectUrlUsecase.getOauthRedirectUrlUsecase(referer);
-        System.out.println(url);
+        System.out.println("Redirect URL: " + url);
         return new RedirectView(url);
     }
 
-    private String getReferer(HttpServletRequest request){
-
+    private String getReferer(HttpServletRequest request) {
+        // Print all headers for debugging
         Enumeration<String> reqHeaderNames = request.getHeaderNames();
         while (reqHeaderNames.hasMoreElements()) {
             String headerName = reqHeaderNames.nextElement();
@@ -37,26 +34,31 @@ public class LoginController {
             System.out.println(headerName + ": " + headerValue);
         }
 
-        String cookies = request.getHeader("cookie");
+        // Attempt to get referer from headers
         String referer = request.getHeader("referer");
-        String refererSubstring="";
-        if(cookies!=null){
+        if (referer != null && !referer.isEmpty()) {
+            System.out.println("Referer from Header: " + referer);
+            return referer;
+        }
+
+        // Attempt to get referer from cookies
+        String cookies = request.getHeader("cookie");
+        if (cookies != null) {
             int refererIndex = cookies.indexOf("referer=");
             if (refererIndex != -1) {
-                // 'referer=' 이후의 부분 추출
-                refererSubstring = cookies.substring(refererIndex + "referer=".length());
-
-                // ';' 이전의 부분 추출 (쿠키가 끝날 때까지)
+                String refererSubstring = cookies.substring(refererIndex + "referer=".length());
                 int semicolonIndex = refererSubstring.indexOf(';');
                 if (semicolonIndex != -1) {
                     refererSubstring = refererSubstring.substring(0, semicolonIndex);
                 }
+                System.out.println("Referer from Cookie: " + refererSubstring);
+                return refererSubstring;
             }
-        } else if (referer!=null) {
-            refererSubstring=referer;
-        } else {
-            refererSubstring = "https://syncd.i-dear.org/";
         }
-        return refererSubstring;
+
+        // Default referer
+        String defaultReferer = "https://syncd.i-dear.org/";
+        System.out.println("Default Referer: " + defaultReferer);
+        return defaultReferer;
     }
 }

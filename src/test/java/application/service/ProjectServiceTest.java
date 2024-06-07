@@ -75,7 +75,6 @@ public class ProjectServiceTest {
         projectService = new ProjectService(readProjectPort, writeProjectPort, readUserPort, liveblocksPort, sendMailPort, chatGPTPort, s3Port, projectMapper);
     }
 
-
     @Test
     void createProject() {
         // Given
@@ -213,7 +212,7 @@ public class ProjectServiceTest {
         SyncProjectUsecase.SyncProjectResponseDto response = projectService.syncProject(
                 userId, projectId, projectStage,
                 "problem",
-                mockFile, mockFile, "{}", mockFile,
+                "[]", mockFile, "{}", mockFile,
                 "[]", mockFile
         );
         // Then

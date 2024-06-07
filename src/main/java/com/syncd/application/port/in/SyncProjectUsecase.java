@@ -15,7 +15,7 @@ public interface SyncProjectUsecase {
     // ======================================
     SyncProjectResponseDto syncProject(String userId, String projectId, int projectStage,
                                        String problem,
-                                       MultipartFile personaImage,
+                                       String personaInfos,
                                        MultipartFile whyWhatHowImage,
                                        String coreDetails,
                                        MultipartFile businessModelImage,
@@ -35,8 +35,7 @@ public interface SyncProjectUsecase {
             String problem,
             String coreDetails,
             String epics,
-
-            MultipartFile personaImage,
+            String personaInfos,
             MultipartFile whyWhatHowImage,
             MultipartFile businessModelImage,
             MultipartFile menuTreeImage

@@ -6,6 +6,7 @@ import com.syncd.application.port.in.CreateProjectUsecase.*;
 import com.syncd.application.port.in.JoinProjectUsecase.*;
 import com.syncd.application.port.in.InviteUserInProjectUsecase.*;
 import com.syncd.application.port.in.WithdrawUserInProjectUsecase.*;
+import com.syncd.application.port.in.GetResultPdfUsecase.*;
 import com.syncd.application.port.in.UpdateProjectUsecase.*;
 import com.syncd.application.port.in.DeleteProjectUsecase.*;
 import com.syncd.application.port.in.SyncProjectUsecase.*;
@@ -40,6 +41,8 @@ public class ProjectController {
     private final SyncProjectUsecase syncProjectUsecase;
 
     private final MakeUserstoryUsecase makeUserstoryUsecase;
+
+    private final GetResultPdfUsecase getResultPdfUsecase;
 
     private final JwtService jwtService;
 
@@ -87,7 +90,7 @@ public class ProjectController {
                 requestDto.projectId(),
                 requestDto.projectStage(),
                 requestDto.problem(),
-                requestDto.personaImage(),
+                requestDto.personaInfos(),
                 requestDto.whyWhatHowImage(),
                 requestDto.coreDetails(),
                 requestDto.businessModelImage(),
@@ -100,6 +103,16 @@ public class ProjectController {
         String token = jwtService.resolveToken(request);
         MakeUserStoryResponseDto result = makeUserstoryUsecase.makeUserstory(jwtService.getUserIdFromToken(token), makeUserStoryReauestDto.getProjectId(), makeUserStoryReauestDto.getScenario());
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/result")
+    public GetResultPdfUsecaseResponseDto getResultPdf(
+            HttpServletRequest request,
+            @RequestParam String projectId) {
+        String token = jwtService.resolveToken(request);
+        return getResultPdfUsecase.getResultPdfUsecaseProject(
+                jwtService.getUserIdFromToken(token),
+                projectId);
     }
 
 }
