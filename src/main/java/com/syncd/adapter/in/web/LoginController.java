@@ -24,7 +24,7 @@ public class LoginController {
     public RedirectView redirectToGoogleOAuth(HttpServletRequest request) {
         String referer = getReferer(request);
         String url = getOauthRedirectUrlUsecase.getOauthRedirectUrlUsecase(referer);
-        System.out.println(url);
+        System.out.println("URL: " + url);
         return new RedirectView(url);
     }
 
