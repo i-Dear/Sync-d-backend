@@ -223,7 +223,6 @@ public class ProjectControllerTest {
     @DisplayName("Sync Project - Valid Request")
     void testSyncProject_ValidRequest() {
         HttpServletRequest request = mock(HttpServletRequest.class);
-        MultipartFile personaImage = mock(MultipartFile.class);
         MultipartFile whyWhatHowImage = mock(MultipartFile.class);
         MultipartFile businessModelImage = mock(MultipartFile.class);
         MultipartFile menuTreeImage = mock(MultipartFile.class);
@@ -234,7 +233,7 @@ public class ProjectControllerTest {
                 "problem",
                 "coreDetailsJsonString",
                 "epicsJsonString",
-                personaImage,
+                "personalinfosString",
                 whyWhatHowImage,
                 businessModelImage,
                 menuTreeImage
@@ -244,7 +243,7 @@ public class ProjectControllerTest {
 
         SyncProjectResponseDto responseDto = new SyncProjectResponseDto("validProjectId");
         when(syncProjectUsecase.syncProject(anyString(), anyString(), anyInt(), anyString(),
-                any(MultipartFile.class), any(MultipartFile.class), anyString(),
+                anyString(), any(MultipartFile.class), anyString(),
                 any(MultipartFile.class), anyString(), any(MultipartFile.class))).thenReturn(responseDto);
 
         SyncProjectResponseDto response = projectController.syncProject(request, requestDto);
@@ -254,7 +253,7 @@ public class ProjectControllerTest {
 
         verifyJwtServiceInteraction(request, "token");
         verifySyncProjectUsecase("userId", "validProjectId", 10, "problem",
-                personaImage, whyWhatHowImage, "coreDetailsJsonString",
+                "personalinfosString", whyWhatHowImage, "coreDetailsJsonString",
                 businessModelImage, "epicsJsonString", menuTreeImage);
     }
 
@@ -376,7 +375,7 @@ public class ProjectControllerTest {
     }
 
     private void verifySyncProjectUsecase(String expectedUserId, String expectedProjectId, int expectedProjectStage,
-                                          String expectedProblem, MultipartFile expectedPersonaImage,
+                                          String expectedProblem, String expectedPersonaInfos,
                                           MultipartFile expectedWhyWhatHowImage, String expectedCoreDetailsJson,
                                           MultipartFile expectedBusinessModelImage, String expectedEpicsJson,
                                           MultipartFile expectedMenuTreeImage) {
@@ -384,7 +383,7 @@ public class ProjectControllerTest {
         ArgumentCaptor<String> projectIdCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Integer> projectStageCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<String> problemCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<MultipartFile> personaImageCaptor = ArgumentCaptor.forClass(MultipartFile.class);
+        ArgumentCaptor<String> personaInfosCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<MultipartFile> whyWhatHowImageCaptor = ArgumentCaptor.forClass(MultipartFile.class);
         ArgumentCaptor<String> coreDetailsJsonCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<MultipartFile> businessModelImageCaptor = ArgumentCaptor.forClass(MultipartFile.class);
@@ -392,14 +391,14 @@ public class ProjectControllerTest {
         ArgumentCaptor<MultipartFile> menuTreeImageCaptor = ArgumentCaptor.forClass(MultipartFile.class);
 
         verify(syncProjectUsecase).syncProject(userIdCaptor.capture(), projectIdCaptor.capture(), projectStageCaptor.capture(),
-                problemCaptor.capture(), personaImageCaptor.capture(), whyWhatHowImageCaptor.capture(), coreDetailsJsonCaptor.capture(),
+                problemCaptor.capture(), personaInfosCaptor.capture(), whyWhatHowImageCaptor.capture(), coreDetailsJsonCaptor.capture(),
                 businessModelImageCaptor.capture(), epicsJsonCaptor.capture(), menuTreeImageCaptor.capture());
 
         assertThat(userIdCaptor.getValue()).isEqualTo(expectedUserId);
         assertThat(projectIdCaptor.getValue()).isEqualTo(expectedProjectId);
         assertThat(projectStageCaptor.getValue()).isEqualTo(expectedProjectStage);
         assertThat(problemCaptor.getValue()).isEqualTo(expectedProblem);
-        assertThat(personaImageCaptor.getValue()).isEqualTo(expectedPersonaImage);
+        assertThat(personaInfosCaptor.getValue()).isEqualTo(expectedPersonaInfos);
         assertThat(whyWhatHowImageCaptor.getValue()).isEqualTo(expectedWhyWhatHowImage);
         assertThat(coreDetailsJsonCaptor.getValue()).isEqualTo(expectedCoreDetailsJson);
         assertThat(businessModelImageCaptor.getValue()).isEqualTo(expectedBusinessModelImage);
