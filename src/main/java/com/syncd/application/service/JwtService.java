@@ -1,5 +1,7 @@
 package com.syncd.application.service;
+import com.syncd.adapter.out.persistence.repository.admin.AdminEntity;
 import com.syncd.application.port.in.*;
+import com.syncd.application.port.in.admin.GetAdminIdFromTokenUsecase;
 import com.syncd.domain.user.User;
 import io.jsonwebtoken.*;
 import jakarta.servlet.Filter;
@@ -16,7 +18,7 @@ import java.util.*;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class JwtService implements GenerateTokenUsecase, JwtAuthenticationFilterUsecase, GetUserIdFromTokenUsecase, GetUsernameFromTokenUsecase, ResolveTokenUsecase, ValidateTokenUsecase {
+public class JwtService implements GenerateTokenUsecase, JwtAuthenticationFilterUsecase, GetUserIdFromTokenUsecase, GetAdminIdFromTokenUsecase, GetUsernameFromTokenUsecase, ResolveTokenUsecase, ValidateTokenUsecase {
 
     @Value("${spring.jwt.secret}")
     private String secretKey;
@@ -38,6 +40,16 @@ public class JwtService implements GenerateTokenUsecase, JwtAuthenticationFilter
                 .compact();
     }
 
+    public String generateTokenForAdmin(AdminEntity admin) {
+        return Jwts.builder()
+                .setHeader(createHeader())
+                .setClaims(createClaimsForAdmin(admin))
+                .setIssuedAt(new Date())
+                .setExpiration(createExpireDateForAccessToken())
+                .signWith(SignatureAlgorithm.HS256, createSigningKey())
+                .compact();
+    }
+
     private static Map<String, Object> createHeader() {
         Map<String, Object> header = new HashMap<>();
         header.put("typ", "JWT");
@@ -51,6 +63,14 @@ public class JwtService implements GenerateTokenUsecase, JwtAuthenticationFilter
         claims.put("email", user.getEmail());
         claims.put("name", user.getName());
         claims.put("img", user.getProfileImg());
+        return claims;
+    }
+
+    private static Map<String, Object> createClaimsForAdmin(AdminEntity admin) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", admin.getId());
+        claims.put("email", admin.getEmail());
+        claims.put("name", admin.getName());
         return claims;
     }
 
@@ -108,6 +128,12 @@ public class JwtService implements GenerateTokenUsecase, JwtAuthenticationFilter
 
     @Override
     public String getUserIdFromToken(String token) {
+        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        return claims.get("id", String.class);
+    }
+
+    @Override
+    public String getAdminIdFromToken(String token) {
         Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
         return claims.get("id", String.class);
     }

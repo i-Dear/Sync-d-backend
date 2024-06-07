@@ -1,5 +1,7 @@
 package com.syncd.application.service;
 
+import com.syncd.adapter.out.persistence.repository.admin.AdminDao;
+import com.syncd.adapter.out.persistence.repository.admin.AdminEntity;
 import com.syncd.adapter.out.persistence.repository.project.ProjectDao;
 import com.syncd.adapter.out.persistence.repository.project.ProjectEntity;
 import com.syncd.adapter.out.persistence.repository.user.UserDao;
@@ -10,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -22,10 +25,38 @@ import java.util.stream.Collectors;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class AdminService implements CreateProjectAdminUsecase, CreateUserAdminUsecase, DeleteProjectAdminUsecase,
+public class AdminService implements LoginAdminUsecase, CreateAdminUsecase, CreateProjectAdminUsecase, CreateUserAdminUsecase, DeleteProjectAdminUsecase,
         DeleteUserAdminUsecase, GetAllProjectAdminUsecase, GetAllUserAdminUsecase, UpdateProjectAdminUsecase, UpdateUserAdminUsecase, GetChatgptPriceAdminUsecase, SearchUserAdminUsecase, SearchProjectAdminUsecase {
     private final ProjectDao projectDao;
     private final UserDao userDao;
+    private final AdminDao adminDao;
+    private final JwtService jwtService;
+
+    @Override
+    public LoginResponseDto login(String email, String password) {
+        AdminEntity admin = adminDao.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+//        if (!passwordEncoder.matches(password, admin.getPassword())) {
+//            throw new RuntimeException("Invalid credentials");
+//        }
+        if (!(password.equals(admin.getPassword()))) {
+            throw new RuntimeException("Invalid credentials");
+        }
+        String token = jwtService.generateTokenForAdmin(admin);
+        return new LoginResponseDto(token);
+    }
+
+    @Override
+    public CreateAdminResponseDto createAdmin(String email, String password, String name) {
+        AdminEntity admin = new AdminEntity();
+        admin.setEmail(email);
+        admin.setPassword(password);
+        admin.setName(name);
+
+        AdminEntity savedAdmin = adminDao.save(admin);
+        return new CreateAdminResponseDto(savedAdmin.getId());
+    }
+
     @Override
     public CreateProjectAdminResponseDto createProject( String name,
                                                         String description,
