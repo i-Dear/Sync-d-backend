@@ -15,6 +15,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
+
 @Repository
 @RequiredArgsConstructor
 public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectPort {
@@ -77,7 +81,11 @@ public class ProjectPersistenceAdapter implements WriteProjectPort, ReadProjectP
     public String updateLastModifiedDate(String projectId) {
         ProjectEntity projectEntity = projectDao.findById(projectId)
                 .orElseThrow(() -> new CustomException(ErrorInfo.PROJECT_NOT_FOUND, "Project ID: " + projectId));
-        projectEntity.setLastModifiedDate(LocalDateTime.now().toString()); // 현재 시간 설정
+
+        // 한국 시간대로 설정
+        ZonedDateTime nowInKorea = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
+        projectEntity.setLastModifiedDate(nowInKorea.format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+
         ProjectEntity savedEntity = projectDao.save(projectEntity);
         return savedEntity.getId();
     }
