@@ -90,7 +90,7 @@ public class ProjectController {
                 requestDto.projectId(),
                 requestDto.projectStage(),
                 requestDto.problem(),
-                requestDto.personaImage(),
+                requestDto.personaInfos(),
                 requestDto.whyWhatHowImage(),
                 requestDto.coreDetails(),
                 requestDto.businessModelImage(),
