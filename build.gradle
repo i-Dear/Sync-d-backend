@@ -99,6 +99,12 @@ dependencies {
 	implementation 'org.aspectj:aspectjrt:1.9.7'
 	implementation 'org.aspectj:aspectjweaver:1.9.7'
 
+	// pdf
+	implementation group: 'com.itextpdf', name: 'itextpdf', version: '5.0.6'
+	implementation group: 'com.itextpdf', name: 'kernel', version: '7.1.13'
+	implementation group: 'com.itextpdf', name: 'layout', version: '7.1.13'
+	implementation 'org.springframework.boot:spring-boot-starter-test'
+
 	//s3
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 

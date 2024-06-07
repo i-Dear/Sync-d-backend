@@ -75,7 +75,6 @@ public class ProjectServiceTest {
         projectService = new ProjectService(readProjectPort, writeProjectPort, readUserPort, liveblocksPort, sendMailPort, chatGPTPort, s3Port, projectMapper);
     }
 
-
     @Test
     void createProject() {
         // Given

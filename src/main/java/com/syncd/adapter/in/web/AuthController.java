@@ -20,6 +20,7 @@ public class AuthController {
     @GetMapping("/code/{registrationId}")
     public RedirectView googleLogin(@RequestParam String code,
                                     @PathVariable String registrationId, HttpServletResponse response) {
+        System.out.println("prod");
         String redirectUri = authControllerProperties.getRedirectUriForGoogle();
         String url = authControllerProperties.getRedirectUrl();
         TokenDto token = socialLoginUsecase.socialLogin(code, registrationId,redirectUri);
@@ -32,6 +33,7 @@ public class AuthController {
     @GetMapping("/code/{registrationId}/dev")
     public RedirectView googleLoginDev(@RequestParam String code,
                                     @PathVariable String registrationId) {
+        System.out.println("dev");
         String url = authControllerProperties.getRedirectUrlDev();
         String redirectUri = authControllerProperties.getRedirectUriForGoogleDev();
         TokenDto token = socialLoginUsecase.socialLogin(code, registrationId,redirectUri);
