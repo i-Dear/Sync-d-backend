@@ -9,10 +9,7 @@ import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
 import com.syncd.application.port.out.s3.S3Port;
-import com.syncd.domain.project.CoreDetails;
-import com.syncd.domain.project.Epic;
-import com.syncd.domain.project.Project;
-import com.syncd.domain.project.UserInProject;
+import com.syncd.domain.project.*;
 import com.syncd.domain.user.User;
 import com.syncd.dto.MakeUserStoryResponseDto;
 import com.syncd.dto.UserRoleDto;
@@ -181,7 +178,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     @Override
     public SyncProjectResponseDto syncProject(String userId, String projectId, int projectStage,
                                               String problem,
-                                              MultipartFile personaImage,
+                                              String personaInfosJson,
                                               MultipartFile whyWhatHowImage,
                                               String coreDetailsJson,
                                               MultipartFile businessModelImage,
@@ -189,11 +186,13 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
                                               MultipartFile menuTreeImage) {
         ObjectMapper objectMapper = new ObjectMapper();
         CoreDetails coreDetails;
+        List<PersonaInfo> personaInfos;
         List<Epic> epics;
 
         try {
             coreDetails = objectMapper.readValue(coreDetailsJson, CoreDetails.class);
             epics = objectMapper.readValue(epicsJson, new TypeReference<List<Epic>>() {});
+            personaInfos = objectMapper.readValue(personaInfosJson, new TypeReference<List<PersonaInfo>>() {});
         } catch (Exception e) {
             throw new CustomException(ErrorInfo.JSON_PARSE_ERROR, "Failed to parse JSON for coreDetails or epics: " + e.getMessage());
         }
@@ -207,7 +206,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
                 project.setProblem(problem);
                 break;
             case 4:
-                project.setPersonaImage(uploadFileToS3(personaImage));
+                project.setPersonaInfos(personaInfos);
                 break;
             case 5:
             case 6:

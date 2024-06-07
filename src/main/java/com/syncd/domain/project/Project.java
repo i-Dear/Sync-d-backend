@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
+
 @Data
 public class Project {
     private  String id;
@@ -25,7 +29,7 @@ public class Project {
 
     // 싱크된 내용
     private String problem;
-    private String personaImage;
+    private List<PersonaInfo> personaInfos;
     private String whyWhatHowImage;
     private CoreDetails coreDetails;
     private String businessModelImage;
@@ -86,7 +90,11 @@ public class Project {
         project.setName(projectName);
         project.setDescription(description);
         project.setProgress(0);
-        project.setLastModifiedDate(LocalDateTime.now().toString());
+
+        // 한국 시간대로 설정
+        ZonedDateTime nowInKorea = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
+        project.setLastModifiedDate(nowInKorea.format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+
         project.setLeftChanceForUserstory(3);
         return project;
     }
