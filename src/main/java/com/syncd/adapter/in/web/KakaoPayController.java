@@ -3,6 +3,7 @@ package com.syncd.adapter.in.web;
 import com.syncd.adapter.in.web.payment.PayApproveResDto;
 import com.syncd.adapter.in.web.payment.PayReadyReqDto;
 import com.syncd.adapter.in.web.payment.PayReadyResDto;
+import com.syncd.adapter.in.web.payment.PayReadyResSimpleDto;
 import com.syncd.application.service.KakaoPayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class KakaoPayController {
             payReadyReqDto.setFail_url("http://localhost:8080/v1/payment/fail");
             payReadyReqDto.setCancel_url("http://localhost:8080/v1/payment/cancel");
 
-            PayReadyResDto response = kakaoPayService.initiatePayment(payReadyReqDto);
+            PayReadyResSimpleDto response = kakaoPayService.initiatePayment(payReadyReqDto);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error initiating payment: " + e.getMessage());
