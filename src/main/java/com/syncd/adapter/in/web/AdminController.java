@@ -53,24 +53,29 @@ public class AdminController {
 
     @GetMapping("/user")
     public GetAllUserResponseDto getAllUser(HttpServletRequest request){
-        return getAllUserAdminUsecase.getAllUser();
+        String token = jwtService.resolveToken(request);
+        return getAllUserAdminUsecase.getAllUser(jwtService.getAdminIdFromToken(token));
     }
 
     @PostMapping("/user/add")
     public CreateUserResponseDto addUser(HttpServletRequest request, @RequestBody CreateUserRequestDto requestDto){
-        return createUserAdminUsecase.addUser(requestDto.email(),
+        String token = jwtService.resolveToken(request);
+        return createUserAdminUsecase.addUser(
+                jwtService.getAdminIdFromToken(token), requestDto.email(),
                 requestDto.name(), requestDto.status(),
                 requestDto.profileImg(), requestDto.projectIds());
     }
 
     @PostMapping("/user/delete")
     public DeleteUserResponseDto deleteUser(HttpServletRequest request, @RequestBody DeleteUserRequestDto requestDto){
-        return deleteUserAdminUsecase.deleteUser(requestDto.userId());
+        String token = jwtService.resolveToken(request);
+        return deleteUserAdminUsecase.deleteUser(jwtService.getAdminIdFromToken(token), requestDto.userId());
     }
 
     @PostMapping("/user/update")
     public UpdateUserResponseDto updateUser(HttpServletRequest request, @RequestBody UpdateUserRequestDto requestDto){
-        return updateUserAdminUsecase.updateUser(requestDto.userId(), requestDto.email(),requestDto.name(), requestDto.status(), requestDto.profileImg(), requestDto.projectIds());
+        String token = jwtService.resolveToken(request);
+        return updateUserAdminUsecase.updateUser(jwtService.getAdminIdFromToken(token), requestDto.userId(), requestDto.email(),requestDto.name(), requestDto.status(), requestDto.profileImg(), requestDto.projectIds());
     }
 
     @GetMapping("/user/search")
@@ -79,7 +84,8 @@ public class AdminController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String searchType,
             @RequestParam(required = false) String searchText) {
-        return searchUserAdminUsecase.searchUsers(status, searchType, searchText);
+        String token = jwtService.resolveToken(request);
+        return searchUserAdminUsecase.searchUsers(jwtService.getAdminIdFromToken(token), status, searchType, searchText);
     }
     // ======================================
     // PROJECT
@@ -87,22 +93,26 @@ public class AdminController {
 
     @GetMapping("/project")
     public GetAllProjectResponseDto getAllProject(HttpServletRequest request){
-        return getAllProjectAdminUsecase.getAllProject();
+        String token = jwtService.resolveToken(request);
+        return getAllProjectAdminUsecase.getAllProject(jwtService.getAdminIdFromToken(token));
     }
 
     @PostMapping("/project/create")
     public CreateProjectAdminResponseDto createProject(HttpServletRequest request, @RequestBody CreateProjectAdminRequestDto requestDto){
-        return createProjectAdminUsecase.createProject(requestDto.name(), requestDto.description(), requestDto.img(), requestDto.users(), requestDto.progress(),requestDto.leftChanceForUserstory());
+        String token = jwtService.resolveToken(request);
+        return createProjectAdminUsecase.createProject(jwtService.getAdminIdFromToken(token), requestDto.name(), requestDto.description(), requestDto.img(), requestDto.users(), requestDto.progress(),requestDto.leftChanceForUserstory());
     }
 
     @PostMapping("/project/delete")
     public DeleteProjectAdminResponseDto deleteProject(HttpServletRequest request, @RequestBody DeleteProjectAdminRequestDto requestDto){
-        return deleteProjectAdminUsecase.deleteProject(requestDto.projectId());
+        String token = jwtService.resolveToken(request);
+        return deleteProjectAdminUsecase.deleteProject(jwtService.getAdminIdFromToken(token), requestDto.projectId());
     }
 
     @PostMapping("/project/update")
     public UpdateProjectAdminResponseDto updateProject(HttpServletRequest request, @RequestBody UpdateProjectAdminRequestDto requestDto){
-        return updateProjectAdminUsecase.updateProject(requestDto.projectId(), requestDto.name(), requestDto.description(),requestDto.img(),requestDto.users(),requestDto.progress(),requestDto.leftChanceForUserstory()) ;
+        String token = jwtService.resolveToken(request);
+        return updateProjectAdminUsecase.updateProject(jwtService.getAdminIdFromToken(token), requestDto.projectId(), requestDto.name(), requestDto.description(),requestDto.img(),requestDto.users(),requestDto.progress(),requestDto.leftChanceForUserstory()) ;
     }
 
     @GetMapping("/project/search")
@@ -117,7 +127,8 @@ public class AdminController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize
     ) {
-        return searchProjectAdminUsecase.searchProjects(name, userId, leftChanceForUserstory, startDate, endDate, progress, page, pageSize);
+        String token = jwtService.resolveToken(request);
+        return searchProjectAdminUsecase.searchProjects(jwtService.getAdminIdFromToken(token), name, userId, leftChanceForUserstory, startDate, endDate, progress, page, pageSize);
     }
 
     // ======================================
@@ -125,6 +136,7 @@ public class AdminController {
     // ======================================
     @GetMapping("/chatgpt")
     public GetChatgptPriceResponseDto GetChatgptPrice(HttpServletRequest request){
-        return getChatgptPriceAdminUsecase.getChatgptPrice();
+        String token = jwtService.resolveToken(request);
+        return getChatgptPriceAdminUsecase.getChatgptPrice(jwtService.getAdminIdFromToken(token));
     }
 }
