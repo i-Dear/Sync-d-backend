@@ -1,11 +1,17 @@
 package com.syncd.application.port.in.admin;
 
+import com.syncd.exceptions.ValidationMessages;
+import jakarta.validation.constraints.NotBlank;
+
 public interface GetChatgptPriceAdminUsecase {
 
     // ======================================
     // METHOD
     // ======================================
-    GetChatgptPriceResponseDto getChatgptPrice();
+    GetChatgptPriceResponseDto getChatgptPrice(
+            @NotBlank(message = ValidationMessages.ADMIN_ID_NOT_BLANK)
+            String adminId
+    );
 
     // ======================================
     // DTO
