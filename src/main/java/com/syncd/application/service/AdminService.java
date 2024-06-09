@@ -167,7 +167,11 @@ public class AdminService implements LoginAdminUsecase, CreateAdminUsecase, Crea
             ProjectEntity project = projectOpt.get();
             project.setName(name);
             project.setDescription(description);
-            project.setImg(uploadFileToS3(img));
+
+            // 이미지가 빈 값이 아닌 경우에만 업데이트
+            if (img != null && !img.isEmpty()) {
+                project.setImg(uploadFileToS3(img));
+            }
 
             List<ProjectEntity.UserInProjectEntity> userEntities = users.stream()
                     .map(user -> {
@@ -214,7 +218,12 @@ public class AdminService implements LoginAdminUsecase, CreateAdminUsecase, Crea
             user.setEmail(email);
             user.setName(name);
             user.setStatus(userStatus);
-            user.setProfileImg(uploadFileToS3(profileImg));
+
+            // 프로필 이미지가 빈 값이 아닌 경우에만 업데이트
+            if (profileImg != null && !profileImg.isEmpty()) {
+                user.setProfileImg(uploadFileToS3(profileImg));
+            }
+
             user.setProjectIds(projectIds);
 
             UserEntity updatedUser = userDao.save(user);
@@ -223,6 +232,7 @@ public class AdminService implements LoginAdminUsecase, CreateAdminUsecase, Crea
             throw new RuntimeException("User not found.");
         }
     }
+
 
     @Override
     public SearchUserAdminResponseDto searchUsers(String adminId, String status, String searchType, String searchText) {
