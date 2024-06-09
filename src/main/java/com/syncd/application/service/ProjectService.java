@@ -215,15 +215,21 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
                                               String epicsJson,
                                               MultipartFile menuTreeImage) {
         ObjectMapper objectMapper = new ObjectMapper();
-        CoreDetails coreDetails;
-        List<PersonaInfo> personaInfos;
-        List<Epic> epics;
+        CoreDetails coreDetails = null;
+        List<PersonaInfo> personaInfos = null;
+        List<Epic> epics = null;
 
         try {
-            coreDetails = objectMapper.readValue(coreDetailsJson, CoreDetails.class);
-            epics = objectMapper.readValue(epicsJson, new TypeReference<List<Epic>>() {});
-            personaInfos = objectMapper.readValue(personaInfosJson, new TypeReference<List<PersonaInfo>>() {});
-        } catch (Exception e) {
+            if(projectStage == 4){
+                personaInfos = objectMapper.readValue(personaInfosJson, new TypeReference<List<PersonaInfo>>() {});
+            }
+            if(projectStage == 8) {
+                coreDetails = objectMapper.readValue(coreDetailsJson, CoreDetails.class);
+            }
+            if(projectStage == 11){
+                epics = objectMapper.readValue(epicsJson, new TypeReference<List<Epic>>() {});
+            }
+          } catch (Exception e) {
             throw new CustomException(ErrorInfo.JSON_PARSE_ERROR, "Failed to parse JSON for coreDetails or epics: " + e.getMessage());
         }
 
