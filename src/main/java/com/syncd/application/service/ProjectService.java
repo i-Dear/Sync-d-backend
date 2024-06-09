@@ -320,8 +320,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     }
 
     private GetAllRoomsByUserIdResponseDto mapProjectsToResponse(String userId, List<Project> projects) {
-        System.out.println("projectId");
-        System.out.println(projects);
         List<ProjectForGetAllInfoAboutRoomsByUserIdResponseDto> projectDtos = projects.stream()
                 .map(project -> convertProjectToDto(userId, project))
                 .filter(dto -> dto != null)  // Ensure that only relevant projects are included
