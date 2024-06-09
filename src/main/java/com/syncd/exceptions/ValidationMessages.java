@@ -8,6 +8,7 @@ public class ValidationMessages {
     public static final String PROJECT_ID_NOT_BLANK = "Project ID must not be blank";
     public static final String PROJECT_NAME_NOT_BLANK = "Project Name must not be blank";
     public static final String USER_ID_NOT_BLANK = "User ID cannot be blank";
+    public static final String ADMIN_ID_NOT_BLANK = "Admin ID cannot be blank";
     public static final String ROOM_ID_NOT_BLANK = "ROOM ID cannot be blank";
     public static final String PROJECT_PROGRESS_NOT_NULL = "Project progress must not be null";
     public static final String SCENARIOS_NOT_NULL = "Scenarios cannot be null";

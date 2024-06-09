@@ -1,5 +1,7 @@
 package com.syncd.application.service;
 
+import com.syncd.adapter.out.persistence.repository.admin.AdminDao;
+import com.syncd.adapter.out.persistence.repository.admin.AdminEntity;
 import com.syncd.adapter.out.persistence.repository.project.ProjectDao;
 import com.syncd.adapter.out.persistence.repository.project.ProjectEntity;
 import com.syncd.adapter.out.persistence.repository.user.UserDao;
@@ -10,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -22,12 +25,41 @@ import java.util.stream.Collectors;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class AdminService implements CreateProjectAdminUsecase, CreateUserAdminUsecase, DeleteProjectAdminUsecase,
+public class AdminService implements LoginAdminUsecase, CreateAdminUsecase, CreateProjectAdminUsecase, CreateUserAdminUsecase, DeleteProjectAdminUsecase,
         DeleteUserAdminUsecase, GetAllProjectAdminUsecase, GetAllUserAdminUsecase, UpdateProjectAdminUsecase, UpdateUserAdminUsecase, GetChatgptPriceAdminUsecase, SearchUserAdminUsecase, SearchProjectAdminUsecase {
     private final ProjectDao projectDao;
     private final UserDao userDao;
+    private final AdminDao adminDao;
+    private final JwtService jwtService;
+
     @Override
-    public CreateProjectAdminResponseDto createProject( String name,
+    public LoginResponseDto login(String email, String password) {
+        AdminEntity admin = adminDao.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+//        if (!passwordEncoder.matches(password, admin.getPassword())) {
+//            throw new RuntimeException("Invalid credentials");
+//        }
+        if (!(password.equals(admin.getPassword()))) {
+            throw new RuntimeException("Invalid credentials");
+        }
+        String token = jwtService.generateTokenForAdmin(admin);
+        return new LoginResponseDto(token);
+    }
+
+    @Override
+    public CreateAdminResponseDto createAdmin(String email, String password, String name) {
+        AdminEntity admin = new AdminEntity();
+        admin.setEmail(email);
+        admin.setPassword(password);
+        admin.setName(name);
+
+        AdminEntity savedAdmin = adminDao.save(admin);
+        return new CreateAdminResponseDto(savedAdmin.getId());
+    }
+
+    @Override
+    public CreateProjectAdminResponseDto createProject( String adminId,
+                                                        String name,
                                                         String description,
                                                         String img,
                                                         List<CreateProjectAdminUsecase.UserInProjectRequestDto> users,
@@ -58,7 +90,7 @@ public class AdminService implements CreateProjectAdminUsecase, CreateUserAdminU
         return new CreateProjectAdminResponseDto(savedProject.getId());
     }
     @Override
-    public CreateUserResponseDto addUser(String email, String name, UserAccountStatus status, String profileImg, List<String> projectIds) {
+    public CreateUserResponseDto addUser(String adminId, String email, String name, UserAccountStatus status, String profileImg, List<String> projectIds) {
         UserEntity user = new UserEntity();
         user.setEmail(email);
         user.setName(name);
@@ -70,7 +102,7 @@ public class AdminService implements CreateProjectAdminUsecase, CreateUserAdminU
         return new CreateUserResponseDto(savedUser.getId());
     }
     @Override
-    public DeleteProjectAdminResponseDto deleteProject(String projectId) {
+    public DeleteProjectAdminResponseDto deleteProject(String adminId, String projectId) {
         Optional<ProjectEntity> projectOpt = projectDao.findById(projectId);
 
         if (projectOpt.isPresent()) {
@@ -82,7 +114,7 @@ public class AdminService implements CreateProjectAdminUsecase, CreateUserAdminU
     }
 
     @Override
-    public DeleteUserResponseDto deleteUser(String userId) {
+    public DeleteUserResponseDto deleteUser(String adminId, String userId) {
         Optional<UserEntity> userOpt = userDao.findById(userId);
         if (userOpt.isPresent()) {
             userDao.delete(userOpt.get());
@@ -93,19 +125,19 @@ public class AdminService implements CreateProjectAdminUsecase, CreateUserAdminU
     }
 
     @Override
-    public GetAllProjectResponseDto getAllProject() {
+    public GetAllProjectResponseDto getAllProject(String adminId) {
         List<ProjectEntity> projects = projectDao.findAll();
         return new GetAllProjectResponseDto(projects);
     }
 
     @Override
-    public GetAllUserResponseDto getAllUser() {
+    public GetAllUserResponseDto getAllUser(String adminId) {
         List<UserEntity> users = userDao.findAll();
         return new GetAllUserResponseDto(users);
     }
 
     @Override
-    public UpdateProjectAdminResponseDto updateProject(String projectId, String name, String description,
+    public UpdateProjectAdminResponseDto updateProject(String adminId, String projectId, String name, String description,
                                                        String img, List<UpdateProjectAdminUsecase.UserInProjectRequestDto> users,
                                                        int progress, int leftChanceForUserstory) {
 
@@ -138,7 +170,7 @@ public class AdminService implements CreateProjectAdminUsecase, CreateUserAdminU
     }
 
     @Override
-    public UpdateUserResponseDto updateUser(String userId, String email, String name, UserAccountStatus status,
+    public UpdateUserResponseDto updateUser(String adminId, String userId, String email, String name, UserAccountStatus status,
                                             String profileImg, List<String> projectIds) {
 
         Optional<UserEntity> userOpt = userDao.findById(userId);
@@ -158,7 +190,7 @@ public class AdminService implements CreateProjectAdminUsecase, CreateUserAdminU
     }
 
     @Override
-    public SearchUserAdminResponseDto searchUsers(String status, String searchType, String searchText) {
+    public SearchUserAdminResponseDto searchUsers(String adminId, String status, String searchType, String searchText) {
         List<UserEntity> users = userDao.findAll();
 
         List<SearchUserAdminUsecase.UserWithProjectsDto> userWithProjects = users.stream()
@@ -183,6 +215,7 @@ public class AdminService implements CreateProjectAdminUsecase, CreateUserAdminU
 
     @Override
     public SearchProjectAdminResponseDto searchProjects(
+            String adminId,
             String name,
             String userId,
             Integer leftChanceForUserstory,
@@ -247,7 +280,7 @@ public class AdminService implements CreateProjectAdminUsecase, CreateUserAdminU
     }
 
     @Override
-    public GetChatgptPriceResponseDto getChatgptPrice(){
+    public GetChatgptPriceResponseDto getChatgptPrice(String adminId){
         return new GetChatgptPriceResponseDto("3.2","4.5","10.4","11.2","40.3");
     }
 }
