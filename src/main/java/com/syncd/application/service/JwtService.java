@@ -81,7 +81,7 @@ public class JwtService implements GenerateTokenUsecase, JwtAuthenticationFilter
     }
 
     private static Key createSigningKey() {
-        byte[] keyBytes = Base64.getDecoder().decode(accessTokenSecretKey);
+        byte[] keyBytes = Base64.getDecoder().decode("aS1kZWFyLXN5bmNkLXNlY3JldC1rZXktaS1kZWFyLXN5bmNkLXNlY3JldC1rZXk=");
         return new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
