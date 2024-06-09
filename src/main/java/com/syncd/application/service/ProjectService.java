@@ -83,6 +83,11 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
     @Override
     public CreateProjectResponseDto createProject(String hostId, String hostName, String projectName, String description, MultipartFile img, List<String> userEmails){
+        User user = readUserPort.findByUserId(hostId);
+        if (user.getNumberOfLeftHostProjects() < 1) {
+            throw new CustomException(ErrorInfo.NOT_LEFT_CHANCE, "Left Chance: " + user.getNumberOfLeftHostProjects());
+        }
+
         List<User> users = new ArrayList<>();
         if(userEmails!=null){
             users = readUserPort.usersFromEmails(userEmails);
@@ -135,7 +140,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         System.out.println(projects);
         // GetAllRoomsByUserIdResponseDto responseDto = projectMappers.mapProjectsToGetAllRoomsByUserIdResponseDto(userId, projects);
         GetAllRoomsByUserIdResponseDto responseDto = mapProjectsToResponse(userId, projects);
-        System.out.println("sout");
         System.out.println(responseDto);
         return responseDto;
     }

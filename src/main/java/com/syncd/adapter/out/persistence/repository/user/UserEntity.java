@@ -17,6 +17,7 @@ public class UserEntity {
     private String tid;
     private String email;
     private String name;
+    private int numberOfLeftHostProjects;
     private UserAccountStatus status;
 
     @Field("profile_img")
