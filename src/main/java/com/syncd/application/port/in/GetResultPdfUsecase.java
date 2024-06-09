@@ -20,4 +20,8 @@ public interface GetResultPdfUsecase {
             String pdfUrl
     ) {}
 
+    record GetResultPdfUsecaseRequesteDto(
+            String projectId
+    ) {}
+
 }

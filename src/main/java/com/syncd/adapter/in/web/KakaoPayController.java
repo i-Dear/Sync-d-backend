@@ -18,11 +18,6 @@ public class KakaoPayController {
     @PostMapping("/ready")
     public ResponseEntity<?> readyToPay(@RequestBody PayReadyReqDto payReadyReqDto) {
         try {
-            // Set your application's callback URLs
-            payReadyReqDto.setApproval_url("http://localhost:8080/v1/payment/success");
-            payReadyReqDto.setFail_url("http://localhost:8080/v1/payment/fail");
-            payReadyReqDto.setCancel_url("http://localhost:8080/v1/payment/cancel");
-
             PayReadyResSimpleDto response = kakaoPayService.initiatePayment(payReadyReqDto);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -31,9 +26,10 @@ public class KakaoPayController {
     }
 
     @GetMapping("/success")
-    public ResponseEntity<?> paymentSuccess(@RequestParam("pg_token") String pgToken, @RequestParam("user_id") String userId) {
+    public ResponseEntity<?> paymentSuccess(@RequestParam("pg_token") String pgToken, @RequestParam("tid") String tid) {
+        System.out.println(tid);
         try {
-            PayApproveResDto response = kakaoPayService.getApprove(pgToken, userId);
+            PayApproveResDto response = kakaoPayService.getApprove(pgToken,"sangjun1389@ajou.ac.kr");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error approving payment: " + e.getMessage());

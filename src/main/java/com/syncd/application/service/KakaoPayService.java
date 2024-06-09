@@ -26,6 +26,18 @@ public class KakaoPayService {
     @Value("${pay.admin-key}")
     private String adminKey;
 
+    @Value("${pay.cid}")
+    private String cid;
+
+    @Value("${pay.APPROVAL_URL}")
+    private String approvalUrl;
+
+    @Value("${pay.FAIL_URL}")
+    private String failUrl;
+
+    @Value("${pay.CANCEL_URL}")
+    private String cancelUrl;
+
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Transactional
@@ -35,6 +47,11 @@ public class KakaoPayService {
         headers.set("Authorization", "SECRET_KEY " + adminKey);
 
         HttpEntity<PayReadyReqDto> request = new HttpEntity<>(payReadyReqDto, headers);
+
+        payReadyReqDto.setCid(cid);
+        payReadyReqDto.setApproval_url(approvalUrl);
+        payReadyReqDto.setCancel_url(cancelUrl);
+        payReadyReqDto.setFail_url(failUrl);
 
         ResponseEntity<PayReadyResDto> response = restTemplate.postForEntity(
                 "https://open-api.kakaopay.com/online/v1/payment/ready",
@@ -47,6 +64,17 @@ public class KakaoPayService {
             PayReadyResSimpleDto simpleDto = new PayReadyResSimpleDto();
             if (payReadyResDto != null) {
                 simpleDto.setNext_redirect_pc_url(payReadyResDto.getNext_redirect_pc_url());
+
+                String targetUserId = "sangjun1389@ajou.ac.kr";
+
+                Optional<UserEntity> optionalUser = userDao.findById(targetUserId);
+                if (optionalUser.isPresent()) {
+                    UserEntity user = optionalUser.get();
+                    user.setTid(payReadyResDto.getTid());
+                    userDao.save(user);
+                } else {
+                    throw new Exception("User not found: " + targetUserId);
+                }
             }
             return simpleDto;
         } else {
@@ -56,6 +84,7 @@ public class KakaoPayService {
 
     @Transactional
     public PayApproveResDto getApprove(String pgToken, String userId) throws Exception {
+        System.out.println("getApprove");
         Optional<UserEntity> optionalUser = userDao.findById(userId);
 
         if (optionalUser.isEmpty()) {
@@ -63,14 +92,13 @@ public class KakaoPayService {
         }
 
         UserEntity user = optionalUser.get();
-
-        String tid = user.getTid();  // Assuming you have a field for storing tid in the User entity
+        String tid = user.getTid();
 
         PayApproveReqDto payApproveReqDto = new PayApproveReqDto();
-        payApproveReqDto.setCid("TC0ONETIME"); // Assuming this is your CID
+        payApproveReqDto.setCid("TC0ONETIME");
         payApproveReqDto.setTid(tid);
-        payApproveReqDto.setPartner_order_id("partner_order_id");  // Use actual partner order ID
-        payApproveReqDto.setPartner_user_id(user.getId().toString());  // Assuming user ID is String
+        payApproveReqDto.setPartner_order_id("partner_order_id");
+        payApproveReqDto.setPartner_user_id("partner_user_id");
         payApproveReqDto.setPg_token(pgToken);
 
         HttpHeaders headers = new HttpHeaders();
@@ -84,7 +112,6 @@ public class KakaoPayService {
                 request,
                 PayApproveResDto.class
         );
-
         if (response.getStatusCode().is2xxSuccessful()) {
             return response.getBody();
         } else {

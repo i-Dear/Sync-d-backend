@@ -11,7 +11,8 @@ public interface InviteUserInProjectUsecase {
     // ======================================
     // METHOD
     // ======================================
-    InviteUserInProjectResponseDto inviteUserInProject(String userId,String hostName, String projectId, List<String> users);
+    InviteUserInProjectResponseDto inviteUserInProject(String userId, String hostName, String projectId, List<String> userEmails);
+
     // ======================================
     // DTO
     // ======================================
