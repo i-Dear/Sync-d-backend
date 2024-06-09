@@ -91,10 +91,14 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         }
 
         List<User> users = new ArrayList<>();
-        if(userEmails!=null){
+        if (userEmails != null) {
             users = readUserPort.usersFromEmails(userEmails);
         }
-        String imgURL = uploadFileToS3(img);
+
+        String imgURL = "";
+        if(userEmails!=null){
+            imgURL = uploadFileToS3(img);
+        }
 
         Project project = new Project();
         project = project.createProjectDomain(projectName, description, imgURL, hostId);
