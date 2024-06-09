@@ -8,7 +8,6 @@ public interface DeleteProjectAdminUsecase {
     // METHOD
     // ======================================
     DeleteProjectAdminResponseDto deleteProject(
-            @NotBlank(message = ValidationMessages.ADMIN_ID_NOT_BLANK)
             String adminId,
             String projectId
     );

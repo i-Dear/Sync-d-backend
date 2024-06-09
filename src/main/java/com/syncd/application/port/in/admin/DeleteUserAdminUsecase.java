@@ -9,7 +9,6 @@ public interface DeleteUserAdminUsecase {
     // METHOD
     // ======================================
     DeleteUserResponseDto deleteUser(
-            @NotBlank(message = ValidationMessages.ADMIN_ID_NOT_BLANK)
             String adminId,
             String userId
     );

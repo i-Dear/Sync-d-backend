@@ -12,7 +12,6 @@ public interface GetAllProjectAdminUsecase {
     // METHOD
     // ======================================
     GetAllProjectResponseDto getAllProject(
-            @NotBlank(message = ValidationMessages.ADMIN_ID_NOT_BLANK)
             String adminId
     );
 

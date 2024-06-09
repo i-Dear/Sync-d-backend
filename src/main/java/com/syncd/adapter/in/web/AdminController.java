@@ -58,12 +58,12 @@ public class AdminController {
     }
 
     @PostMapping("/user/add")
-    public CreateUserResponseDto addUser(HttpServletRequest request, @RequestBody CreateUserRequestDto requestDto){
+    public CreateUserResponseDto addUser(HttpServletRequest request, @ModelAttribute CreateUserRequestDto requestDto){
         String token = jwtService.resolveToken(request);
         return createUserAdminUsecase.addUser(
                 jwtService.getAdminIdFromToken(token), requestDto.email(),
                 requestDto.name(), requestDto.status(),
-                requestDto.profileImg(), requestDto.projectIds());
+                requestDto.profileImg(), requestDto.projectIdsJson());
     }
 
     @PostMapping("/user/delete")
@@ -73,9 +73,9 @@ public class AdminController {
     }
 
     @PostMapping("/user/update")
-    public UpdateUserResponseDto updateUser(HttpServletRequest request, @RequestBody UpdateUserRequestDto requestDto){
+    public UpdateUserResponseDto updateUser(HttpServletRequest request, @ModelAttribute UpdateUserRequestDto requestDto){
         String token = jwtService.resolveToken(request);
-        return updateUserAdminUsecase.updateUser(jwtService.getAdminIdFromToken(token), requestDto.userId(), requestDto.email(),requestDto.name(), requestDto.status(), requestDto.profileImg(), requestDto.projectIds());
+        return updateUserAdminUsecase.updateUser(jwtService.getAdminIdFromToken(token), requestDto.userId(), requestDto.email(),requestDto.name(), requestDto.status(), requestDto.profileImg(), requestDto.projectIdsJson());
     }
 
     @GetMapping("/user/search")
@@ -98,9 +98,9 @@ public class AdminController {
     }
 
     @PostMapping("/project/create")
-    public CreateProjectAdminResponseDto createProject(HttpServletRequest request, @RequestBody CreateProjectAdminRequestDto requestDto){
+    public CreateProjectAdminResponseDto createProject(HttpServletRequest request, @ModelAttribute CreateProjectAdminRequestDto requestDto){
         String token = jwtService.resolveToken(request);
-        return createProjectAdminUsecase.createProject(jwtService.getAdminIdFromToken(token), requestDto.name(), requestDto.description(), requestDto.img(), requestDto.users(), requestDto.progress(),requestDto.leftChanceForUserstory());
+        return createProjectAdminUsecase.createProject(jwtService.getAdminIdFromToken(token), requestDto.name(), requestDto.description(), requestDto.img(), requestDto.usersJson(), requestDto.progress(),requestDto.leftChanceForUserstory());
     }
 
     @PostMapping("/project/delete")
@@ -110,9 +110,9 @@ public class AdminController {
     }
 
     @PostMapping("/project/update")
-    public UpdateProjectAdminResponseDto updateProject(HttpServletRequest request, @RequestBody UpdateProjectAdminRequestDto requestDto){
+    public UpdateProjectAdminResponseDto updateProject(HttpServletRequest request, @ModelAttribute UpdateProjectAdminRequestDto requestDto){
         String token = jwtService.resolveToken(request);
-        return updateProjectAdminUsecase.updateProject(jwtService.getAdminIdFromToken(token), requestDto.projectId(), requestDto.name(), requestDto.description(),requestDto.img(),requestDto.users(),requestDto.progress(),requestDto.leftChanceForUserstory()) ;
+        return updateProjectAdminUsecase.updateProject(jwtService.getAdminIdFromToken(token), requestDto.projectId(), requestDto.name(), requestDto.description(),requestDto.img(),requestDto.usersJson(),requestDto.progress(),requestDto.leftChanceForUserstory()) ;
     }
 
     @GetMapping("/project/search")
@@ -125,10 +125,11 @@ public class AdminController {
             @RequestParam(required = false) String endDate,
             @RequestParam(required = false) Integer progress,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int pageSize
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(required = false) String userName
     ) {
         String token = jwtService.resolveToken(request);
-        return searchProjectAdminUsecase.searchProjects(jwtService.getAdminIdFromToken(token), name, userId, leftChanceForUserstory, startDate, endDate, progress, page, pageSize);
+        return searchProjectAdminUsecase.searchProjects(jwtService.getAdminIdFromToken(token), name, userId, leftChanceForUserstory, startDate, endDate, progress, page, pageSize, userName);
     }
 
     // ======================================
