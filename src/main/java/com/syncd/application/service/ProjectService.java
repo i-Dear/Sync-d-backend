@@ -18,6 +18,7 @@ import com.syncd.application.port.out.openai.ChatGPTPort;
 import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
+import com.syncd.application.port.out.persistence.user.WriteUserPort;
 import com.syncd.application.port.out.s3.S3Port;
 import com.syncd.domain.project.*;
 import com.syncd.domain.user.User;
@@ -73,6 +74,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     private final ReadProjectPort readProjectPort;
     private final WriteProjectPort writeProjectPort;
     private final ReadUserPort readUserPort;
+    private final WriteUserPort writeUserPort;
     private final LiveblocksPort liveblocksPort;
     private final SendMailPort sendMailPort;
     private final ChatGPTPort chatGPTPort;
@@ -83,6 +85,11 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
     @Override
     public CreateProjectResponseDto createProject(String hostId, String hostName, String projectName, String description, MultipartFile img, List<String> userEmails){
+        User user = readUserPort.findByUserId(hostId);
+        if (user.getNumberOfLeftHostProjects() < 1) {
+            throw new CustomException(ErrorInfo.NOT_LEFT_HOST_PROJECTS, "Left Host Projects: " + user.getNumberOfLeftHostProjects());
+        }
+
         List<User> users = new ArrayList<>();
         if(userEmails!=null){
             users = readUserPort.usersFromEmails(userEmails);
@@ -96,6 +103,8 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
             sendMailPort.sendIviteMailBatch(hostName, projectName, userEmails, project.getId());
         }
         CreateProjectResponseDto createProjectResponseDto = new CreateProjectResponseDto(writeProjectPort.CreateProject(project));
+        user.setNumberOfLeftHostProjects(user.getNumberOfLeftHostProjects() - 1);
+        writeUserPort.updateUser(user);
 
 //        User host = readUserPort.findByUserId(hostId);
 //        List<UserInProject> members = new ArrayList<>();
@@ -135,7 +144,6 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         System.out.println(projects);
         // GetAllRoomsByUserIdResponseDto responseDto = projectMappers.mapProjectsToGetAllRoomsByUserIdResponseDto(userId, projects);
         GetAllRoomsByUserIdResponseDto responseDto = mapProjectsToResponse(userId, projects);
-        System.out.println("sout");
         System.out.println(responseDto);
         return responseDto;
     }
