@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -61,7 +60,7 @@ public class ProjectController {
     @PostMapping("/invite")
     public InviteUserInProjectResponseDto inviteUser(HttpServletRequest request, @Valid @RequestBody InviteUserInProjectRequestDto requestDto){
         String token = jwtService.resolveToken(request);
-        return inviteUserInProjectUsecase.inviteUserInProject(jwtService.getUserIdFromToken(token),jwtService.getUsernameFromToken(token), requestDto.projectId(), requestDto.users());
+        return inviteUserInProjectUsecase.inviteUserInProject(jwtService.getUserIdFromToken(token),jwtService.getUsernameFromToken(token),requestDto.projectId(), requestDto.users());
     }
 
     @PostMapping("/withdraw")
@@ -79,6 +78,7 @@ public class ProjectController {
     @PostMapping("/update")
     public UpdateProjectResponseDto updateProject(HttpServletRequest request, @Valid @RequestBody UpdateProjectRequestDto requestDto){
         String token = jwtService.resolveToken(request);
+        System.out.println(requestDto);
         return updateProjectUsecase.updateProject(jwtService.getUserIdFromToken(token), requestDto.projectId(), requestDto.projectName(), requestDto.description(), requestDto.image());
     }
 
@@ -108,11 +108,11 @@ public class ProjectController {
     @GetMapping("/result")
     public GetResultPdfUsecaseResponseDto getResultPdf(
             HttpServletRequest request,
-            @RequestParam String projectId) {
+            @RequestBody GetResultPdfUsecaseRequesteDto requesteDto) {
         String token = jwtService.resolveToken(request);
         return getResultPdfUsecase.getResultPdfUsecaseProject(
                 jwtService.getUserIdFromToken(token),
-                projectId);
+                requesteDto.projectId());
     }
 
 }

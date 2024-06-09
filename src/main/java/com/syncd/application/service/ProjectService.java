@@ -5,6 +5,7 @@ import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.layout.borders.Border;
@@ -30,7 +31,6 @@ import com.syncd.mapper.ProjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.mock.web.MockMultipartFile;
@@ -47,23 +47,11 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.property.UnitValue;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
 import java.io.*;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
-
-import javax.imageio.ImageIO;
 
 
 @Service
@@ -82,6 +70,15 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
     private final ProjectMapper projectMappers;
     public static final String FONT_PATH = "/font/GmarketSansTTFMedium.ttf";
+    public static final String REPORT_ICON_PATH = "https://syncd-img.s3.ap-northeast-2.amazonaws.com/static-image/1.%E1%84%87%E1%85%A9%E1%84%80%E1%85%A9%E1%84%89%E1%85%A5.png";
+    public static final String PROBLEM_PATH = "https://syncd-img.s3.ap-northeast-2.amazonaws.com/static-image/2.%E1%84%86%E1%85%AE%E1%86%AB%E1%84%8C%E1%85%A6.png";
+    public static final String PERSONA_PATH = "https://syncd-img.s3.ap-northeast-2.amazonaws.com/static-image/3.%E1%84%91%E1%85%A6%E1%84%85%E1%85%B3%E1%84%89%E1%85%A9%E1%84%82%E1%85%A1.png";
+    public static final String PROBLEM_PROCESS_PATH = "https://syncd-img.s3.ap-northeast-2.amazonaws.com/static-image/4.%E1%84%8C%E1%85%A5%E1%86%BC%E1%84%8B%E1%85%B4%E1%84%80%E1%85%AA%E1%84%8C%E1%85%A5%E1%86%BC.png";
+    public static final String DEFINE_PATH = "https://syncd-img.s3.ap-northeast-2.amazonaws.com/static-image/5.%E1%84%8C%E1%85%A5%E1%86%BC%E1%84%8B%E1%85%B4.png";
+    public static final String BM_PATH = "https://syncd-img.s3.ap-northeast-2.amazonaws.com/static-image/6.%E1%84%87%E1%85%B5%E1%84%8B%E1%85%A6%E1%86%B7.png";
+    public static final String SCENARIO_PATH = "https://syncd-img.s3.ap-northeast-2.amazonaws.com/static-image/7.%E1%84%89%E1%85%B5%E1%84%82%E1%85%A1%E1%84%85%E1%85%B5%E1%84%8B%E1%85%A9.png";
+    public static final String  MENUTREE_PATH = "https://syncd-img.s3.ap-northeast-2.amazonaws.com/static-image/8.%E1%84%86%E1%85%A6%E1%84%82%E1%85%B2%E1%84%90%E1%85%B3%E1%84%85%E1%85%B5.png";
+
 
     @Override
     public CreateProjectResponseDto createProject(String hostId, String hostName, String projectName, String description, MultipartFile img, List<String> userEmails){
@@ -91,14 +88,10 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         }
 
         List<User> users = new ArrayList<>();
-        if (userEmails != null) {
+        if(userEmails!=null){
             users = readUserPort.usersFromEmails(userEmails);
         }
-
-        String imgURL = "";
-        if(userEmails!=null){
-            imgURL = uploadFileToS3(img);
-        }
+        String imgURL = uploadFileToS3(img);
 
         Project project = new Project();
         project = project.createProjectDomain(projectName, description, imgURL, hostId);
@@ -183,7 +176,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
 
 
     @Override
-    public InviteUserInProjectResponseDto inviteUserInProject(String userId,String hostName, String projectId, List<String> userEmails) {
+    public InviteUserInProjectResponseDto inviteUserInProject(String userId, String hostName, String projectId, List<String> userEmails) {
         Project project = readProjectPort.findProjectByProjectId(projectId);
         checkHost(project, userId);
         if (userEmails != null && !userEmails.isEmpty()){
@@ -241,7 +234,7 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
             if(projectStage == 11){
                 epics = objectMapper.readValue(epicsJson, new TypeReference<List<Epic>>() {});
             }
-          } catch (Exception e) {
+        } catch (Exception e) {
             throw new CustomException(ErrorInfo.JSON_PARSE_ERROR, "Failed to parse JSON for coreDetails or epics: " + e.getMessage());
         }
 
@@ -390,65 +383,88 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
             Random random = new Random();
 
             // Add title
-            document.add(new Paragraph("프로젝트 기획 보고서")
-                    .setFontSize(20)
-                    .setBold()
-                    .setTextAlignment(TextAlignment.CENTER)
-                    .setMarginBottom(20));
+            Image img = new Image(ImageDataFactory.create(REPORT_ICON_PATH));
+            img.scaleToFit(25, 25); // 너비와 높이를 조정하여 이미지 크기를 변경합니다.
+            Paragraph paragraph = new Paragraph();
+            paragraph.add(img);
+            paragraph.add("프로젝트 기획 보고서").setFontSize(20).setBold().setTextAlignment(TextAlignment.CENTER).setMarginBottom(20);
+            document.add(paragraph);
 
             // Add problem
-            document.add(new Paragraph("문제:")
-                    .setFontSize(16)
-                    .setBold()
-                    .setMarginBottom(10));
-            document.add(new Paragraph(project.getProblem())
-                    .setMarginBottom(20));
+            if(project.getProblem()!=null) {
 
+                Image img1 = new Image(ImageDataFactory.create(PROBLEM_PATH));
+                img1.scaleToFit(15, 15); // 너비와 높이를 조정하여 이미지 크기를 변경합니다.
+                Paragraph paragraph1 = new Paragraph();
+                paragraph1.add(img1);
+                paragraph1.add("문제:").setFontSize(16).setBold().setMarginBottom(10);
+                document.add(paragraph1
+                        .setMarginBottom(20));
+                document.add(new Paragraph(project.getProblem() != null ? project.getProblem() : "")
+                        .setMarginBottom(20));
+            }
             // Add personas
-            document.add(new Paragraph("페르소나:")
-                    .setFontSize(16)
-                    .setBold()
-                    .setMarginBottom(10));
+            if(project.getPersonaInfos() != null) {
 
-// Create a table with 2 columns
+                Image img1 = new Image(ImageDataFactory.create(PERSONA_PATH));
+                img1.scaleToFit(15, 15); // 너비와 높이를 조정하여 이미지 크기를 변경합니다.
+                Paragraph paragraph1 = new Paragraph();
+                paragraph1.add(img1);
+                paragraph1.add("페르소나:").setFontSize(16).setBold().setMarginBottom(10);
+
+                document.add(paragraph1
+                        .setMarginBottom(20));
+
+            // Create a table with 2 columns
             Table personaTable = new Table(UnitValue.createPercentArray(2)).useAllAvailableWidth();
 
-            for (PersonaInfo persona : project.getPersonaInfos()) {
-                // Create a cell for each persona
-                Cell personaCell = new Cell().setBorder(Border.NO_BORDER);
+                for (PersonaInfo persona : project.getPersonaInfos()) {
+                    // Create a cell for each persona
+                    Cell personaCell = new Cell().setBorder(Border.NO_BORDER);
 
-                // Add persona image
-                String randomImage = personaImages[random.nextInt(personaImages.length)];
-                Image personaImage = new Image(ImageDataFactory.create(randomImage)).scaleToFit(100, 100);
-                personaCell.add(personaImage);
+                    // Add persona image
+                    String randomImage = personaImages[random.nextInt(personaImages.length)];
+                    Image personaImage = new Image(ImageDataFactory.create(randomImage)).scaleToFit(100, 100);
+                    personaCell.add(personaImage);
 
-                // Add persona details
-                personaCell.add(new Paragraph("정보: " + persona.getInfo()));
-                personaCell.add(new Paragraph("설명: " + persona.getPersonality()));
-                personaCell.add(new Paragraph("설명: " + persona.getDetail()));
+                    // Add persona details
+                    personaCell.add(new Paragraph("정보: " + persona.getInfo()));
+                    personaCell.add(new Paragraph("직업: " + persona.getPersonality()));
+                    personaCell.add(new Paragraph("설명: " + persona.getDetail()));
 
-                // Add the cell to the table
-                personaTable.addCell(personaCell);
+                    // Add the cell to the table
+                    personaTable.addCell(personaCell);
+                }
+
+
+                // Add the table to the document
+                document.add(personaTable);
+                document.add(new Paragraph(" ")); // Add some space after the personas
+            }
+            if (project.getWhyWhatHowImage()!=null) {
+                // Add whyWhatHowImage
+                Image img1 = new Image(ImageDataFactory.create(PROBLEM_PROCESS_PATH));
+                img1.scaleToFit(15, 15); // 너비와 높이를 조정하여 이미지 크기를 변경합니다.
+                Paragraph paragraph1 = new Paragraph();
+                paragraph1.add(img1);
+                paragraph1.add("문제 정의 과정:").setFontSize(16).setBold().setMarginBottom(10);
+
+                document.add(paragraph1
+                        .setMarginBottom(20));
+                addImageToDocument(document, project.getWhyWhatHowImage(), 500, 300);
+                document.add(new Paragraph(" "));
             }
 
-// Add the table to the document
-            document.add(personaTable);
-            document.add(new Paragraph(" ")); // Add some space after the personas
-
-
-            // Add whyWhatHowImage
-            document.add(new Paragraph("문제 정의 과정:")
-                    .setFontSize(16)
-                    .setBold()
-                    .setMarginBottom(10));
-            addImageToDocument(document, project.getWhyWhatHowImage(), 500, 300);
-            document.add(new Paragraph(" "));
-
+            if (project.getCoreDetails()!=null) {
             // Add core details
-            document.add(new Paragraph("문제 정의:")
-                    .setFontSize(16)
-                    .setBold()
-                    .setMarginBottom(10));
+                Image img1 = new Image(ImageDataFactory.create(DEFINE_PATH));
+                img1.scaleToFit(15, 15); // 너비와 높이를 조정하여 이미지 크기를 변경합니다.
+                Paragraph paragraph1 = new Paragraph();
+                paragraph1.add(img1);
+                paragraph1.add("문제 정의:").setFontSize(16).setBold().setMarginBottom(10);
+
+                document.add(paragraph1
+                        .setMarginBottom(20));
             document.add(new Paragraph("핵심 타겟: " + project.getCoreDetails().getCoreTarget())
                     .setMarginBottom(5));
             document.add(new Paragraph("핵심 문제: " + project.getCoreDetails().getCoreProblem())
@@ -459,52 +475,70 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
                     .setMarginBottom(5));
             document.add(new Paragraph("핵심 가치: " + project.getCoreDetails().getCoreValue())
                     .setMarginBottom(20));
-
-            // Add business model image
-            document.add(new Paragraph("비즈니스 모델:")
-                    .setFontSize(16)
-                    .setBold()
-                    .setMarginBottom(10));
-            addImageToDocument(document, project.getBusinessModelImage(), 500, 300);
-            document.add(new Paragraph(" "));
-
-            // Add scenarios
-            document.add(new Paragraph("시나리오:")
-                    .setFontSize(16)
-                    .setBold()
-                    .setMarginBottom(10));
-            for (String scenario : project.getScenarios()) {
-                document.add(new Paragraph(scenario)
-                        .setMarginBottom(5));
             }
-            document.add(new Paragraph(" "));
 
-            for (Epic epic : project.getEpics()) {
-                Div epicDiv = new Div()
-                        .setBackgroundColor(ColorConstants.LIGHT_GRAY)
-                        .setBorderRadius(new BorderRadius(10))
-                        .setPadding(10)
-                        .setMarginBottom(10);
-                epicDiv.add(new Paragraph(epic.getName())
-                        .setFontSize(12)
-                        .setBold()
-                        .setMarginBottom(10));
-                com.itextpdf.layout.element.List userStoriesList = new com.itextpdf.layout.element.List();
-                for (UserStory userStory : epic.getUserStories()) {
-                    userStoriesList.add(new ListItem(userStory.getName()));
+            if (project.getBusinessModelImage()!=null) {
+                // Add business model image
+                Image img1 = new Image(ImageDataFactory.create(BM_PATH));
+                img1.scaleToFit(15, 15); // 너비와 높이를 조정하여 이미지 크기를 변경합니다.
+                Paragraph paragraph1 = new Paragraph();
+                paragraph1.add(img1);
+                paragraph1.add("비즈니스 모델:").setFontSize(16).setBold().setMarginBottom(10);
+
+                document.add(paragraph1
+                        .setMarginBottom(20));
+                addImageToDocument(document, project.getBusinessModelImage(), 500, 300);
+                document.add(new Paragraph(" "));
+            }
+            if (project.getScenarios()!=null) {
+                // Add scenarios
+                Image img1 = new Image(ImageDataFactory.create(SCENARIO_PATH));
+                img1.scaleToFit(15, 15); // 너비와 높이를 조정하여 이미지 크기를 변경합니다.
+                Paragraph paragraph1 = new Paragraph();
+                paragraph1.add(img1);
+                paragraph1.add("시나리오:").setFontSize(16).setBold().setMarginBottom(10);
+
+                document.add(paragraph1
+                        .setMarginBottom(20));
+                for (String scenario : project.getScenarios()) {
+                    document.add(new Paragraph(scenario)
+                            .setMarginBottom(5));
                 }
-                epicDiv.add(userStoriesList);
-                document.add(epicDiv);
+                document.add(new Paragraph(" "));
             }
+            if (project.getEpics()!=null) {
+                for (Epic epic : project.getEpics()) {
+                    Div epicDiv = new Div()
+                            .setBackgroundColor(new DeviceRgb(232, 240, 254))
+                            .setBorderRadius(new BorderRadius(10))
+                            .setPadding(10)
+                            .setMarginBottom(10);
+                    epicDiv.add(new Paragraph(epic.getName())
+                            .setFontSize(12)
+                            .setBold()
+                            .setMarginBottom(10));
+                    com.itextpdf.layout.element.List userStoriesList = new com.itextpdf.layout.element.List();
+                    for (UserStory userStory : epic.getUserStories()) {
+                        userStoriesList.add(new ListItem(userStory.getName()));
+                    }
+                    epicDiv.add(userStoriesList);
+                    document.add(epicDiv);
+                }
 
-            document.add(new Paragraph("").setMarginBottom(10));
-            // Add menu tree image
-            document.add(new Paragraph("메뉴 트리:")
-                    .setFontSize(16)
-                    .setBold()
-                    .setMarginBottom(10));
-            addImageToDocument(document, project.getMenuTreeImage(), 500, 300);
+                document.add(new Paragraph("").setMarginBottom(10));
+            }
+            if(project.getMenuTreeImage()!=null) {
+                // Add menu tree image
+                Image img1 = new Image(ImageDataFactory.create(MENUTREE_PATH));
+                img1.scaleToFit(15, 15); // 너비와 높이를 조정하여 이미지 크기를 변경합니다.
+                Paragraph paragraph1 = new Paragraph();
+                paragraph1.add(img1);
+                paragraph1.add("메뉴 트리:").setFontSize(16).setBold().setMarginBottom(10);
 
+                document.add(paragraph1
+                        .setMarginBottom(20));
+                addImageToDocument(document, project.getMenuTreeImage(), 500, 300);
+            }
             document.close();
 
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
@@ -515,9 +549,10 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
             return new GetResultPdfUsecaseResponseDto(fileUrl);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new CustomException(ErrorInfo.JSON_PARSE_ERROR, "Failed to parse JSON for coreDetails or epics: " + e.getMessage());
+            throw new CustomException(ErrorInfo.NOT_INCLUDE_PROJECT, "프로젝트에 포함되어 있지 않습니다." + e.getMessage());
         }
     }
+
 
     private void addImageToDocument(Document document, String imagePath, float width, float height) {
         try {

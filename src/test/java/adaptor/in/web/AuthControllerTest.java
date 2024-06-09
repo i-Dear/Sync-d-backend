@@ -3,7 +3,6 @@ package adaptor.in.web;
 import com.syncd.AuthControllerProperties;
 import com.syncd.adapter.in.web.AuthController;
 import com.syncd.application.port.in.SocialLoginUsecase;
-import com.syncd.application.port.out.persistence.user.ReadUserPort;
 import com.syncd.dto.TokenDto;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
