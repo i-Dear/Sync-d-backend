@@ -1,6 +1,6 @@
 package Dummy.Stub.application.out.persistence.project;
 
-import Dummy.Consistent;
+import Dummy.ProjectDummyData;
 import com.syncd.application.port.out.persistence.project.WriteProjectPort;
 import com.syncd.domain.project.Project;
 
@@ -9,7 +9,7 @@ public class StubWriteProjectPort implements WriteProjectPort {
 
     @Override
     public String CreateProject(Project project) {
-        return Consistent.ProjectId.getValue();
+        return ProjectDummyData.ProjectId.getValue();
     }
 
     @Override
