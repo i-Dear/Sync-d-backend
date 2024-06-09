@@ -21,7 +21,7 @@ public class LoginController {
         String referer = getReferer(request);
         System.out.println("Extracted Referer: " + referer);
         String url = getOauthRedirectUrlUsecase.getOauthRedirectUrlUsecase(referer);
-        System.out.println("Redirect URL: " + url);
+        System.out.println(url);
         return new RedirectView(url);
     }
 

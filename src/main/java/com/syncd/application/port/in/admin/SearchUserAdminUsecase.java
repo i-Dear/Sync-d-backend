@@ -13,7 +13,6 @@ public interface SearchUserAdminUsecase {
     // METHOD
     // ======================================
     SearchUserAdminResponseDto searchUsers(
-            @NotBlank(message = ValidationMessages.ADMIN_ID_NOT_BLANK)
             String adminId,
             String status, String searchType, String searchText
     );

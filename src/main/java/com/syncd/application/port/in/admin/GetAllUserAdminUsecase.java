@@ -12,7 +12,6 @@ public interface GetAllUserAdminUsecase {
     // METHOD
     // ======================================
     GetAllUserResponseDto getAllUser(
-            @NotBlank(message = ValidationMessages.ADMIN_ID_NOT_BLANK)
             String adminId
     );
 

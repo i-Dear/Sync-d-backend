@@ -14,10 +14,9 @@ public interface SearchProjectAdminUsecase {
     // METHOD
     // ======================================
     SearchProjectAdminResponseDto searchProjects(
-            @NotBlank(message = ValidationMessages.ADMIN_ID_NOT_BLANK)
             String adminId,
             String name, String userId, Integer leftChanceForUserstory,
-            String startDate, String endDate, Integer progress, int page, int pageSize
+            String startDate, String endDate, Integer progress, int page, int pageSize, String userName
     );
 
     // ======================================
@@ -31,7 +30,8 @@ public interface SearchProjectAdminUsecase {
             String endDate,
             Integer progress,
             int page,
-            int pageSize
+            int pageSize,
+            String userName
     ) {}
 
     record SearchProjectAdminResponseDto(

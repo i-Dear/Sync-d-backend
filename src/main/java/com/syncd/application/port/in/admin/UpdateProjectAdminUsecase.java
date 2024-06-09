@@ -13,13 +13,12 @@ public interface UpdateProjectAdminUsecase {
     // METHOD
     // ======================================
     UpdateProjectAdminResponseDto updateProject(
-            @NotBlank(message = ValidationMessages.ADMIN_ID_NOT_BLANK)
             String adminId,
             String projectId,
             String name,
             String description,
-            String img,
-            List<UserInProjectRequestDto> users,
+            MultipartFile img,
+            String usersJson,
             int progress,
             int leftChanceForUserstory
     );
@@ -31,8 +30,8 @@ public interface UpdateProjectAdminUsecase {
             String projectId,
             String name,
             String description,
-            String img,
-            List<UserInProjectRequestDto> users,
+            MultipartFile img,
+            String usersJson,
             int progress,
             int leftChanceForUserstory
     ) {}

@@ -7,6 +7,7 @@ import Dummy.Stub.application.out.openai.StubChatGPTPort;
 import Dummy.Stub.application.out.persistence.project.StubReadProjectPort;
 import Dummy.Stub.application.out.persistence.project.StubWriteProjectPort;
 import Dummy.Stub.application.out.persistence.user.StubReadUserPort;
+import Dummy.Stub.application.out.persistence.user.StubWriteUserPort;
 import Dummy.Stub.application.out.s3.StubS3Port;
 import Dummy.domain.StubProject;
 import com.syncd.application.port.in.*;
@@ -37,6 +38,8 @@ public class ProjectServiceTest {
 
     private StubReadUserPort readUserPort;
 
+    private StubWriteUserPort writeUserPort;
+
     private StubLiveblocksPort liveblocksPort;
 
     private StubSendMailPort sendMailPort;
@@ -56,9 +59,10 @@ public class ProjectServiceTest {
         sendMailPort = new StubSendMailPort();
         chatGPTPort = new StubChatGPTPort();
         s3Port = new StubS3Port();
+        writeUserPort = new StubWriteUserPort();
         projectMapper = Mockito.mock(ProjectMapper.class);
 
-        projectService = new ProjectService(readProjectPort, writeProjectPort, readUserPort, liveblocksPort, sendMailPort, chatGPTPort, s3Port, projectMapper);
+        projectService = new ProjectService(readProjectPort, writeProjectPort, readUserPort, writeUserPort,liveblocksPort, sendMailPort, chatGPTPort, s3Port, projectMapper);
     }
 
     @Test

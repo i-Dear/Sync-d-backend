@@ -14,8 +14,10 @@ import java.util.List;
 public class UserEntity {
     @Id
     private String id;
+    private String tid;
     private String email;
     private String name;
+    private int numberOfLeftHostProjects;
     private UserAccountStatus status;
 
     @Field("profile_img")

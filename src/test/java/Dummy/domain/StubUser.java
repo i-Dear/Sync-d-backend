@@ -9,5 +9,7 @@ public class StubUser extends User {
         this.setName(UserDummyData.UserName.getValue());
         this.setEmail(UserDummyData.UserEmail.getValue());
         this.setProfileImg(UserDummyData.UserImage.getValue());
+        this.setNumberOfLeftHostProjects(1);
     }
+
 }
