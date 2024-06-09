@@ -4,13 +4,16 @@ import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase;
 import com.syncd.application.port.in.GetUserInfoUsecase;
 //import com.syncd.application.port.in.RegitsterUserUsecase;
 import com.syncd.application.port.in.UpdateUserInfoUsecase;
-import com.syncd.application.port.out.autentication.AuthenticationPort;
+import com.syncd.application.port.out.persistence.project.ReadProjectPort;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
 import com.syncd.application.port.out.persistence.user.WriteUserPort;
 import com.syncd.application.port.out.s3.S3Port;
+import com.syncd.domain.project.Project;
+import com.syncd.domain.project.UserInProject;
 import com.syncd.domain.user.User;
 //import com.syncd.dto.TokenDto;
 //import com.syncd.dto.UserForTokenDto;
+import com.syncd.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 //import org.springframework.security.core.userdetails.UserDetails;
@@ -19,10 +22,13 @@ import org.springframework.security.crypto.codec.Hex;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -30,17 +36,9 @@ import java.security.NoSuchAlgorithmException;
 @RequiredArgsConstructor
 public class UserService implements GetUserInfoUsecase, UpdateUserInfoUsecase {
     private final ReadUserPort readUserPort;
+    private final ReadProjectPort readProjectPort;
     private final WriteUserPort writeUserPort;
-    private final AuthenticationPort authenticationPort;
     private final S3Port s3Port;
-    private final GetAllRoomsByUserIdUsecase getAllRoomsByUserIdUsecase;
-
-//    @Override
-//    public RegisterUserResponseDto registerUser(RegisterUserRequestDto registerDto){
-//        String userId = writeUserPort.createUser(registerDto.name(), registerDto.email(),"").value();
-//        TokenDto tokens = authenticationPort.GetJwtTokens(new UserForTokenDto(userId));
-//        return new RegisterUserResponseDto(tokens.accessToken(), tokens.refreshToken());
-//    }
 
     @Override
     public GetUserInfoResponseDto getUserInfo(String userId) {
@@ -50,9 +48,14 @@ public class UserService implements GetUserInfoUsecase, UpdateUserInfoUsecase {
             throw new RuntimeException("User not found with ID: " + userId);
         }
 
-        GetAllRoomsByUserIdUsecase.GetAllRoomsByUserIdResponseDto projects = getAllRoomsByUserIdUsecase.getAllRoomsByUserId(userId);
+        List<Project> projects = readProjectPort.findAllProjectByUserId(userId);
+        // GetAllRoomsByUserIdResponseDto responseDto = projectMappers.mapProjectsToGetAllRoomsByUserIdResponseDto(userId, projects);
+        GetAllRoomsByUserIdUsecase.GetAllRoomsByUserIdResponseDto allProjects = mapProjectsToResponse(userId, projects);
 
-        return new GetUserInfoResponseDto(userId,hash(userId) ,user.getName(), user.getProfileImg(), user.getEmail(), projects.projects());
+
+//        GetAllRoomsByUserIdUsecase.GetAllRoomsByUserIdResponseDto projects = getAllRoomsByUserIdUsecase.getAllRoomsByUserId(userId);
+        System.out.println(user);
+        return new GetUserInfoResponseDto(userId,hash(userId) ,user.getName(), user.getProfileImg(), user.getEmail(), allProjects.projects());
 
     }
 
@@ -98,13 +101,44 @@ public class UserService implements GetUserInfoUsecase, UpdateUserInfoUsecase {
         return new UpdateUserInfoResponseDto(userId, user.getName(), user.getProfileImg());
     }
 
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        // 데이터베이스에서 사용자 정보를 조회하는 로직을 구현합니다.
-//        User user = readUserPort.findByUsername(username);
-//        if (user == null) {
-//            throw new UsernameNotFoundException("User not found with username: " + username);
-//        }
-//        return new org.springframework.security.core.userdetails.User(user.getName(), user.g(), user.getAuthorities());
-//    }
+    private GetAllRoomsByUserIdUsecase.GetAllRoomsByUserIdResponseDto mapProjectsToResponse(String userId, List<Project> projects) {
+        List<GetAllRoomsByUserIdUsecase.ProjectForGetAllInfoAboutRoomsByUserIdResponseDto> projectDtos = projects.stream()
+                .map(project -> convertProjectToDto(userId, project))
+                .filter(dto -> dto != null)  // Ensure that only relevant projects are included
+                .collect(Collectors.toList());
 
+        return new GetAllRoomsByUserIdUsecase.GetAllRoomsByUserIdResponseDto(userId, projectDtos);
+    }
+
+    private GetAllRoomsByUserIdUsecase.ProjectForGetAllInfoAboutRoomsByUserIdResponseDto convertProjectToDto(String userEmail, Project project) {
+        Role userRole = project.getUsers().stream()
+                .filter(user -> userEmail.equals(user.getUserId()))
+                .map(UserInProject::getRole)
+                .findFirst()
+                .orElse(null);
+
+        if (userRole == null) return null;
+
+        List<UserInProject> usersInProject = project.getUsers();
+
+        List<String> userEmails = usersInProject.stream()
+                .map(UserInProject::getUserId)
+                .map(userId -> {
+                    User user = readUserPort.findByUserId(userId);
+                    return user != null ? user.getEmail() : null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        return new GetAllRoomsByUserIdUsecase.ProjectForGetAllInfoAboutRoomsByUserIdResponseDto(
+                project.getName(),
+                project.getId(),
+                project.getDescription(),
+                userRole,
+                userEmails,
+                project.getProgress(),
+                project.getLastModifiedDate(),
+                project.getImg()
+        );
+    }
 }

@@ -1,85 +1,127 @@
 package application.service;
 
+import Dummy.Stub.application.out.gmail.StubSendMailPort;
+import Dummy.Stub.application.out.liveblock.StubLiveblocksPort;
+import Dummy.Stub.application.out.openai.StubChatGPTPort;
+import Dummy.Stub.application.out.persistence.project.StubReadProjectPort;
+import Dummy.Stub.application.out.persistence.project.StubWriteProjectPort;
+import Dummy.Stub.application.out.persistence.user.StubReadUserPort;
+import Dummy.Stub.application.out.persistence.user.StubWriteUserPort;
+import Dummy.Stub.application.out.s3.StubS3Port;
+import Dummy.UserDummyData;
+import Dummy.domain.StubUser;
 import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase;
+import com.syncd.application.port.in.GetUserInfoUsecase.*;
+import com.syncd.application.port.in.UpdateUserInfoUsecase.*;
+import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase.*;
+
+import com.syncd.application.port.out.autentication.AuthenticationPort;
 import com.syncd.application.port.out.persistence.user.ReadUserPort;
-import com.syncd.domain.user.User;
+import com.syncd.application.port.out.persistence.user.WriteUserPort;
+import com.syncd.application.port.out.s3.S3Port;
+import com.syncd.application.service.ProjectService;
 import com.syncd.application.service.UserService;
-import com.syncd.enums.Role;
+import com.syncd.domain.user.User;
+import com.syncd.mapper.ProjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.Collections;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 public class UserServiceTest {
-
-    @Mock
-    private ReadUserPort readUserPort;
-
-    @Mock
-    private GetAllRoomsByUserIdUsecase getAllRoomsByUserIdUsecase;
 
     @InjectMocks
     private UserService userService;
 
+    private StubReadUserPort readUserPort;
+
+    private StubReadProjectPort readProjectPort;
+
+    private StubWriteUserPort writeUserPort;
+
+    private StubS3Port s3Port;
+
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
+    void setUp() {
+        readUserPort = new StubReadUserPort();
+        s3Port = new StubS3Port();
+        writeUserPort = new StubWriteUserPort();
+        readProjectPort = new StubReadProjectPort();
+
+        userService = new UserService(readUserPort,readProjectPort,writeUserPort,s3Port);
     }
 
     @Test
-    public void testGetUserInfo_UserNotFound() {
+    void getUserInfo() {
         // Given
-        String userId = "user123";
+        User stubUser = new StubUser();
 
         // When
-        when(readUserPort.findByUserId(userId)).thenReturn(null);
+        GetUserInfoResponseDto response = userService.getUserInfo(stubUser.getId());
 
         // Then
-        assertThrows(RuntimeException.class, () -> {
-            userService.getUserInfo(userId);
-        });
+        System.out.println(response);
+        assertNotNull(response);
+        assertEquals(stubUser.getId(), response.userId());
+        assertEquals(stubUser.getName(), response.name());
+        assertEquals(stubUser.getProfileImg(), response.img());
+        assertEquals(stubUser.getEmail(), response.email());
     }
 
     @Test
-    public void testGetUserInfo() {
+    void updateUserInfo() {
         // Given
-        String userId = "user123";
-        User user = new User();
-        user.setId(userId);
-        user.setName("syncd");
-        user.setEmail("syncd.doe@example.com");
-        user.setProfileImg("profile.jpg");
-
-        GetAllRoomsByUserIdUsecase.ProjectForGetAllInfoAboutRoomsByUserIdResponseDto project1 =
-                new GetAllRoomsByUserIdUsecase.ProjectForGetAllInfoAboutRoomsByUserIdResponseDto(
-                        "project1", "1", "description1", Role.HOST, List.of("user1@example.com"), 0, "2024-05-19","img");
-        GetAllRoomsByUserIdUsecase.ProjectForGetAllInfoAboutRoomsByUserIdResponseDto project2 =
-                new GetAllRoomsByUserIdUsecase.ProjectForGetAllInfoAboutRoomsByUserIdResponseDto(
-                        "project2", "2", "description2", Role.MEMBER, List.of("user2@example.com"), 50, "2024-05-20","img");
-        GetAllRoomsByUserIdUsecase.GetAllRoomsByUserIdResponseDto projects =
-                new GetAllRoomsByUserIdUsecase.GetAllRoomsByUserIdResponseDto(userId, List.of(project1, project2));
+        User stubUser = new StubUser();
 
         // When
-        when(readUserPort.findByUserId(userId)).thenReturn(user);
-        when(getAllRoomsByUserIdUsecase.getAllRoomsByUserId(userId)).thenReturn(projects);
-
-        // Act
-        UserService.GetUserInfoResponseDto response = userService.getUserInfo(userId);
+        UpdateUserInfoResponseDto response = userService.updateUserInfo(stubUser.getId(), stubUser.getName(), UserDummyData.getImageFile());
 
         // Then
-        assertEquals(userId, response.userId());
-        assertEquals("syncd", response.name());
-        assertEquals("syncd.doe@example.com", response.email());
-        assertEquals("profile.jpg", response.img());
-        assertEquals(2, response.projects().size());
-        assertEquals("project1", response.projects().get(0).name());
-        assertEquals("project2", response.projects().get(1).name());
+        assertNotNull(response);
+        assertEquals(stubUser.getId(), response.userId());
+        assertEquals(stubUser.getName(), response.name());
+        assertEquals(stubUser.getProfileImg(), response.img());
+
+    }
+
+    @Test
+    void updateUserInfo_withoutNameChange() {
+        // Given
+        User stubUser = new StubUser();
+
+        // When
+        UpdateUserInfoResponseDto response = userService.updateUserInfo(stubUser.getId(), stubUser.getName(), UserDummyData.getImageFile());
+        // Then
+        assertNotNull(response);
+        assertEquals(stubUser.getId(), response.userId());
+        assertEquals(stubUser.getName(), response.name());
+        assertEquals(stubUser.getProfileImg(), response.img());
+
+    }
+
+    @Test
+    void updateUserInfo_withoutImageChange() {
+        // Given
+        User stubUser = new StubUser();
+
+        // When
+        UpdateUserInfoResponseDto response = userService.updateUserInfo(stubUser.getId(), stubUser.getName(), UserDummyData.getImageFile());
+
+        // Then
+        assertNotNull(response);
+        assertEquals(stubUser.getId(), response.userId());
+        assertEquals(stubUser.getName(), response.name());
+        assertEquals(stubUser.getProfileImg(), response.img());
+
     }
 }
