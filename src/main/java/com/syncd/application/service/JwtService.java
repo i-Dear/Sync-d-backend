@@ -36,7 +36,7 @@ public class JwtService implements GenerateTokenUsecase, JwtAuthenticationFilter
                 .setClaims(createClaims(user))
                 .setIssuedAt(new Date())
                 .setExpiration(createExpireDateForAccessToken())
-                .signWith(SignatureAlgorithm.HS256, createSigningKey())
+                .signWith(SignatureAlgorithm.HS256, "aS1kZWFyLXN5bmNkLXNlY3JldC1rZXktaS1kZWFyLXN5bmNkLXNlY3JldC1rZXk=")
                 .compact();
     }
 

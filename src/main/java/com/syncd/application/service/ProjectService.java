@@ -218,19 +218,25 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
         CoreDetails coreDetails = null;
         List<PersonaInfo> personaInfos = null;
         List<Epic> epics = null;
-
+        System.out.println("whyWhatHowImage: " + whyWhatHowImage);
+        System.out.println("businessModelImage: " + businessModelImage);
+        System.out.println("menuTreeImage: " + menuTreeImage);
         try {
-            if(projectStage == 4){
-                personaInfos = objectMapper.readValue(personaInfosJson, new TypeReference<List<PersonaInfo>>() {});
+            switch (projectStage) {
+                case 4:
+                    personaInfos = objectMapper.readValue(personaInfosJson, new TypeReference<List<PersonaInfo>>() {});
+                    break;
+                case 8:
+                    coreDetails = objectMapper.readValue(coreDetailsJson, CoreDetails.class);
+                    break;
+                case 11:
+                    epics = objectMapper.readValue(epicsJson, new TypeReference<List<Epic>>() {});
+                    break;
+                default:
+                    break;
             }
-            if(projectStage == 8) {
-                coreDetails = objectMapper.readValue(coreDetailsJson, CoreDetails.class);
-            }
-            if(projectStage == 11){
-                epics = objectMapper.readValue(epicsJson, new TypeReference<List<Epic>>() {});
-            }
-          } catch (Exception e) {
-            throw new CustomException(ErrorInfo.JSON_PARSE_ERROR, "Failed to parse JSON for coreDetails or epics: " + e.getMessage());
+        } catch (Exception e) {
+            throw new CustomException(ErrorInfo.JSON_PARSE_ERROR, "Failed to parse JSON for coreDetails, personaInfos, or epics: " + e.getMessage());
         }
 
         Project project = readProjectPort.findProjectByProjectId(projectId);
@@ -267,9 +273,9 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
             default:
                 throw new IllegalArgumentException("Invalid project stage: " + projectStage);
         }
+        writeProjectPort.UpdateProject(project);
         writeProjectPort.AddProgress(projectId, projectStage);
         writeProjectPort.updateLastModifiedDate(projectId);
-        writeProjectPort.UpdateProject(project);
         return new SyncProjectResponseDto(projectId);
     }
 
@@ -359,6 +365,8 @@ public class ProjectService implements CreateProjectUsecase, GetAllRoomsByUserId
     }
 
     private String uploadFileToS3(MultipartFile file) {
+        System.out.println("file Name: " + file.getOriginalFilename());
+        System.out.println("file Empty: " + file.isEmpty());
         if (file != null && !file.isEmpty()) {
             Optional<String> optionalFileUrl = s3Port.uploadMultipartFileToS3(file);
             return optionalFileUrl.orElseThrow(() -> new IllegalStateException("Failed to upload file to S3"));
