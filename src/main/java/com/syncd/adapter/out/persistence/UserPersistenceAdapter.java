@@ -49,6 +49,7 @@ public class UserPersistenceAdapter implements WriteUserPort, ReadUserPort {
         existingUser.setName(user.getName());
         existingUser.setEmail(user.getEmail());
         existingUser.setProfileImg(user.getProfileImg());
+        existingUser.setNumberOfLeftHostProjects(user.getNumberOfLeftHostProjects());
 
         UserEntity updatedUser = userDao.save(existingUser);
 
