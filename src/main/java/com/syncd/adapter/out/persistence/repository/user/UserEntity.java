@@ -14,6 +14,7 @@ import java.util.List;
 public class UserEntity {
     @Id
     private String id;
+    private String tid;
     private String email;
     private String name;
     private UserAccountStatus status;

@@ -9,7 +9,6 @@ public interface GetChatgptPriceAdminUsecase {
     // METHOD
     // ======================================
     GetChatgptPriceResponseDto getChatgptPrice(
-            @NotBlank(message = ValidationMessages.ADMIN_ID_NOT_BLANK)
             String adminId
     );
 

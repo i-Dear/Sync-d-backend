@@ -12,10 +12,9 @@ public interface CreateProjectAdminUsecase {
     // METHOD
     // ======================================
     CreateProjectAdminResponseDto createProject(
-            @NotBlank(message = ValidationMessages.ADMIN_ID_NOT_BLANK)
             String adminId,
-            String name, String description, String img,
-            List<UserInProjectRequestDto> users,
+            String name, String description, MultipartFile img,
+            String usersJson,
             int progress, int leftChanceForUserstory
     );
 
@@ -25,8 +24,8 @@ public interface CreateProjectAdminUsecase {
     record CreateProjectAdminRequestDto(
             String name,
             String description,
-            String img,
-            List<UserInProjectRequestDto> users,
+            MultipartFile img,
+            String usersJson,
             int progress,
             int leftChanceForUserstory
     ) {}

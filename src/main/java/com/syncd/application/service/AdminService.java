@@ -1,5 +1,7 @@
 package com.syncd.application.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.syncd.adapter.out.persistence.repository.admin.AdminDao;
 import com.syncd.adapter.out.persistence.repository.admin.AdminEntity;
 import com.syncd.adapter.out.persistence.repository.project.ProjectDao;
@@ -7,18 +9,17 @@ import com.syncd.adapter.out.persistence.repository.project.ProjectEntity;
 import com.syncd.adapter.out.persistence.repository.user.UserDao;
 import com.syncd.adapter.out.persistence.repository.user.UserEntity;
 import com.syncd.application.port.in.admin.*;
+import com.syncd.application.port.out.s3.S3Port;
 import com.syncd.enums.UserAccountStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,14 +32,13 @@ public class AdminService implements LoginAdminUsecase, CreateAdminUsecase, Crea
     private final UserDao userDao;
     private final AdminDao adminDao;
     private final JwtService jwtService;
+    private final S3Port s3Port;
+    private final ObjectMapper objectMapper;
 
     @Override
     public LoginResponseDto login(String email, String password) {
         AdminEntity admin = adminDao.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
-//        if (!passwordEncoder.matches(password, admin.getPassword())) {
-//            throw new RuntimeException("Invalid credentials");
-//        }
         if (!(password.equals(admin.getPassword()))) {
             throw new RuntimeException("Invalid credentials");
         }
@@ -58,19 +58,18 @@ public class AdminService implements LoginAdminUsecase, CreateAdminUsecase, Crea
     }
 
     @Override
-    public CreateProjectAdminResponseDto createProject( String adminId,
-                                                        String name,
-                                                        String description,
-                                                        String img,
-                                                        List<CreateProjectAdminUsecase.UserInProjectRequestDto> users,
-                                                        int progress,
-                                                        int leftChanceForUserstory){
+    public CreateProjectAdminResponseDto createProject(String adminId, String name, String description, MultipartFile img, String usersJson, int progress, int leftChanceForUserstory) {
+        List<CreateProjectAdminUsecase.UserInProjectRequestDto> users;
+        try {
+            users = objectMapper.readValue(usersJson, new TypeReference<List<CreateProjectAdminUsecase.UserInProjectRequestDto>>() {});
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to parse users JSON", e);
+        }
 
         ProjectEntity project = new ProjectEntity();
         project.setName(name);
         project.setDescription(description);
-        project.setImg(new String(img.getBytes()));
-
+        project.setImg(uploadFileToS3(img));
 
         List<ProjectEntity.UserInProjectEntity> userEntities = users.stream()
                 .map(user -> {
@@ -89,18 +88,36 @@ public class AdminService implements LoginAdminUsecase, CreateAdminUsecase, Crea
         ProjectEntity savedProject = projectDao.save(project);
         return new CreateProjectAdminResponseDto(savedProject.getId());
     }
+
     @Override
-    public CreateUserResponseDto addUser(String adminId, String email, String name, UserAccountStatus status, String profileImg, List<String> projectIds) {
+    public CreateUserResponseDto addUser(String adminId, String email, String name, String status, MultipartFile profileImg, String projectIdsJson) {
+        List<String> projectIds = Collections.emptyList();
+        if (projectIdsJson != null && !projectIdsJson.isEmpty() && !"undefined".equals(projectIdsJson)) {
+            try {
+                projectIds = objectMapper.readValue(projectIdsJson, new TypeReference<List<String>>() {});
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to parse projectIds JSON", e);
+            }
+        }
+
+        UserAccountStatus userStatus;
+        try {
+            userStatus = UserAccountStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid status value: " + status, e);
+        }
+
         UserEntity user = new UserEntity();
         user.setEmail(email);
         user.setName(name);
-        user.setStatus(status);
-        user.setProfileImg(profileImg);
+        user.setStatus(userStatus);
+        user.setProfileImg(uploadFileToS3(profileImg));
         user.setProjectIds(projectIds);
 
         UserEntity savedUser = userDao.save(user);
         return new CreateUserResponseDto(savedUser.getId());
     }
+
     @Override
     public DeleteProjectAdminResponseDto deleteProject(String adminId, String projectId) {
         Optional<ProjectEntity> projectOpt = projectDao.findById(projectId);
@@ -137,16 +154,24 @@ public class AdminService implements LoginAdminUsecase, CreateAdminUsecase, Crea
     }
 
     @Override
-    public UpdateProjectAdminResponseDto updateProject(String adminId, String projectId, String name, String description,
-                                                       String img, List<UpdateProjectAdminUsecase.UserInProjectRequestDto> users,
-                                                       int progress, int leftChanceForUserstory) {
+    public UpdateProjectAdminResponseDto updateProject(String adminId, String projectId, String name, String description, MultipartFile img, String usersJson, int progress, int leftChanceForUserstory) {
+        List<UpdateProjectAdminUsecase.UserInProjectRequestDto> users;
+        try {
+            users = objectMapper.readValue(usersJson, new TypeReference<List<UpdateProjectAdminUsecase.UserInProjectRequestDto>>() {});
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to parse users JSON", e);
+        }
 
         Optional<ProjectEntity> projectOpt = projectDao.findById(projectId);
         if (projectOpt.isPresent()) {
             ProjectEntity project = projectOpt.get();
             project.setName(name);
             project.setDescription(description);
-            project.setImg(new String(img.getBytes()));
+
+            // 이미지가 빈 값이 아닌 경우에만 업데이트
+            if (img != null && !img.isEmpty()) {
+                project.setImg(uploadFileToS3(img));
+            }
 
             List<ProjectEntity.UserInProjectEntity> userEntities = users.stream()
                     .map(user -> {
@@ -170,16 +195,35 @@ public class AdminService implements LoginAdminUsecase, CreateAdminUsecase, Crea
     }
 
     @Override
-    public UpdateUserResponseDto updateUser(String adminId, String userId, String email, String name, UserAccountStatus status,
-                                            String profileImg, List<String> projectIds) {
+    public UpdateUserResponseDto updateUser(String adminId, String userId, String email, String name, String status, MultipartFile profileImg, String projectIdsJson) {
+        List<String> projectIds = Collections.emptyList();
+        if (projectIdsJson != null && !projectIdsJson.isEmpty() && !"undefined".equals(projectIdsJson)) {
+            try {
+                projectIds = objectMapper.readValue(projectIdsJson, new TypeReference<List<String>>() {});
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to parse projectIds JSON", e);
+            }
+        }
+
+        UserAccountStatus userStatus;
+        try {
+            userStatus = UserAccountStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid status value: " + status, e);
+        }
 
         Optional<UserEntity> userOpt = userDao.findById(userId);
         if (userOpt.isPresent()) {
             UserEntity user = userOpt.get();
             user.setEmail(email);
             user.setName(name);
-            user.setStatus(status);
-            user.setProfileImg(profileImg);
+            user.setStatus(userStatus);
+
+            // 프로필 이미지가 빈 값이 아닌 경우에만 업데이트
+            if (profileImg != null && !profileImg.isEmpty()) {
+                user.setProfileImg(uploadFileToS3(profileImg));
+            }
+
             user.setProjectIds(projectIds);
 
             UserEntity updatedUser = userDao.save(user);
@@ -188,6 +232,7 @@ public class AdminService implements LoginAdminUsecase, CreateAdminUsecase, Crea
             throw new RuntimeException("User not found.");
         }
     }
+
 
     @Override
     public SearchUserAdminResponseDto searchUsers(String adminId, String status, String searchType, String searchText) {
@@ -223,13 +268,22 @@ public class AdminService implements LoginAdminUsecase, CreateAdminUsecase, Crea
             String endDate,
             Integer progress,
             int page,
-            int pageSize
+            int pageSize,
+            String userName
     ) {
         DateTimeFormatter requestFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         DateTimeFormatter dataFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS");
         List<ProjectEntity> projects = projectDao.findAll();
 
-        // Filtering logic
+        Map<String, UserEntity> userMap = new HashMap<>();
+        for (ProjectEntity project : projects) {
+            for (ProjectEntity.UserInProjectEntity userInProject : project.getUsers()) {
+                userDao.findById(userInProject.getUserId()).ifPresent(userEntity -> {
+                    userMap.put(userEntity.getId(), userEntity);
+                });
+            }
+        }
+
         if (name != null && !name.isEmpty()) {
             projects = projects.stream()
                     .filter(project -> name.equalsIgnoreCase(project.getName()))
@@ -261,16 +315,16 @@ public class AdminService implements LoginAdminUsecase, CreateAdminUsecase, Crea
                     .filter(project -> progress.intValue() == project.getProgress())
                     .collect(Collectors.toList());
         }
-
-        // Fetch user details for each project and create a user map
-        Map<String, UserEntity> userMap = new HashMap<>();
-        for (ProjectEntity project : projects) {
-            for (ProjectEntity.UserInProjectEntity userInProject : project.getUsers()) {
-                userDao.findById(userInProject.getUserId()).ifPresent(userEntity -> userMap.put(userEntity.getId(), userEntity));
-            }
+        if (userName != null && !userName.isEmpty()) {
+            projects = projects.stream()
+                    .filter(project -> project.getUsers().stream()
+                            .anyMatch(user -> {
+                                UserEntity userEntity = userMap.get(user.getUserId());
+                                return userEntity != null && userName.equalsIgnoreCase(userEntity.getName());
+                            }))
+                    .collect(Collectors.toList());
         }
 
-        // Pagination logic
         long totalCount = projects.size();
         int startIndex = (page - 1) * pageSize;
         int endIndex = Math.min(startIndex + pageSize, projects.size());
@@ -282,5 +336,13 @@ public class AdminService implements LoginAdminUsecase, CreateAdminUsecase, Crea
     @Override
     public GetChatgptPriceResponseDto getChatgptPrice(String adminId){
         return new GetChatgptPriceResponseDto("3.2","4.5","10.4","11.2","40.3");
+    }
+
+    private String uploadFileToS3(MultipartFile file) {
+        if (file != null && !file.isEmpty()) {
+            Optional<String> optionalFileUrl = s3Port.uploadMultipartFileToS3(file);
+            return optionalFileUrl.orElseThrow(() -> new IllegalStateException("Failed to upload file to S3"));
+        }
+        return "";
     }
 }
