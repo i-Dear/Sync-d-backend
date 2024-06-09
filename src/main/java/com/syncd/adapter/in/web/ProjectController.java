@@ -105,7 +105,7 @@ public class ProjectController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/result")
+    @PostMapping("/result")
     public GetResultPdfUsecaseResponseDto getResultPdf(
             HttpServletRequest request,
             @RequestBody GetResultPdfUsecaseRequesteDto requesteDto) {
