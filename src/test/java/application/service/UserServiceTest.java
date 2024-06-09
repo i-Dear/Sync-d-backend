@@ -1,42 +1,20 @@
 package application.service;
 
-import Dummy.Stub.application.out.gmail.StubSendMailPort;
-import Dummy.Stub.application.out.liveblock.StubLiveblocksPort;
-import Dummy.Stub.application.out.openai.StubChatGPTPort;
 import Dummy.Stub.application.out.persistence.project.StubReadProjectPort;
-import Dummy.Stub.application.out.persistence.project.StubWriteProjectPort;
 import Dummy.Stub.application.out.persistence.user.StubReadUserPort;
 import Dummy.Stub.application.out.persistence.user.StubWriteUserPort;
 import Dummy.Stub.application.out.s3.StubS3Port;
 import Dummy.UserDummyData;
 import Dummy.domain.StubUser;
-import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase;
 import com.syncd.application.port.in.GetUserInfoUsecase.*;
 import com.syncd.application.port.in.UpdateUserInfoUsecase.*;
-import com.syncd.application.port.in.GetAllRoomsByUserIdUsecase.*;
-
-import com.syncd.application.port.out.autentication.AuthenticationPort;
-import com.syncd.application.port.out.persistence.user.ReadUserPort;
-import com.syncd.application.port.out.persistence.user.WriteUserPort;
-import com.syncd.application.port.out.s3.S3Port;
-import com.syncd.application.service.ProjectService;
 import com.syncd.application.service.UserService;
 import com.syncd.domain.user.User;
-import com.syncd.mapper.ProjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Collections;
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+
 
 public class UserServiceTest {
 

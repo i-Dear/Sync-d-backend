@@ -145,7 +145,7 @@ public class ProjectServiceTest {
         List<String> invitedUsers = ProjectDummyData.getUserLists();
 
         // When
-        InviteUserInProjectUsecase.InviteUserInProjectResponseDto response = projectService.inviteUserInProject(stubProject.getHost(),stubProject.getName(), stubProject.getId(), invitedUsers);
+        InviteUserInProjectUsecase.InviteUserInProjectResponseDto response = projectService.inviteUserInProject(stubProject.getHost(),stubProject.getName(),stubProject.getId(), invitedUsers);
 
         // Then
         assertNotNull(response);
